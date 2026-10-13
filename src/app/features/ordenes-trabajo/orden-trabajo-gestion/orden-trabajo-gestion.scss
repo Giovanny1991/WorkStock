@@ -1,0 +1,876 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+
+/* =====================================================
+   ENCABEZADO DEL DIÁLOGO
+===================================================== */
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 9px 12px;
+
+  border-bottom: 1px solid var(--app-border);
+
+  background: var(--app-card);
+
+
+  h2 {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: var(--app-text);
+
+    line-height: 1.15;
+  }
+
+
+  p {
+    margin: 2px 0 0;
+
+    font-size: 10px;
+
+    color: var(--app-text-muted);
+
+    line-height: 1.1;
+  }
+
+
+  button {
+    width: 30px;
+    height: 30px;
+
+    padding: 3px;
+
+
+    mat-icon {
+      width: 17px;
+      height: 17px;
+
+      font-size: 17px;
+    }
+  }
+}
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+mat-dialog-content {
+  display: block;
+
+  max-height: 74vh;
+
+  padding: 10px !important;
+
+  background: var(--app-bg);
+}
+
+
+/* =====================================================
+   TARJETAS DE SECCIÓN
+===================================================== */
+
+.section-card {
+  padding: 10px;
+
+  margin-bottom: 8px;
+
+  background: var(--app-card);
+
+  border: 1px solid var(--app-border);
+  border-radius: 7px;
+}
+
+
+.section-card:last-child {
+  margin-bottom: 0;
+}
+
+
+/* =====================================================
+   ENCABEZADO DE SECCIONES
+===================================================== */
+
+.section-header {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 9px;
+
+
+  h3 {
+    margin: 0;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: var(--app-text);
+
+    line-height: 1.15;
+  }
+
+
+  p {
+    margin: 1px 0 0;
+
+    font-size: 9px;
+
+    color: var(--app-text-muted);
+
+    line-height: 1.15;
+  }
+}
+
+
+.section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  flex: 0 0 28px;
+
+  border-radius: 6px;
+
+  background: #eef4ff;
+
+  color: var(--app-primary);
+
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+
+    font-size: 16px;
+  }
+}
+
+
+/* =====================================================
+   INFORMACIÓN GENERAL
+===================================================== */
+
+.info-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 6px;
+}
+
+
+.info-item {
+  min-width: 0;
+
+  padding: 6px 8px;
+
+  border-radius: 5px;
+
+  background: var(--app-card-secondary);
+
+
+  span {
+    display: block;
+
+    margin-bottom: 2px;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    color: var(--app-text-muted);
+
+    line-height: 1.1;
+
+    text-transform: uppercase;
+  }
+
+
+  strong {
+    display: block;
+
+    overflow: hidden;
+
+    font-size: 10.5px;
+    font-weight: 600;
+
+    color: var(--app-text);
+
+    line-height: 1.2;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+  }
+}
+
+
+.mono {
+  font-family:
+    Consolas,
+    "Courier New",
+    monospace;
+}
+
+
+/* =====================================================
+   DAÑO REPORTADO
+===================================================== */
+
+.damage-box {
+  margin-top: 6px;
+
+  padding: 7px 8px;
+
+  border-radius: 5px;
+
+  background: var(--app-card-secondary);
+
+
+  span {
+    display: block;
+
+    margin-bottom: 2px;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    color: var(--app-text-muted);
+
+    text-transform: uppercase;
+  }
+
+
+  strong {
+    font-size: 10.5px;
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    color: var(--app-text);
+  }
+}
+
+
+/* =====================================================
+   CHECKBOX
+===================================================== */
+
+.pending-check {
+  margin-bottom: 8px;
+
+
+  mat-checkbox {
+    font-size: 10.5px;
+  }
+}
+
+
+/* =====================================================
+   FORMULARIOS
+===================================================== */
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 180px)
+    minmax(0, 1fr);
+
+  gap: 8px;
+}
+
+
+.money-grid {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  align-items: stretch;
+}
+
+
+/* =====================================================
+   FORM FIELDS COMPACTOS
+===================================================== */
+
+:host ::ng-deep {
+
+  .section-card {
+
+    .mat-mdc-text-field-wrapper {
+      height: 40px;
+    }
+
+
+    .mat-mdc-form-field-flex {
+      height: 40px;
+
+      align-items: center;
+    }
+
+
+    .mat-mdc-form-field-infix {
+      min-height: 40px;
+
+      padding-top: 8px !important;
+      padding-bottom: 6px !important;
+    }
+
+
+    .mat-mdc-floating-label {
+      font-size: 11px;
+    }
+
+
+    input,
+    .mat-mdc-select-value {
+      font-size: 10.5px;
+    }
+
+
+    .mat-mdc-form-field-icon-prefix,
+    .mat-mdc-form-field-icon-suffix {
+      padding: 0 4px;
+    }
+
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+
+      font-size: 16px;
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   OBSERVACIONES
+===================================================== */
+
+.observaciones-field {
+  width: 100%;
+}
+
+
+:host ::ng-deep
+.observaciones-field {
+
+  .mat-mdc-text-field-wrapper {
+    height: auto;
+
+    min-height: 64px;
+  }
+
+
+  .mat-mdc-form-field-flex {
+    height: auto;
+
+    align-items: flex-start;
+  }
+
+
+  .mat-mdc-form-field-infix {
+    min-height: 64px;
+
+    padding-top: 10px !important;
+    padding-bottom: 6px !important;
+  }
+
+
+  textarea {
+    min-height: 42px;
+
+    font-size: 10.5px;
+
+    line-height: 1.3;
+  }
+
+}
+
+
+/* =====================================================
+   SALDO
+===================================================== */
+
+.saldo-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 40px;
+
+  padding: 5px 9px;
+
+  box-sizing: border-box;
+
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+
+  background: var(--app-card-secondary);
+
+
+  span {
+    margin-bottom: 2px;
+
+    font-size: 9px;
+    font-weight: 500;
+
+    color: var(--app-text-muted);
+  }
+
+
+  strong {
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--app-text);
+
+    line-height: 1.1;
+  }
+}
+
+
+.pending-value {
+  font-size: 10px !important;
+
+  color: var(--app-warning) !important;
+}
+
+
+.saldo-pendiente {
+  color: var(--app-danger) !important;
+}
+
+
+.saldo-pagado {
+  color: var(--app-success) !important;
+}
+
+
+/* =====================================================
+   ADVERTENCIA
+===================================================== */
+
+.warning-box {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 7px;
+
+  padding: 6px 8px;
+
+  border-radius: 5px;
+
+  background: var(--app-warning-bg);
+
+  color: var(--app-warning);
+
+  font-size: 9.5px;
+
+  line-height: 1.2;
+
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+
+    flex: 0 0 16px;
+
+    font-size: 16px;
+  }
+}
+
+
+/* =====================================================
+   ACCESORIOS - FORMULARIO
+===================================================== */
+
+.accessory-form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    90px
+    auto;
+
+  gap: 7px;
+
+  align-items: start;
+}
+
+
+.accessory-select {
+  width: 100%;
+}
+
+
+.quantity-field {
+  width: 100%;
+}
+
+
+.add-button {
+  height: 40px;
+
+  padding: 0 12px;
+
+  font-size: 10px;
+
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+
+    font-size: 16px;
+  }
+}
+
+
+/* =====================================================
+   INFORMACIÓN DE STOCK
+===================================================== */
+
+.stock-info {
+  margin-top: -1px;
+  margin-bottom: 6px;
+
+  font-size: 9.5px;
+
+  color: var(--app-text-muted);
+
+
+  strong {
+    color: var(--app-text);
+
+    font-weight: 700;
+  }
+}
+
+
+/* =====================================================
+   TABLA DE ACCESORIOS
+===================================================== */
+
+.accessories-table-wrapper {
+  width: 100%;
+
+  margin-top: 5px;
+
+  overflow-x: auto;
+
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+
+.accessories-table {
+  width: 100%;
+
+  background: var(--app-card);
+}
+
+
+:host ::ng-deep
+.accessories-table {
+
+  .mat-mdc-header-row {
+    height: 30px;
+
+    background: var(--app-card-secondary);
+  }
+
+
+  .mat-mdc-header-cell {
+    height: 30px;
+
+    padding: 3px 7px;
+
+    border-bottom:
+      1px solid var(--app-border);
+
+    color: var(--app-text-muted);
+
+    font-size: 8.5px;
+    font-weight: 700;
+  }
+
+
+  .mat-mdc-row {
+    height: 34px;
+  }
+
+
+  .mat-mdc-row:hover {
+    background: var(--app-card-secondary);
+  }
+
+
+  .mat-mdc-cell {
+    height: 34px;
+
+    padding: 3px 7px;
+
+    border-bottom:
+      1px solid var(--app-border-soft);
+
+    color: var(--app-text);
+
+    font-size: 9.5px;
+  }
+
+}
+
+
+/* =====================================================
+   ACCIÓN TABLA
+===================================================== */
+
+.actions-column {
+  width: 55px;
+
+  text-align: center;
+}
+
+
+:host ::ng-deep
+.actions-column {
+
+  .mat-mdc-icon-button {
+    width: 27px;
+    height: 27px;
+
+    padding: 3px;
+  }
+
+
+  .mat-icon {
+    width: 15px;
+    height: 15px;
+
+    font-size: 15px;
+
+    color: var(--app-danger);
+  }
+
+
+  .mat-mdc-icon-button:hover {
+    background: var(--app-danger-bg);
+  }
+
+}
+
+
+/* =====================================================
+   SIN ACCESORIOS
+===================================================== */
+
+.empty-accessories {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 11px;
+
+  margin-top: 5px;
+
+  border: 1px dashed var(--app-border);
+  border-radius: 6px;
+
+  background: var(--app-card-secondary);
+
+  font-size: 9.5px;
+
+  color: var(--app-text-muted);
+
+
+  mat-icon {
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
+  }
+}
+
+/* =====================================================
+   GESTIÓN TÉCNICA
+===================================================== */
+
+.gestion-grid {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.observaciones-field {
+  width: 100%;
+}
+
+
+.estado-field {
+  width: 220px;
+}
+
+/* =====================================================
+   ACCIONES DEL DIÁLOGO
+===================================================== */
+
+mat-dialog-actions {
+  min-height: 48px;
+
+  padding: 7px 12px 8px;
+
+  gap: 6px;
+
+  border-top:
+    1px solid var(--app-border);
+
+  background: var(--app-card);
+
+
+  button {
+    height: 34px;
+
+    font-size: 10px;
+
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+
+      font-size: 16px;
+    }
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE TABLET
+===================================================== */
+
+@media (
+  max-width: 800px
+) {
+
+  .info-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .money-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .saldo-card {
+    grid-column:
+      span 2;
+  }
+
+
+  .accessory-form {
+    grid-template-columns:
+      1fr 90px;
+  }
+
+
+  .add-button {
+    grid-column:
+      span 2;
+
+    width: 100%;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE MÓVIL
+===================================================== */
+
+@media (
+  max-width: 560px
+) {
+
+    .estado-field {
+    width: 100%;
+  }
+  
+  .dialog-header {
+    padding: 8px 10px;
+
+
+    h2 {
+      font-size: 15px;
+    }
+  }
+
+
+  mat-dialog-content {
+    padding: 7px !important;
+  }
+
+
+  .section-card {
+    padding: 8px;
+
+    margin-bottom: 6px;
+  }
+
+
+  .section-header {
+    margin-bottom: 7px;
+  }
+
+
+  .info-grid,
+  .form-grid,
+  .money-grid,
+  .accessory-form {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .saldo-card,
+  .add-button {
+    grid-column:
+      auto;
+  }
+
+
+  .add-button {
+    width: 100%;
+  }
+
+
+  mat-dialog-actions {
+    padding: 6px 9px 7px;
+  }
+
+}

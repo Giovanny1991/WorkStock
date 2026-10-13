@@ -1,0 +1,263 @@
+<div class="page-header">
+  <div>
+    <h1>Nueva factura</h1>
+    <p>Registro de venta de equipos</p>
+  </div>
+</div>
+
+@if (cargando()) {
+<mat-progress-bar mode="indeterminate" />
+}
+
+<div class="invoice-layout">
+
+  <div class="main-column">
+
+    <div class="card form-card">
+      <div class="section-header">
+        <div class="section-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+
+        <div>
+          <h2>Cliente</h2>
+          <p>Seleccione el cliente para la factura</p>
+        </div>
+      </div>
+
+      <div class="client-selector">
+
+        <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
+          <!-- <mat-label>Buscar cliente</mat-label> -->
+
+          <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
+            placeholder="Cédula, RUC o nombre..." autocomplete="off">
+
+          <mat-icon matSuffix>search</mat-icon>
+
+          <mat-autocomplete #autoCliente="matAutocomplete" (optionSelected)="seleccionarCliente($event.option.value)">
+            @for (cliente of clientesFiltrados(); track cliente.id) {
+            <mat-option [value]="descripcionCliente(cliente)">
+              <div class="option-main">
+                {{ cliente.nombreCliente }}
+              </div>
+
+              <div class="option-secondary">
+                {{ cliente.identificacion }}
+              </div>
+            </mat-option>
+            }
+
+            @if (
+            clientesFiltrados().length === 0 &&
+            busquedaCliente().length > 0
+            ) {
+            <mat-option disabled>
+              Cliente no encontrado
+            </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        @if (puedeRegistrarCliente()) {
+        <button mat-stroked-button class="new-client-btn" type="button" (click)="registrarCliente()">
+          <mat-icon>person_add</mat-icon>
+          Registrar cliente
+        </button>
+        }
+
+        @if (clienteSeleccionado()) {
+        <button mat-stroked-button class="edit-client-btn" type="button" (click)="actualizarCliente()">
+          <mat-icon>edit</mat-icon>
+          Actualizar cliente
+        </button>
+        }
+
+      </div>
+    </div>
+
+    <div class="card form-card">
+      <div class="section-header">
+        <div class="section-icon">
+          <mat-icon>smartphone</mat-icon>
+        </div>
+
+        <div>
+          <h2>Agregar equipo</h2>
+          <p>Solo se muestran equipos disponibles para factura</p>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
+        <!-- <mat-label>Buscar equipo</mat-label> -->
+
+        <input matInput [formControl]="productoTexto" [matAutocomplete]="autoProducto"
+          placeholder="IMEI, marca o modelo..." autocomplete="off">
+
+        <mat-icon matSuffix>search</mat-icon>
+
+        <mat-autocomplete #autoProducto="matAutocomplete" (optionSelected)="seleccionarProducto($event.option.value)">
+          @for (producto of stockFiltrado(); track producto.id) {
+          <mat-option [value]="descripcionProducto(producto)">
+            <div class="option-main">
+              {{ producto.nombreMarca }} {{ producto.nombreModelo }}
+            </div>
+
+            <div class="option-secondary">
+              IMEI: {{ producto.imei1 }} ·
+              {{ producto.ram }} RAM ·
+              {{ producto.almacenamiento }} GB ·
+              {{ producto.color }}
+            </div>
+          </mat-option>
+          }
+
+          @if (stockFiltrado().length === 0) {
+          <mat-option disabled>
+            No existen equipos disponibles
+          </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <div>
+          <strong>Detalle de factura</strong>
+        </div>
+
+        <span class="records">
+          {{ detalle().length }} equipos
+        </span>
+      </div>
+
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="detalle()">
+
+          <ng-container matColumnDef="producto">
+            <th mat-header-cell *matHeaderCellDef>Equipo</th>
+
+            <td mat-cell *matCellDef="let x">
+              <div class="product-name">
+                {{ x.nombreMarca }} {{ x.nombreModelo }}
+              </div>
+
+              <small>
+                {{ x.ram }} RAM /
+                {{ x.almacenamiento }} GB /
+                {{ x.color }}
+              </small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="imei">
+            <th mat-header-cell *matHeaderCellDef>IMEI</th>
+
+            <td mat-cell *matCellDef="let x">
+              <strong>{{ x.imei1 }}</strong>
+
+              @if (x.imei2) {
+              <small>{{ x.imei2 }}</small>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="costo">
+            <th mat-header-cell *matHeaderCellDef>Costo</th>
+
+            <td mat-cell *matCellDef="let x">
+              {{ x.precioCosto | currency:'USD':'symbol':'1.2-2' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="precio">
+            <th mat-header-cell *matHeaderCellDef>Precio venta</th>
+
+            <td mat-cell *matCellDef="let x">
+              <div class="price-input">
+                <span>$</span>
+
+
+                <input type="number" min="0" step="0.01" [value]="x.precioTotal"
+                  [class.invalid-price]="x.precioTotal < x.precioCosto"
+                  (blur)="actualizarPrecio(x.id, $any($event.target).value)"
+                  (keydown.enter)="$any($event.target).blur()">
+
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="col-actions">
+              Acciones
+            </th>
+
+            <td mat-cell *matCellDef="let x" class="col-actions">
+              <button mat-icon-button class="action delete" matTooltip="Quitar" (click)="eliminarProducto(x)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+
+          <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+
+          <tr *matNoDataRow>
+            <td class="no-data" [attr.colspan]="displayedColumns().length">
+              <mat-icon>shopping_cart</mat-icon>
+              Agregue equipos a la factura
+            </td>
+          </tr>
+
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="summary-column">
+
+    <div class="summary-card">
+      <div class="summary-title">
+        <mat-icon>receipt_long</mat-icon>
+        Resumen
+      </div>
+
+      <div class="summary-row">
+        <span>Subtotal</span>
+
+        <strong>
+          {{ subtotal() | currency:'USD':'symbol':'1.2-2' }}
+        </strong>
+      </div>
+
+      <div class="summary-row">
+        <span>IVA ({{ ivaPorcentaje() }}%)</span>
+
+        <strong>
+          {{ valorIva() | currency:'USD':'symbol':'1.2-2' }}
+        </strong>
+      </div>
+
+      <div class="summary-total">
+        <span>Total</span>
+
+        <strong>
+          {{ total() | currency:'USD':'symbol':'1.2-2' }}
+        </strong>
+      </div>
+
+      <button mat-flat-button class="invoice-btn" [disabled]="!puedeFacturar() || facturando()" (click)="facturar()">
+        <mat-icon>
+          {{ facturando() ? 'hourglass_top' : 'receipt_long' }}
+        </mat-icon>
+
+        {{ facturando() ? 'Facturando...' : 'Generar factura' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>

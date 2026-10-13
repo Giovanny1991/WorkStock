@@ -1,0 +1,37 @@
+
+<mat-sidenav-container
+  class="layout-container"
+  [attr.data-workstock-theme]="tema">
+
+  <mat-sidenav
+    class="sidebar"
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="sidebarOpened"
+    (openedChange)="sidebarOpened = $event"
+    [autoFocus]="false">
+
+    <app-sidebar
+      (navegar)="cerrarMenuEnMovil()" />
+
+  </mat-sidenav>
+
+  <mat-sidenav-content class="main-column">
+
+    <app-header
+      (menuClick)="toggleMenu()"
+      [tema]="tema"
+      (cambiarTema)="alternarTema()" />
+
+    <main
+      class="content"
+      id="contenido-principal">
+
+      <!-- <app-breadcrumbs></app-breadcrumbs> -->
+
+      <router-outlet />
+
+    </main>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

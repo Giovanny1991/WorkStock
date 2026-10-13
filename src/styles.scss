@@ -1,0 +1,693 @@
+@use '@angular/material' as mat;
+
+/* ==============================================
+   WORKSTOCK - SISTEMA GLOBAL DE TEMAS
+============================================== */
+
+html {
+  height: 100%;
+
+  @include mat.theme((color: (primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette ),
+      typography: Roboto,
+      density: 0));
+}
+
+/* ==============================================
+   MODO CLARO
+============================================== */
+
+:root,
+:root[data-workstock-theme='light'] {
+  color-scheme: light;
+
+  --app-bg: #f5f7fb;
+  --app-card: #ffffff;
+  --app-card-secondary: #f8fafc;
+  --app-text: #1f2937;
+  --app-text-muted: #667085;
+  --app-border: #e5e7eb;
+  --app-border-soft: #f0f2f5;
+  --app-hover: #f1f5f9;
+
+  --app-primary: #2563eb;
+  --app-primary-soft: #eff6ff;
+  --app-success: #166534;
+  --app-success-bg: #dcfce7;
+  --app-danger: #b42318;
+  --app-danger-bg: #fee2e2;
+
+  --app-input-bg: #ffffff;
+}
+
+/* ==============================================
+   MODO OSCURO
+============================================== */
+
+:root[data-workstock-theme='dark'] {
+  color-scheme: dark;
+
+  --app-bg: #0f172a;
+  --app-card: #1e293b;
+  --app-card-secondary: #263449;
+  --app-text: #f1f5f9;
+  --app-text-muted: #94a3b8;
+  --app-border: #334155;
+  --app-border-soft: #304054;
+  --app-hover: #293a51;
+
+  --app-primary: #93c5fd;
+  --app-primary-soft: #223d60;
+  --app-success: #86efac;
+  --app-success-bg: #153e32;
+  --app-danger: #fca5a5;
+  --app-danger-bg: #51272d;
+
+  --app-input-bg: #263449;
+}
+
+/* ==============================================
+   ESTRUCTURA GENERAL
+============================================== */
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  font: var(--mat-sys-body-medium);
+
+  color-scheme: inherit;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+
+
+/* =====================================================
+   WORKSTOCK - ESTILOS GLOBALES DE FORMULARIOS
+   Angular Material MDC
+===================================================== */
+
+/* ==========================================
+   CAMPOS DE TEXTO ESTÁNDAR
+========================================== */
+
+.mat-mdc-form-field.ws-field,
+.mat-mdc-form-field.ws-search {
+  width: 100%;
+  min-width: 0;
+  font-size: 13px;
+
+  --mdc-outlined-text-field-container-shape: 7px;
+  --mdc-outlined-text-field-outline-color: var(--app-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--app-text-muted);
+  --mdc-outlined-text-field-focus-outline-color: var(--app-primary);
+
+  --mdc-outlined-text-field-input-text-color: var(--app-text);
+  --mdc-outlined-text-field-input-text-size: 13px;
+
+  --mdc-outlined-text-field-input-text-placeholder-color:
+    var(--app-text-muted);
+
+  --mdc-outlined-text-field-label-text-color:
+    var(--app-text-muted);
+
+  --mdc-outlined-text-field-focus-label-text-color:
+    var(--app-primary);
+}
+
+/* ==========================================
+   ALTURA COMPACTA
+========================================== */
+
+.mat-mdc-form-field.ws-field .mat-mdc-text-field-wrapper,
+
+.mat-mdc-form-field.ws-search .mat-mdc-text-field-wrapper {
+  height: 40px;
+}
+
+.mat-mdc-form-field.ws-field .mat-mdc-form-field-flex,
+
+.mat-mdc-form-field.ws-search .mat-mdc-form-field-flex {
+  height: 40px;
+  align-items: center;
+}
+
+.mat-mdc-form-field.ws-field .mat-mdc-form-field-infix,
+
+.mat-mdc-form-field.ws-search .mat-mdc-form-field-infix {
+  display: flex;
+  align-items: center;
+
+  height: 40px;
+  min-height: 40px;
+
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* ==========================================
+   INPUTS
+========================================== */
+
+.mat-mdc-form-field.ws-field input.mat-mdc-input-element,
+
+.mat-mdc-form-field.ws-search input.mat-mdc-input-element {
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+
+  font-size: 13px;
+  line-height: normal;
+
+  color: var(--app-text);
+  caret-color: var(--app-primary);
+}
+
+.mat-mdc-form-field.ws-field input::placeholder,
+
+.mat-mdc-form-field.ws-search input::placeholder {
+  color: var(--app-text-muted);
+  opacity: 1;
+}
+
+/* ==========================================
+   ICONOS
+========================================== */
+
+.mat-mdc-form-field.ws-field .mat-mdc-form-field-icon-prefix,
+
+.mat-mdc-form-field.ws-field .mat-mdc-form-field-icon-suffix,
+
+.mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-prefix,
+
+.mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-suffix {
+  display: flex;
+  align-items: center;
+}
+
+.mat-mdc-form-field.ws-field .mat-mdc-form-field-icon-suffix mat-icon,
+
+.mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-suffix mat-icon {
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+
+  color: var(--app-text-muted);
+}
+
+/* ==========================================
+   BUSCADORES
+========================================== */
+
+.mat-mdc-form-field.ws-search {
+  width: 300px;
+  max-width: 100%;
+}
+
+.mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-suffix {
+  padding-right: 9px;
+}
+
+
+input[matInput][type="number"] {
+  text-align: center;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+  .mat-mdc-form-field.ws-search {
+    width: 100%;
+  }
+}
+
+
+/* ==============================================
+   CONTENIDO PRINCIPAL
+============================================== */
+
+main.content {
+  color: var(--app-text);
+}
+
+main.content h1,
+main.content h2,
+main.content h3 {
+  color: var(--app-text);
+}
+
+main.content p {
+  color: var(--app-text-muted);
+}
+
+/* ==============================================
+   CAMPOS ANGULAR MATERIAL
+============================================== */
+
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-input-text-color:
+    var(--app-text);
+
+  --mdc-outlined-text-field-label-text-color:
+    var(--app-text-muted);
+
+  --mdc-outlined-text-field-outline-color:
+    var(--app-border);
+
+  --mdc-outlined-text-field-hover-outline-color:
+    var(--app-text-muted);
+}
+
+/* ==============================================
+   TABLAS ANGULAR MATERIAL
+============================================== */
+
+.mat-mdc-table {
+  --mat-table-background-color:
+    var(--app-card);
+
+  --mat-table-header-headline-color:
+    var(--app-text-muted);
+
+  --mat-table-row-item-label-text-color:
+    var(--app-text);
+
+  --mat-table-row-item-outline-color:
+    var(--app-border-soft);
+
+  background: var(--app-card);
+  color: var(--app-text);
+}
+
+.mat-mdc-paginator {
+  --mat-paginator-container-background-color:
+    var(--app-card);
+
+  --mat-paginator-container-text-color:
+    var(--app-text-muted);
+
+  background: var(--app-card);
+  color: var(--app-text);
+}
+
+/* ==============================================
+   MODALES Y SUPERFICIES
+============================================== */
+
+.mat-mdc-dialog-surface {
+  --mdc-dialog-container-color:
+    var(--app-card);
+
+  --mdc-dialog-subhead-color:
+    var(--app-text);
+
+  --mdc-dialog-supporting-text-color:
+    var(--app-text);
+
+  background-color: var(--app-card);
+  color: var(--app-text);
+}
+
+/* ==============================================
+   IMPRESIÓN
+============================================== */
+
+
+
+@media print {
+
+  :root,
+  :root[data-workstock-theme='dark'] {
+    color-scheme: light;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .cdk-overlay-container,
+  .cdk-global-overlay-wrapper,
+  .cdk-overlay-pane,
+  .mat-mdc-dialog-container,
+  .mat-mdc-dialog-surface,
+  mat-dialog-content {
+    visibility: visible !important;
+
+    overflow: visible !important;
+
+    max-height: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+
+  /* CONTENIDO QUE SE PUEDE IMPRIMIR */
+
+  #ticketFactura,
+  #ticketFactura *,
+  #ticketNotaVenta,
+  #ticketNotaVenta *,
+  #ticketOrdenTrabajo,
+  #ticketOrdenTrabajo *,
+  #ticketNotaAccesorios,
+  #ticketNotaAccesorios * {
+    visibility: visible !important;
+  }
+
+
+  /* FORMATO TÉRMICO 80 MM */
+
+  #ticketFactura,
+  #ticketNotaVenta,
+  #ticketOrdenTrabajo,
+  #ticketNotaAccesorios {
+    position: fixed !important;
+
+    top: 0 !important;
+    left: 0 !important;
+
+    width: 80mm !important;
+    max-width: 80mm !important;
+
+    margin: 0 !important;
+
+    padding: 3mm !important;
+
+    background: #ffffff !important;
+
+    box-shadow: none !important;
+
+    color: #000000 !important;
+  }
+
+
+  @page {
+    margin: 0;
+  }
+
+}
+
+
+
+/* =============================================
+   WORKSTOCK - ESTILOS GLOBALES DE COMPONENTES
+============================================= */
+
+/* ENCABEZADOS DE PÁGINAS */
+
+.page-header h1 {
+  color: var(--app-text);
+}
+
+.page-header p {
+  color: var(--app-text-muted);
+}
+
+/* TARJETAS PRINCIPALES */
+
+.card,
+.app-card {
+  background-color: var(--app-card);
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+/* BARRAS DE HERRAMIENTAS */
+
+.toolbar {
+  background-color: var(--app-card);
+  border-color: var(--app-border);
+}
+
+/* INFORMACIÓN SECUNDARIA */
+
+.records,
+.text-muted {
+  color: var(--app-text-muted);
+}
+
+/* TABLAS */
+
+table.mat-mdc-table {
+  background-color: var(--app-card);
+  color: var(--app-text);
+}
+
+.mat-mdc-header-row {
+  background-color: var(--app-card-secondary);
+}
+
+.mat-mdc-header-cell {
+  color: var(--app-text-muted);
+  border-bottom-color: var(--app-border);
+}
+
+.mat-mdc-row {
+  background-color: var(--app-card);
+}
+
+.mat-mdc-row:hover {
+  background-color: var(--app-hover);
+}
+
+.mat-mdc-cell {
+  background-color: transparent;
+  color: var(--app-text);
+  border-bottom-color: var(--app-border-soft);
+}
+
+/* TEXTOS EN TABLAS */
+
+.invoice-number {
+  color: var(--app-primary);
+}
+
+.client-name {
+  color: var(--app-text);
+}
+
+.total-value {
+  color: var(--app-success);
+}
+
+.mat-mdc-cell small {
+  color: var(--app-text-muted);
+}
+
+/* PAGINACIÓN */
+
+.mat-mdc-paginator {
+  background-color: var(--app-card);
+  color: var(--app-text-muted);
+}
+
+/* INPUTS */
+
+.mat-mdc-form-field {
+  color: var(--app-text);
+}
+
+.mat-mdc-input-element {
+  color: var(--app-text) !important;
+  caret-color: var(--app-primary);
+}
+
+.mat-mdc-input-element::placeholder {
+  color: var(--app-text-muted);
+  opacity: .8;
+}
+
+/* SELECTORES */
+
+.mat-mdc-select {
+  color: var(--app-text);
+}
+
+/* DIÁLOGOS */
+
+.mat-mdc-dialog-surface {
+  background-color: var(--app-card);
+  color: var(--app-text);
+}
+
+/* MENÚS */
+
+.mat-mdc-menu-panel {
+  background-color: var(--app-card);
+}
+
+.mat-mdc-menu-item {
+  color: var(--app-text);
+}
+
+/* CONTROLES DESHABILITADOS */
+
+.mat-mdc-button:disabled,
+.mat-mdc-icon-button:disabled {
+  opacity: .45;
+}
+
+/* ESTADOS */
+
+.status.active {
+  background-color: var(--app-success-bg);
+  color: var(--app-success);
+}
+
+.status.cancelled {
+  background-color: var(--app-danger-bg);
+  color: var(--app-danger);
+}
+
+/* TRANSICIÓN VISUAL */
+
+.card,
+.app-card,
+.mat-mdc-table,
+.mat-mdc-paginator {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+
+
+/* ==========================================
+   WORKSTOCK - MENÚ GLOBAL DE ACCIONES
+========================================== */
+
+.mat-mdc-menu-panel.workstock-actions-menu {
+  min-width: 190px;
+  max-width: 210px;
+
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+
+  background: var(--app-card);
+  color: var(--app-text);
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, .10);
+
+  overflow: hidden;
+}
+
+/* CONTENIDO DEL MENÚ */
+
+.workstock-actions-menu .mat-mdc-menu-content {
+  padding: 5px;
+}
+
+/* OPCIONES */
+
+.workstock-actions-menu .mat-mdc-menu-item {
+  min-height: 38px;
+  height: 38px;
+
+  padding: 0 10px;
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--app-text);
+}
+
+/* CONTENIDO HORIZONTAL */
+
+.workstock-actions-menu .mat-mdc-menu-item .mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+
+  margin-right: 11px;
+  flex-shrink: 0;
+}
+
+/* HOVER */
+
+.workstock-actions-menu .mat-mdc-menu-item:hover:not([disabled]) {
+  background: var(--app-hover);
+}
+
+/* VISUALIZAR */
+
+.workstock-actions-menu .ws-icon-view {
+  color: var(--app-primary);
+}
+
+/* GESTIONAR */
+
+.workstock-actions-menu .ws-icon-edit {
+  color: var(--app-text-muted);
+}
+
+/* SEPARADOR */
+
+.workstock-actions-menu mat-divider {
+  margin: 5px 8px;
+  border-top-color: var(--app-border);
+}
+
+/* ELIMINAR */
+
+.workstock-actions-menu .mat-mdc-menu-item.ws-menu-danger {
+  color: var(--app-danger);
+}
+
+.workstock-actions-menu .mat-mdc-menu-item.ws-menu-danger mat-icon {
+  color: var(--app-danger);
+}
+
+.workstock-actions-menu .mat-mdc-menu-item.ws-menu-danger:hover:not([disabled]) {
+  background: var(--app-danger-bg);
+}
+
+/* DESHABILITADO */
+
+.workstock-actions-menu .mat-mdc-menu-item[disabled] {
+  opacity: .45;
+}
+
+
+/* ==========================================
+   WORKSTOCK - VISOR MATDIALOG
+========================================== */
+
+.ws-visor-dialog {
+
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-color: var(--app-card);
+    --mdc-dialog-container-shape: 10px;
+  }
+
+  .mat-mdc-dialog-surface {
+    background: var(--app-card) !important;
+    color: var(--app-text) !important;
+
+    border: 1px solid var(--app-border);
+    border-radius: 10px !important;
+
+    overflow: hidden;
+  }
+
+}
+
+.ws-visor-backdrop {
+  background: rgba(15, 23, 42, .35) !important;
+}

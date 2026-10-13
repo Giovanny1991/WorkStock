@@ -1,0 +1,156 @@
+
+<!-- =====================================================
+     WORKSTOCK - NUEVA / EDITAR MARCA
+===================================================== -->
+
+<!-- ENCABEZADO -->
+
+<div class="dialog-header">
+
+  <div class="header-identity">
+
+    <span class="header-icon">
+      <mat-icon>
+        {{ esEdicion ? 'edit_note' : 'label' }}
+      </mat-icon>
+    </span>
+
+    <div class="header-text">
+
+      <h2>
+        {{ esEdicion ? 'Editar marca' : 'Nueva marca' }}
+      </h2>
+
+      <p>
+        {{
+          esEdicion
+            ? 'Actualiza la información de la marca.'
+            : 'Registra una nueva marca de dispositivos.'
+        }}
+      </p>
+
+    </div>
+
+  </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    class="close-button"
+    aria-label="Cerrar formulario"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    <mat-icon>close</mat-icon>
+
+  </button>
+
+</div>
+
+
+<!-- CONTENIDO -->
+
+<mat-dialog-content class="dialog-content">
+
+  <form [formGroup]="form">
+
+    <div class="field-group">
+
+      <label class="field-label" for="marca-nombre">
+        Nombre de la marca
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="marca-nombre"
+          matInput
+          type="text"
+          formControlName="nombreMarca"
+          maxlength="50"
+          placeholder="Ej. Samsung"
+          autocomplete="off">
+
+        @if (
+          form.controls.nombreMarca.hasError('required') &&
+          form.controls.nombreMarca.touched
+        ) {
+          <mat-error>
+            Ingrese la marca
+          </mat-error>
+        }
+
+        @if (
+          form.controls.nombreMarca.hasError('minlength') &&
+          form.controls.nombreMarca.touched
+        ) {
+          <mat-error>
+            Mínimo 2 caracteres
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+      <div class="field-footer">
+
+        <span>
+          Identifica el fabricante del dispositivo.
+        </span>
+
+        <span class="counter">
+          {{ form.controls.nombreMarca.value.length }}/50
+        </span>
+
+      </div>
+
+    </div>
+
+  </form>
+
+</mat-dialog-content>
+
+
+<!-- ACCIONES -->
+
+<mat-dialog-actions
+  class="dialog-actions"
+  align="end">
+
+  <button
+    mat-stroked-button
+    type="button"
+    class="cancel-btn"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    Cancelar
+
+  </button>
+
+  <button
+    mat-flat-button
+    type="button"
+    class="save-btn"
+    [disabled]="form.invalid || guardando()"
+    (click)="guardar()">
+
+    <mat-icon>
+      {{ guardando() ? 'hourglass_top' : 'save' }}
+    </mat-icon>
+
+    <span>
+      {{
+        guardando()
+          ? 'Guardando...'
+          : esEdicion
+            ? 'Actualizar'
+            : 'Guardar'
+      }}
+    </span>
+
+  </button>
+
+</mat-dialog-actions>

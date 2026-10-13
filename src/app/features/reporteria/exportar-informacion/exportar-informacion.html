@@ -1,0 +1,354 @@
+<!-- =====================================================
+     WORKSTOCK - EXPORTAR INFORMACIÓN
+===================================================== -->
+
+<!-- ENCABEZADO -->
+
+<div class="page-header">
+  <div>
+    <h1>Exportar información</h1>
+    <p>Descarga de reportes de ventas e inventario</p>
+  </div>
+</div>
+
+
+<!-- CONTENEDOR PRINCIPAL -->
+
+<div class="card">
+
+  @if (ocupado) {
+  <mat-progress-bar class="export-progress" mode="indeterminate" />
+  }
+
+  <!-- BARRA SUPERIOR -->
+
+  <div class="toolbar">
+
+    <div class="toolbar-title">
+      <mat-icon>file_download</mat-icon>
+      <span>Centro de exportaciones</span>
+    </div>
+
+    <span class="records">
+      7 reportes disponibles
+    </span>
+
+  </div>
+
+
+  <!-- NOTIFICACIONES -->
+
+  @if (error()) {
+  <div class="message error-message" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error() }}</span>
+  </div>
+  }
+
+  @if (exito()) {
+  <div class="message success-message" role="status">
+    <mat-icon>check_circle_outline</mat-icon>
+    <span>{{ exito() }}</span>
+  </div>
+  }
+
+
+  <!-- =================================================
+       CUADRÍCULA DE REPORTES
+  ================================================= -->
+
+  <div class="reports-grid">
+
+
+
+    <!-- ===============================================
+         FACTURAS
+    =============================================== -->
+
+    <section class="report-panel facturas-panel">
+
+      <div class="panel-heading">
+
+        <span class="panel-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </span>
+
+        <div class="panel-heading-text">
+          <h2>Facturas</h2>
+          <p>Facturación comercial</p>
+        </div>
+
+      </div>
+
+
+      <div class="panel-content">
+
+        @for (reporte of facturacion; track reporte.tipo) {
+
+        <div class="report-item">
+
+          <div class="report-info">
+            <strong>{{ reporte.titulo }}</strong>
+            <span>{{ reporte.descripcion }}</span>
+          </div>
+
+          <button mat-stroked-button type="button" class="export-btn" [disabled]="ocupado"
+            [attr.aria-label]="'Exportar ' + reporte.titulo" (click)="exportar(reporte.tipo)">
+
+            <mat-icon>
+              {{ descargando() === reporte.tipo
+              ? 'hourglass_top'
+              : 'download' }}
+            </mat-icon>
+
+            <span>
+              {{ descargando() === reporte.tipo
+              ? 'Generando...'
+              : 'Exportar Excel' }}
+            </span>
+
+          </button>
+
+        </div>
+
+        }
+
+      </div>
+
+    </section>
+
+    <!-- ===============================================
+         NOTAS DE VENTA - CELULARES
+    =============================================== -->
+
+    <section class="report-panel celulares-panel">
+
+      <div class="panel-heading">
+
+        <span class="panel-icon">
+          <mat-icon>smartphone</mat-icon>
+        </span>
+
+        <div class="panel-heading-text">
+          <h2>Notas de venta celulares</h2>
+          <p>Comprobantes de venta de dispositivos</p>
+        </div>
+
+      </div>
+
+
+      <div class="panel-content">
+
+        @for (reporte of ventasCelulares; track reporte.tipo) {
+
+        <div class="report-item">
+
+          <div class="report-info">
+            <strong>{{ reporte.titulo }}</strong>
+            <span>{{ reporte.descripcion }}</span>
+          </div>
+
+          <button mat-stroked-button type="button" class="export-btn" [disabled]="ocupado"
+            [attr.aria-label]="'Exportar ' + reporte.titulo" (click)="exportar(reporte.tipo)">
+
+            <mat-icon>
+              {{ descargando() === reporte.tipo
+              ? 'hourglass_top'
+              : 'download' }}
+            </mat-icon>
+
+            <span>
+              {{ descargando() === reporte.tipo
+              ? 'Generando...'
+              : 'Exportar Excel' }}
+            </span>
+
+          </button>
+
+        </div>
+
+        }
+
+      </div>
+
+    </section>
+
+
+    <!-- ===============================================
+         NOTAS DE VENTA - ACCESORIOS
+    =============================================== -->
+
+    <section class="report-panel accesorios-panel">
+
+      <div class="panel-heading">
+
+        <span class="panel-icon">
+          <mat-icon>headphones</mat-icon>
+        </span>
+
+        <div class="panel-heading-text">
+          <h2>Notas de venta accesorios</h2>
+          <p>Comprobantes de venta de accesorios</p>
+        </div>
+
+      </div>
+
+
+      <div class="panel-content">
+
+        @for (reporte of ventasAccesorios; track reporte.tipo) {
+
+        <div class="report-item">
+
+          <div class="report-info">
+            <strong>{{ reporte.titulo }}</strong>
+            <span>{{ reporte.descripcion }}</span>
+          </div>
+
+          <button mat-stroked-button type="button" class="export-btn" [disabled]="ocupado"
+            [attr.aria-label]="'Exportar ' + reporte.titulo" (click)="exportar(reporte.tipo)">
+
+            <mat-icon>
+              {{ descargando() === reporte.tipo
+              ? 'hourglass_top'
+              : 'download' }}
+            </mat-icon>
+
+            <span>
+              {{ descargando() === reporte.tipo
+              ? 'Generando...'
+              : 'Exportar Excel' }}
+            </span>
+
+          </button>
+
+        </div>
+
+        }
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===============================================
+         REPORTES GENERALES
+    =============================================== -->
+
+    <section class="report-panel general-panel">
+
+      <div class="panel-heading">
+
+        <span class="panel-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </span>
+
+        <div class="panel-heading-text">
+          <h2>Reportes generales</h2>
+          <p>Ventas y existencias de inventario</p>
+        </div>
+
+      </div>
+
+
+      <div class="panel-content">
+
+        <div class="general-grid">
+
+          @for (reporte of generales; track reporte.tipo) {
+
+          <div class="general-item">
+
+            <!-- TÍTULO DEL REPORTE -->
+
+            <div class="general-info">
+
+              <mat-icon>
+                {{ reporte.icono }}
+              </mat-icon>
+
+              <span>
+                {{ reporte.titulo }}
+              </span>
+
+            </div>
+
+
+            <!-- FILTRO STOCK CELULARES -->
+
+            @if (reporte.tipo === 'celulares_stock') {
+
+            <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+
+              <mat-select aria-label="Filtrar stock por factura" [value]="filtroFactura()" [disabled]="ocupado"
+                (selectionChange)="cambiarFiltro($event.value)">
+
+                <mat-option value="TODOS">
+                  Todos
+                </mat-option>
+
+                <mat-option value="SI">
+                  Con factura
+                </mat-option>
+
+                <mat-option value="NO">
+                  Sin factura
+                </mat-option>
+
+              </mat-select>
+
+            </mat-form-field>
+
+            }
+
+
+            <!-- BOTÓN EXPORTAR -->
+
+            <button mat-stroked-button type="button" class="export-btn general-export" [disabled]="ocupado"
+              [attr.aria-label]="'Exportar ' + reporte.titulo" (click)="exportar(reporte.tipo)">
+
+              <mat-icon>
+                {{ descargando() === reporte.tipo
+                ? 'hourglass_top'
+                : 'download' }}
+              </mat-icon>
+
+              <span>
+                {{ descargando() === reporte.tipo
+                ? 'Generando...'
+                : 'Exportar Excel' }}
+              </span>
+
+            </button>
+
+          </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- =================================================
+       PIE INFORMATIVO
+  ================================================= -->
+
+  <div class="card-footer">
+
+    <mat-icon>info_outline</mat-icon>
+
+    <span>
+      Los reportes se generan en formato Excel con
+      la información disponible en el sistema al momento
+      de la descarga.
+    </span>
+
+  </div>
+
+</div>

@@ -1,0 +1,351 @@
+/* =====================================================
+   WORKSTOCK | HISTORIAL DE NOTAS DE VENTA
+   Estilos depurados, tema claro/oscuro y filas anuladas
+===================================================== */
+
+:host {
+  display: block;
+}
+
+/* ENCABEZADO */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 3px 0 0;
+    color: var(--app-text-muted);
+    font-size: 13px;
+  }
+}
+
+/* TARJETA Y CARGA */
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  color: var(--app-text);
+}
+
+/* BARRA SUPERIOR */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--app-card);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.search-field {
+  width: 300px;
+  max-width: 100%;
+  font-size: 13px;
+  color: var(--app-text);
+
+  input {
+    color: var(--app-text);
+    caret-color: var(--app-primary);
+
+    &::placeholder {
+      color: var(--app-text-muted);
+      opacity: 0.85;
+    }
+  }
+}
+
+.records {
+  color: var(--app-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .search-field {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    height: 40px;
+    background: var(--app-input-bg, var(--app-card));
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 40px;
+    align-items: center;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: 40px;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .mat-mdc-form-field-icon-suffix,
+  .mat-mdc-form-field-icon-prefix {
+    color: var(--app-text-muted);
+  }
+}
+
+/* TABLA */
+.table-container,
+.table-wrapper {
+  overflow-x: auto;
+  scrollbar-color: var(--app-border) var(--app-card);
+}
+
+table,
+table.mat-mdc-table {
+  width: 100%;
+  background: var(--app-card);
+  color: var(--app-text);
+}
+
+.mat-mdc-header-row {
+  height: 42px;
+  background: var(--app-card-secondary);
+}
+
+.mat-mdc-header-cell {
+  vertical-align: middle;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.mat-mdc-row {
+  height: 48px;
+  background: var(--app-card);
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background: var(--app-hover, var(--app-card-secondary));
+  }
+}
+
+.mat-mdc-cell {
+  vertical-align: middle;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--app-border-soft, var(--app-border));
+  color: var(--app-text);
+  font-size: 13px;
+  line-height: 18px;
+  background: transparent;
+}
+
+/* =====================================================
+   FILAS ANULADAS: aplicar a la fila y a cada celda.
+   Esto evita que estilos MDC o del tema tapen el rojo.
+===================================================== */
+:host .mat-mdc-row.row-cancelled,
+:host .mat-mdc-row.row-cancelled:hover {
+  background-color: var(--app-danger-bg, rgba(220, 38, 38, 0.10)) !important;
+}
+
+:host .mat-mdc-row.row-cancelled > .mat-mdc-cell,
+:host .mat-mdc-row.row-cancelled:hover > .mat-mdc-cell {
+  background-color: var(--app-danger-bg, rgba(220, 38, 38, 0.10)) !important;
+}
+
+:host .mat-mdc-row.row-cancelled > .mat-mdc-cell:first-child {
+  box-shadow: inset 3px 0 0 var(--app-danger, #dc2626);
+}
+
+:host .mat-mdc-row.row-cancelled .invoice-number,
+:host .mat-mdc-row.row-cancelled .client-name,
+:host .mat-mdc-row.row-cancelled .total-value {
+  color: var(--app-text-muted);
+}
+
+:host .mat-mdc-row.row-cancelled .status.cancelled {
+  color: var(--app-danger, #dc2626);
+  background: var(--app-danger-bg, rgba(220, 38, 38, 0.10));
+}
+
+/* DATOS DE LA NOTA */
+.invoice-number {
+  color: var(--app-primary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.client-name {
+  display: block;
+  color: var(--app-text);
+  font-weight: 600;
+}
+
+td small {
+  display: block;
+  margin-top: 2px;
+  color: var(--app-text-muted);
+  font-size: 11px;
+}
+
+.money-column {
+  width: 110px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.total-value {
+  color: var(--app-success);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ESTADOS */
+.status-column {
+  width: 110px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--app-card-secondary);
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status.active {
+  background: var(--app-success-bg);
+  color: var(--app-success);
+}
+
+.status.cancelled {
+  background: var(--app-danger-bg, rgba(220, 38, 38, 0.10));
+  color: var(--app-danger, #dc2626);
+}
+
+/* ACCIONES */
+.actions-header,
+.actions-cell,
+.col-actions {
+  width: 120px;
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.actions-cell,
+.col-actions {
+  vertical-align: middle;
+}
+
+.actions-cell button,
+.col-actions button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  margin: 0 2px;
+  border-radius: 50%;
+  transition: background-color 150ms ease, color 150ms ease, opacity 150ms ease;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.view-btn {
+  color: var(--app-primary) !important;
+
+  &:hover:not(:disabled) {
+    background: var(--app-primary-soft, rgba(37, 99, 235, 0.08)) !important;
+  }
+}
+
+.delete-btn {
+  color: var(--app-danger, #dc2626) !important;
+
+  &:hover:not(:disabled) {
+    background: var(--app-danger-bg, rgba(220, 38, 38, 0.08)) !important;
+  }
+}
+
+/* SIN DATOS */
+.no-data-row,
+tr:has(> .no-data) {
+  height: 120px;
+}
+
+.no-data,
+.no-data-row td {
+  text-align: center;
+  color: var(--app-text-muted);
+  font-size: 13px;
+}
+
+.no-data mat-icon,
+.no-data-row mat-icon {
+  display: block;
+  margin: 0 auto 5px;
+  color: var(--app-text-muted);
+}
+
+/* PAGINADOR */
+mat-paginator {
+  background: var(--app-card);
+  border-top: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+}
+
+:host ::ng-deep .mat-mdc-paginator-container {
+  min-height: 48px !important;
+  font-size: 12px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  .page {
+    padding: 0;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar {
+    padding: 10px 12px;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+}

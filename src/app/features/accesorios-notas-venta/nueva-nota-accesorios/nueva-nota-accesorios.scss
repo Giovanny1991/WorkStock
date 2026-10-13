@@ -1,0 +1,1068 @@
+/* =====================================================
+   HEADER
+===================================================== */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 16px;
+
+
+  h1 {
+    margin: 0;
+
+    font-size: 22px;
+    font-weight: 700;
+ color: var(--app-text);
+  }
+
+
+  p {
+    margin: 3px 0 0;
+
+    font-size: 13px;
+
+    color: var(--app-text-muted);
+  }
+}
+
+
+/* =====================================================
+   LAYOUT PRINCIPAL
+===================================================== */
+
+.invoice-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr) 290px;
+
+  gap: 16px;
+
+  align-items: start;
+}
+
+
+.main-column {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 16px;
+
+  min-width: 0;
+}
+
+
+.summary-column {
+  min-width: 0;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.card {
+  position: relative;
+
+  overflow: hidden;
+
+ background: var(--app-card);
+  border: 1px solid var(--app-border);
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 1px 3px
+    rgba(16, 24, 40, .05);
+}
+
+
+.form-card {
+  padding: 16px;
+}
+
+
+/* =====================================================
+   ENCABEZADO DE SECCIÓN
+===================================================== */
+
+.section-header {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+
+
+  h2 {
+    margin: 0;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--app-text);
+  }
+
+
+  p {
+    margin: 2px 0 0;
+
+    font-size: 12px;
+
+    color: var(--app-text-muted);
+  }
+}
+
+
+.section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  border-radius: 7px;
+
+  background: var(--app-primary-soft);
+
+  color: var(--app-primary);
+
+
+  mat-icon {
+    width: 19px;
+    height: 19px;
+
+    font-size: 19px;
+  }
+}
+
+
+/* =====================================================
+   AUTOCOMPLETE
+===================================================== */
+
+.autocomplete-field {
+  width: 100%;
+
+  font-size: 13px;
+}
+
+
+.option-main {
+  overflow: hidden;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: var(--app-text);
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+.option-secondary {
+  overflow: hidden;
+
+  font-size: 11px;
+
+  color: var(--app-text-muted);
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   CLIENTE
+===================================================== */
+
+.client-selector {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+
+  .autocomplete-field {
+    flex: 1;
+  }
+}
+
+
+.new-client-btn,
+.edit-client-btn {
+  height: 44px;
+
+  white-space: nowrap;
+
+  border-radius:
+    7px !important;
+
+  font-size: 12px;
+
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+  }
+}
+
+
+.edit-client-btn {
+  color: var(--app-primary);
+}
+
+
+/* =====================================================
+   TOOLBAR TABLA
+===================================================== */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 12px 14px;
+
+  border-bottom:
+    1px solid var(--app-border);
+
+  font-size: 13px;
+
+
+  strong {
+    color: var(--app-text);
+
+    font-weight: 700;
+  }
+}
+
+
+.records {
+  font-size: 12px;
+
+  color: var(--app-text-muted);
+}
+
+
+/* =====================================================
+   TABLA COMPACTA
+===================================================== */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+
+.sale-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  background: var(--app-card);
+}
+
+/* Las columnas se distribuyen automáticamente */
+.col-product,
+.col-stock,
+.col-money,
+.col-quantity,
+.col-price,
+.col-total,
+.col-actions {
+  width: auto;
+}
+/* =====================================================
+   FILAS
+===================================================== */
+
+.mat-mdc-header-row {
+  height: 38px;
+
+  background: var(--app-card-secondary);
+}
+
+
+.mat-mdc-row {
+  height: 46px;
+
+  transition:
+    background .15s ease;
+}
+
+
+.mat-mdc-row:hover {
+  background: var(--app-card-secondary);
+}
+
+
+/* =====================================================
+   CELDAS
+===================================================== */
+
+.mat-mdc-header-cell {
+  padding:
+    0 7px !important;
+
+  border-bottom:
+    1px solid var(--app-border);
+
+  color: var(--app-text-muted);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: .02em;
+
+  white-space: nowrap;
+}
+
+
+.mat-mdc-cell {
+  padding:
+    5px 7px !important;
+
+  border-bottom:
+    1px solid var(--app-border-soft);
+
+  color: var(--app-text);
+
+  font-size: 12px;
+
+  vertical-align: middle;
+}
+
+
+/* =====================================================
+   ANCHOS DE COLUMNAS
+===================================================== */
+
+/*
+   Producto utiliza todo el espacio disponible.
+*/
+/* Columnas adaptables al ancho disponible */
+.col-product {
+  width: auto;
+}
+
+.col-stock {
+  width: auto;
+  text-align: center;
+}
+
+.col-money {
+  width: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.col-quantity {
+  width: auto;
+  text-align: center;
+}
+
+.col-price {
+  width: auto;
+}
+
+.col-total {
+  width: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.col-actions {
+  width: auto;
+  text-align: center;
+}
+
+
+/* =====================================================
+   PRODUCTO
+===================================================== */
+
+.product-name {
+  overflow: hidden;
+
+  max-width: 100%;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  color: var(--app-text);
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+td small {
+  display: block;
+
+  margin-top: 1px;
+
+  color: var(--app-text-muted);
+
+  font-size: 9px;
+}
+
+
+/* =====================================================
+   STOCK
+===================================================== */
+
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 26px;
+
+  box-sizing: border-box;
+
+  padding:
+    2px 6px;
+
+  border-radius: 12px;
+
+  background: var(--app-success-bg);
+
+  color: var(--app-success);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   CANTIDAD
+===================================================== */
+
+.quantity-input {
+  width: 54px;
+  height: 28px;
+
+  box-sizing: border-box;
+
+  margin:
+    0 auto;
+
+  overflow: hidden;
+
+  border:
+    1px solid var(--app-border);
+
+  border-radius: 5px;
+
+  background: var(--app-card);
+
+  transition:
+    border-color .15s ease,
+    background .15s ease;
+
+
+  input {
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+      0 3px;
+
+    border: 0;
+
+    outline: none;
+
+    background:
+      transparent;
+
+    color: var(--app-text);
+
+    font-size: 11px;
+
+    text-align: center;
+  }
+
+
+  &:focus-within {
+    border-color:
+      var(--app-primary);
+  }
+}
+
+
+.quantity-input.invalid-quantity {
+  border-color:
+    var(--app-danger);
+
+  background:
+    var(--app-danger-bg);
+}
+
+
+/* =====================================================
+   PRECIO DE VENTA
+===================================================== */
+
+.price-input {
+  display: flex;
+  align-items: center;
+
+  width: 70px;
+  height: 28px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  border:
+    1px solid var(--app-border);
+
+  border-radius: 5px;
+
+  background: var(--app-card);
+
+  transition:
+    border-color .15s ease,
+    background .15s ease;
+
+
+  span {
+    padding-left: 5px;
+
+    color: var(--app-text-muted);
+
+    font-size: 10px;
+  }
+
+
+  input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+      0 4px;
+
+    border: 0;
+
+    outline: none;
+
+    background:
+      transparent;
+
+    color: var(--app-text);
+
+    font-size: 11px;
+  }
+
+
+  &:focus-within {
+    border-color:
+      var(--app-primary);
+  }
+}
+
+
+/*
+   Precio menor a PVP1
+   pero todavía mayor o igual al costo.
+*/
+
+.price-input:has(
+  .warning-price
+) {
+  border-color:
+    var(--app-warning);
+
+  background:
+    var(--app-warning-bg);
+}
+
+
+/*
+   Precio menor al costo.
+*/
+
+.price-input:has(
+  .invalid-price
+) {
+  border-color:
+    var(--app-danger);
+
+  background:
+    var(--app-danger-bg);
+}
+
+
+/* =====================================================
+   REFERENCIA PVP1 / PVP2
+===================================================== */
+
+.pvp-reference {
+  margin-top:
+    2px !important;
+
+  overflow: visible;
+
+  font-size:
+    8px !important;
+
+  white-space:
+    nowrap;
+}
+
+
+/* =====================================================
+   TOTAL POR PRODUCTO
+===================================================== */
+
+.total-line {
+  display: block;
+
+  font-size:
+    12px !important;
+
+  font-weight: 700;
+
+  color: var(--app-success);
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   ACCIONES
+===================================================== */
+
+.action {
+  width: 28px;
+  height: 28px;
+
+  margin: 0;
+
+
+  mat-icon {
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
+  }
+}
+
+
+.action.delete {
+  color: var(--app-danger);
+}
+
+
+/* =====================================================
+   ADVERTENCIA DE PRECIO
+===================================================== */
+
+/*
+   Precio inferior a PVP1,
+   pero todavía permite la venta.
+*/
+
+.mat-mdc-row.row-warning {
+  background: var(--app-warning-bg);
+}
+
+
+.mat-mdc-row.row-warning:hover {
+  background: var(--app-warning-bg);
+}
+
+
+/*
+   Precio inferior al costo.
+   No debe permitirse generar la nota.
+*/
+
+.mat-mdc-row.row-danger {
+  background: var(--app-danger-bg);
+}
+
+
+.mat-mdc-row.row-danger:hover {
+  background: var(--app-danger-bg);
+}
+
+
+/*
+   Indicador lateral.
+*/
+
+.mat-mdc-row.row-warning
+.mat-mdc-cell:first-child {
+  box-shadow:
+    inset 3px 0 0 var(--app-warning);
+}
+
+
+.mat-mdc-row.row-danger
+.mat-mdc-cell:first-child {
+  box-shadow:
+    inset 3px 0 0 var(--app-danger);
+}
+
+
+/* =====================================================
+   SIN DATOS
+===================================================== */
+
+.no-data {
+  height: 100px;
+
+  padding:
+    20px !important;
+
+  text-align: center;
+
+  color: var(--app-text-muted);
+
+  font-size: 12px;
+
+
+  mat-icon {
+    display: block;
+
+    width: 22px;
+    height: 22px;
+
+    margin:
+      0 auto 5px;
+
+    font-size: 22px;
+  }
+}
+
+
+/* =====================================================
+   RESUMEN LATERAL
+===================================================== */
+
+.summary-card {
+  position: sticky;
+
+  top: 16px;
+
+  padding: 16px;
+
+  background: var(--app-card);
+
+  border:
+    1px solid var(--app-border);
+
+  border-radius: 8px;
+
+  box-shadow:
+    0 1px 3px
+    rgba(16, 24, 40, .05);
+}
+
+
+/* =====================================================
+   TÍTULO RESUMEN
+===================================================== */
+
+.summary-title {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding-bottom: 13px;
+
+  margin-bottom: 6px;
+
+  border-bottom:
+    1px solid var(--app-border);
+
+  color: var(--app-text);
+
+  font-size: 14px;
+  font-weight: 700;
+
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+
+    color: var(--app-primary);
+
+    font-size: 20px;
+  }
+}
+
+
+/* =====================================================
+   FILAS RESUMEN
+===================================================== */
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 8px 0;
+
+  color: var(--app-text-muted);
+
+  font-size: 13px;
+
+
+  strong {
+    color: var(--app-text);
+
+    font-weight: 700;
+  }
+}
+
+
+/* =====================================================
+   TOTAL RESUMEN
+===================================================== */
+
+.summary-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 6px;
+
+  padding: 13px 0;
+
+  border-top:
+    1px solid var(--app-border);
+
+  color: var(--app-text);
+
+  font-size: 15px;
+  font-weight: 700;
+
+
+  strong {
+    color: var(--app-success);
+
+    font-size: 19px;
+    font-weight: 700;
+  }
+}
+
+
+/* =====================================================
+   BOTÓN GENERAR
+===================================================== */
+
+.invoice-btn {
+  width: 100%;
+  height: 40px;
+
+  margin-top: 8px;
+
+  border-radius:
+    7px !important;
+
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+  }
+}
+
+
+/* =====================================================
+   ANGULAR MATERIAL
+===================================================== */
+
+:host ::ng-deep
+.autocomplete-field
+.mat-mdc-text-field-wrapper {
+  min-height: 44px;
+}
+
+
+:host ::ng-deep
+.autocomplete-field
+.mat-mdc-form-field-infix {
+  min-height: 44px;
+
+  padding-top:
+    10px !important;
+
+  padding-bottom:
+    8px !important;
+}
+
+
+/* =====================================================
+   INPUT NUMBER
+===================================================== */
+
+/*
+   Quita la separación exagerada de algunos navegadores
+   sin eliminar los controles nativos.
+*/
+
+.quantity-input input[type='number'],
+.price-input input[type='number'] {
+  appearance: auto;
+}
+
+
+/* =====================================================
+   RESPONSIVE - TABLET
+===================================================== */
+
+@media (
+  max-width: 1100px
+) {
+
+  .invoice-layout {
+    grid-template-columns:
+      minmax(0, 1fr) 260px;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE - RESUMEN ABAJO
+===================================================== */
+
+@media (
+  max-width: 950px
+) {
+
+  .invoice-layout {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .summary-card {
+    position: static;
+  }
+
+
+  .summary-column {
+    order: 2;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE - MÓVIL
+===================================================== */
+
+@media (
+  max-width: 700px
+) {
+
+  .page-header {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+
+  .client-selector {
+    flex-direction: column;
+
+
+    .autocomplete-field,
+    .new-client-btn,
+    .edit-client-btn {
+      width: 100%;
+    }
+
+  }
+
+
+  .form-card {
+    padding: 14px;
+  }
+
+
+  .section-header {
+    margin-bottom: 12px;
+  }
+
+
+  .toolbar {
+    padding:
+      10px 12px;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+===================================================== */
+
+@media (
+  max-width: 480px
+) {
+
+  .page-header {
+
+    h1 {
+      font-size: 20px;
+    }
+
+
+    p {
+      font-size: 12px;
+    }
+
+  }
+
+
+  .summary-card {
+    padding: 14px;
+  }
+
+
+  .summary-total {
+
+    strong {
+      font-size: 18px;
+    }
+
+  }
+
+}

@@ -1,0 +1,154 @@
+
+<!-- ==========================================
+     WORKSTOCK - CATEGORÍAS
+========================================== -->
+
+<!-- ENCABEZADO -->
+
+<div class="dialog-header">
+
+  <div class="header-identity">
+
+    <div class="header-icon">
+      <mat-icon>
+        {{ esEdicion ? 'edit_note' : 'category' }}
+      </mat-icon>
+    </div>
+
+    <div class="header-text">
+
+      <h2>
+        {{ esEdicion ? 'Editar categoría' : 'Nueva categoría' }}
+      </h2>
+
+      <p>
+        {{
+          esEdicion
+            ? 'Actualiza la información de la categoría.'
+            : 'Registra una nueva categoría de productos.'
+        }}
+      </p>
+
+    </div>
+
+  </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    class="close-button"
+    aria-label="Cerrar formulario"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    <mat-icon>close</mat-icon>
+
+  </button>
+
+</div>
+
+
+<!-- CONTENIDO -->
+
+<mat-dialog-content class="dialog-content">
+
+  <form [formGroup]="form">
+
+    <div class="field-group">
+
+      <label class="field-label" for="categoria-nombre">
+        Nombre de la categoría
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="categoria-nombre"
+          matInput
+          type="text"
+          formControlName="categoria"
+          maxlength="20"
+          placeholder="Ej. Pantallas"
+          autocomplete="off">
+
+        @if (
+          form.controls.categoria.hasError('required') &&
+          form.controls.categoria.touched
+        ) {
+          <mat-error>
+            Ingrese la categoría
+          </mat-error>
+        }
+
+        @if (
+          form.controls.categoria.hasError('minlength') &&
+          form.controls.categoria.touched
+        ) {
+          <mat-error>
+            Mínimo 3 caracteres
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+      <div class="field-footer">
+
+        <span>
+          Identifica el grupo de productos.
+        </span>
+
+        <span class="counter">
+          {{ form.controls.categoria.value.length }}/20
+        </span>
+
+      </div>
+
+    </div>
+
+  </form>
+
+</mat-dialog-content>
+
+
+<!-- ACCIONES -->
+
+<mat-dialog-actions
+  align="end"
+  class="dialog-actions">
+
+  <button
+    mat-stroked-button
+    type="button"
+    class="cancel-btn"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    Cancelar
+
+  </button>
+
+  <button
+    mat-flat-button
+    type="button"
+    class="save-btn"
+    [disabled]="form.invalid || guardando()"
+    (click)="guardar()">
+
+    <mat-icon>
+      {{ guardando() ? 'hourglass_top' : 'save' }}
+    </mat-icon>
+
+    {{
+      guardando()
+        ? 'Guardando...'
+        : esEdicion
+          ? 'Actualizar'
+          : 'Guardar'
+    }}
+
+  </button>
+
+</mat-dialog-actions>

@@ -1,0 +1,402 @@
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 3px 0 0;
+    font-size: 13px;
+    color: var(--app-text-muted);
+  }
+}
+
+
+/* ==========================================
+   CARD
+========================================== */
+
+.card {
+  position: relative;
+  overflow: hidden;
+
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
+}
+
+
+/* ==========================================
+   TOOLBAR
+========================================== */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.search-field {
+  width: 300px;
+  font-size: 13px;
+}
+
+.records {
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  background: var(--app-card);
+}
+
+
+/* ==========================================
+   TABLE HEADER
+========================================== */
+
+.mat-mdc-header-row {
+  height: 42px;
+  background: var(--app-card-secondary);
+}
+
+.mat-mdc-header-cell {
+  border-bottom: 1px solid var(--app-border);
+
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
+
+/* ==========================================
+   TABLE ROWS
+========================================== */
+
+.mat-mdc-row {
+  height: 46px;
+  transition: background .15s ease;
+}
+
+.mat-mdc-row:hover {
+  background: var(--app-card-secondary);
+}
+
+.mat-mdc-cell {
+  border-bottom: 1px solid var(--app-border-soft);
+
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+
+/* ==========================================
+   TABLE INFORMATION
+========================================== */
+
+.invoice-number {
+  font-weight: 700;
+  color: var(--app-primary);
+}
+
+.client-name {
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+td small {
+  display: block;
+  margin-top: 2px;
+
+  color: var(--app-text-muted);
+  font-size: 11px;
+}
+
+.total-value {
+  font-weight: 700;
+  color: var(--app-success);
+}
+
+
+/* ==========================================
+   STATUS
+========================================== */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 3px 9px;
+  border-radius: 20px;
+
+  background: var(--app-card-secondary);
+  color: var(--app-text-muted);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status.active {
+  background: var(--app-success-bg);
+  color: var(--app-success);
+}
+
+.status.pending {
+  background: var(--app-warning-bg);
+  color: var(--app-warning);
+}
+
+.balance-pending {
+  font-weight: 700;
+  color: var(--app-danger);
+}
+
+
+/* ==========================================
+   COLUMNA ACCIONES
+========================================== */
+
+.col-actions {
+  width: 132px;
+  min-width: 132px;
+  max-width: 132px;
+
+  padding: 0 8px !important;
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+/* ==========================================
+   CONTENEDOR DE BOTONES
+========================================== */
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  width: 100%;
+}
+
+
+/* ==========================================
+   BOTONES DE ACCIÓN
+========================================== */
+
+.action-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px !important;
+  height: 32px !important;
+
+  min-width: 32px !important;
+  min-height: 32px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  flex-shrink: 0;
+
+  border: 1px solid transparent;
+  border-radius: 8px !important;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+
+  mat-icon {
+    display: block;
+
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+    line-height: 18px;
+
+    margin: 0 !important;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--app-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+}
+
+
+/* ==========================================
+   ACCIÓN VISUALIZAR
+========================================== */
+
+.action-view {
+  color: var(--app-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--app-primary-bg, rgba(7, 93, 176, .09));
+    border-color: rgba(7, 93, 176, .12);
+  }
+}
+
+
+/* ==========================================
+   ACCIÓN GESTIONAR
+========================================== */
+
+.action-edit {
+  color: var(--app-text-muted);
+
+  &:hover:not(:disabled) {
+    background: var(--app-card-secondary);
+    border-color: var(--app-border);
+    color: var(--app-primary);
+  }
+}
+
+
+/* ==========================================
+   ACCIÓN ELIMINAR
+========================================== */
+
+.action-delete {
+  color: var(--app-danger);
+
+  &:hover:not(:disabled) {
+    background: var(--app-danger-bg);
+    border-color: rgba(220, 38, 38, .12);
+  }
+}
+
+
+/* ==========================================
+   NO DATA
+========================================== */
+
+.no-data {
+  height: 120px;
+  text-align: center;
+  color: var(--app-text-muted);
+
+  mat-icon {
+    display: block;
+    margin: 0 auto 5px;
+  }
+}
+
+
+/* ==========================================
+   PAGINATOR
+========================================== */
+
+mat-paginator {
+  border-top: 1px solid var(--app-border);
+}
+
+
+/* ==========================================
+   SEARCH FIELD MATERIAL
+========================================== */
+
+:host ::ng-deep .search-field .mat-mdc-text-field-wrapper {
+  height: 40px;
+}
+
+:host ::ng-deep .search-field .mat-mdc-form-field-infix {
+  min-height: 40px;
+
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .records {
+    display: none;
+  }
+
+  .col-actions {
+    width: 126px;
+    min-width: 126px;
+    max-width: 126px;
+
+    padding: 0 5px !important;
+  }
+
+  .actions-container {
+    gap: 3px;
+  }
+
+  .action-btn {
+    width: 30px !important;
+    height: 30px !important;
+
+    min-width: 30px !important;
+    min-height: 30px !important;
+  }
+}

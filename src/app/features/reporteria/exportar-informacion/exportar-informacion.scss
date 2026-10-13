@@ -1,0 +1,636 @@
+
+/* =====================================================
+   WORKSTOCK - EXPORTAR INFORMACIÓN
+   DISEÑO COMPACTO Y PROFESIONAL
+===================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+:host * {
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   ENCABEZADO - ESTILO CLIENTES
+===================================================== */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 3px 0 0;
+    font-size: 13px;
+    color: var(--app-text-muted);
+  }
+}
+
+/* =====================================================
+   TARJETA PRINCIPAL
+===================================================== */
+
+.card {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
+}
+
+.export-progress {
+  width: 100%;
+}
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  min-height: 50px;
+  padding: 12px 16px;
+
+  border-bottom: 1px solid var(--app-border);
+}
+
+.toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-text);
+
+  mat-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: var(--app-text-muted);
+  }
+}
+
+.records {
+  font-size: 12px;
+  color: var(--app-text-muted);
+  white-space: nowrap;
+}
+
+/* =====================================================
+   CUADRÍCULA PRINCIPAL
+===================================================== */
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+  padding: 18px;
+
+  align-items: start;
+}
+
+/* =====================================================
+   POSICIÓN DE PANELES
+===================================================== */
+
+.celulares-panel {
+  grid-column: 1;
+}
+
+.accesorios-panel {
+  grid-column: 2;
+}
+
+.facturas-panel {
+  grid-column: 1 / -1;
+}
+
+.general-panel {
+  grid-column: 1 / -1;
+}
+
+/* =====================================================
+   PANELES
+===================================================== */
+
+.report-panel {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+
+  overflow: hidden;
+
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease;
+
+  &:hover {
+    border-color: var(--app-primary);
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .045);
+  }
+}
+
+/* =====================================================
+   ENCABEZADO DE CADA PANEL
+===================================================== */
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  min-height: 66px;
+  padding: 12px 15px;
+
+  border-bottom: 1px solid var(--app-border-soft);
+}
+
+.panel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  background: var(--app-primary-soft);
+  border-radius: 7px;
+
+  color: var(--app-primary);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+.panel-heading-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 4px;
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+
+    color: var(--app-text);
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  p {
+    margin: 0;
+
+    color: var(--app-text-muted);
+
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+}
+
+/* =====================================================
+   CONTENIDO DE PANELES
+===================================================== */
+
+.panel-content {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+  min-width: 0;
+
+  padding: 13px 15px;
+}
+
+/* =====================================================
+   FILA DE EXPORTACIÓN
+===================================================== */
+
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+  min-height: 50px;
+  min-width: 0;
+}
+
+.report-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+  min-width: 0;
+
+  strong {
+    color: var(--app-text);
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  span {
+    color: var(--app-text-muted);
+
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.export-btn {
+  flex-shrink: 0;
+
+  min-width: 124px;
+  height: 34px;
+
+  padding: 0 11px;
+
+  border-radius: 6px !important;
+
+  color: var(--app-primary) !important;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  mat-icon {
+    flex-shrink: 0;
+
+    width: 16px;
+    height: 16px;
+
+    font-size: 16px;
+    line-height: 16px;
+  }
+
+  &:not(:disabled):hover {
+    background: var(--app-primary-soft);
+  }
+
+  &:disabled {
+    opacity: .55;
+  }
+}
+
+/* =====================================================
+   FACTURAS - PANEL COMPACTO
+===================================================== */
+
+.facturas-panel .panel-heading {
+  min-height: 60px;
+  padding: 11px 15px;
+}
+
+.facturas-panel .panel-content {
+  padding: 10px 15px;
+}
+
+.facturas-panel .report-item {
+  min-height: 42px;
+}
+
+/* =====================================================
+   REPORTES GENERALES - ANCHO COMPLETO
+===================================================== */
+
+.general-panel .panel-heading {
+  min-height: 74px;
+
+  padding: 15px 18px;
+
+  gap: 13px;
+}
+
+.general-panel .panel-heading-text {
+  gap: 6px;
+}
+
+.general-panel .panel-heading-text h2 {
+  line-height: 1.45;
+}
+
+.general-panel .panel-heading-text p {
+  line-height: 1.6;
+}
+
+.general-panel .panel-content {
+  padding: 16px 18px;
+}
+
+/* =====================================================
+   CUADRÍCULA REPORTES GENERALES
+===================================================== */
+
+.general-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* =====================================================
+   TARJETAS INTERNAS
+===================================================== */
+
+.general-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  min-width: 0;
+  min-height: 132px;
+
+  padding: 14px;
+
+  background: var(--app-card-secondary);
+  border: 1px solid var(--app-border-soft);
+  border-radius: 7px;
+}
+
+/* =====================================================
+   TÍTULOS DE REPORTES GENERALES
+===================================================== */
+
+.general-info {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+  min-width: 0;
+
+  mat-icon {
+    flex-shrink: 0;
+
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+    line-height: 18px;
+
+    color: var(--app-text-muted);
+  }
+
+  span {
+    color: var(--app-text);
+
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+}
+
+/* =====================================================
+   BOTONES DE REPORTES GENERALES
+===================================================== */
+
+.general-export {
+  width: 100%;
+  min-width: 0;
+  margin-top: auto;
+
+  background: var(--app-card);
+}
+
+/* =====================================================
+   FILTRO FACTURA
+===================================================== */
+
+.filter-field {
+  display: block;
+  width: 100%;
+
+  font-size: 12px;
+}
+
+.general-item .filter-field {
+  margin-top: auto;
+}
+
+.general-item:has(.filter-field) .general-export {
+  margin-top: 0;
+}
+
+:host ::ng-deep
+.filter-field .mat-mdc-text-field-wrapper {
+  height: 34px;
+}
+
+:host ::ng-deep
+.filter-field .mat-mdc-form-field-infix {
+  min-height: 34px;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+:host ::ng-deep
+.filter-field .mat-mdc-select-value {
+  font-size: 11px;
+}
+
+/* =====================================================
+   NOTIFICACIONES
+===================================================== */
+
+.message {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+  padding: 10px 16px;
+
+  border-bottom: 1px solid var(--app-border);
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  mat-icon {
+    flex-shrink: 0;
+
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+  }
+}
+
+.error-message {
+  color: var(--app-danger);
+  background: var(--app-danger-bg);
+}
+
+.success-message {
+  color: var(--app-success);
+  background: var(--app-success-bg);
+}
+
+/* =====================================================
+   PIE INFORMATIVO
+===================================================== */
+
+.card-footer {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+  padding: 12px 16px;
+
+  border-top: 1px solid var(--app-border);
+
+  background: var(--app-card-secondary);
+
+  color: var(--app-text-muted);
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  mat-icon {
+    flex-shrink: 0;
+
+    width: 16px;
+    height: 16px;
+
+    font-size: 16px;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE - TABLET
+===================================================== */
+
+@media (max-width: 1150px) {
+
+  .general-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+/* =====================================================
+   RESPONSIVE - PANTALLAS MEDIANAS
+===================================================== */
+
+@media (max-width: 750px) {
+
+  .reports-grid {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .celulares-panel,
+  .accesorios-panel,
+  .facturas-panel,
+  .general-panel {
+    grid-column: 1;
+  }
+
+  .general-panel .panel-heading {
+    padding: 13px;
+  }
+
+  .general-panel .panel-content {
+    padding: 12px;
+  }
+
+}
+
+/* =====================================================
+   RESPONSIVE - MÓVIL
+===================================================== */
+
+@media (max-width: 500px) {
+
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    padding: 11px 12px;
+  }
+
+  .records {
+    font-size: 11px;
+  }
+
+  .panel-heading {
+    padding: 12px;
+  }
+
+  .panel-content {
+    padding: 12px;
+  }
+
+  .report-item {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 10px;
+  }
+
+  .report-item .export-btn {
+    width: 100%;
+  }
+
+  .general-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .general-item {
+    min-height: 110px;
+  }
+
+  .card-footer {
+    padding: 12px;
+  }
+
+}

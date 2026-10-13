@@ -1,0 +1,286 @@
+<div class="dialog-header no-print">
+  <div>
+    <h2>Factura</h2>
+
+    @if (factura(); as f) {
+      <p>#{{ f.numeroFactura }}</p>
+    }
+  </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    (click)="cerrar()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+@if (cargando()) {
+  <mat-progress-bar
+    mode="indeterminate"
+    class="no-print"
+  />
+}
+
+<mat-dialog-content>
+
+  @if (factura(); as f) {
+
+    <div
+      class="ticket"
+      id="ticketFactura"
+    >
+
+      <div class="centrado logo-container">
+        <img
+          src="/images/logoBlancoNegro.png"
+          alt="M&C"
+          class="logo"
+        >
+      </div>
+
+      <div class="centrado business-info">
+        <strong>
+          '' CONTRIBUYENTE RIMPE NEGOCIO POPULAR ''
+        </strong>
+
+        <br><br>
+
+        CARLOS MARCELO GUEVARA TORRES<br>
+        RUC: 1719984534001<br>
+        DIR: Bustamante s/n y Mejía D16<br>
+        TELEFONO: 099 566 4394<br>
+        QUITO - ECUADOR
+
+        <br><br>
+
+        <strong class="title">
+          LOCAL 71
+        </strong>
+
+        <br>
+
+        VENTA Y REPARACION PROFESIONAL
+
+        <br><br>
+
+        <strong class="title">
+          DATOS FACTURA
+        </strong>
+
+        <br><br>
+      </div>
+
+      <table class="info-table">
+
+        <tr>
+          <td>N° DOCUMENTO:</td>
+          <td>
+            001-001<strong>{{ f.numeroFactura }}</strong>
+          </td>
+        </tr>
+
+        <tr>
+          <td>FECHA:</td>
+          <td>
+            {{ f.fechaFactura | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </tr>
+
+        <tr>
+          <td>CAJA:</td>
+          <td>
+            {{ f.vendedor }}
+          </td>
+        </tr>
+
+        <tr>
+          <td>AUT. SRI:</td>
+          <td>
+            1128760278
+          </td>
+        </tr>
+
+        <tr>
+          <td>FECHA AUTORIZACION:</td>
+          <td>
+            14/SEPTIEMBRE/2021
+          </td>
+        </tr>
+
+        <tr>
+          <td
+            colspan="2"
+            class="client-title"
+          >
+            CLIENTE
+          </td>
+        </tr>
+
+        <tr>
+          <td>RUC:</td>
+          <td>{{ f.identificacion }}</td>
+        </tr>
+
+        <tr>
+          <td>NOMBRE:</td>
+          <td>{{ f.nombreCliente }}</td>
+        </tr>
+
+        <tr>
+          <td>TELEFONO:</td>
+          <td>{{ f.telefono || '-' }}</td>
+        </tr>
+
+        <tr>
+          <td>CORREO:</td>
+          <td>{{ f.correo || '-' }}</td>
+        </tr>
+
+        <tr>
+          <td>DIRECCION:</td>
+          <td>{{ f.direccion || '-' }}</td>
+        </tr>
+
+      </table>
+
+      <br>
+
+      <table class="products-table">
+
+        <thead>
+          <tr>
+            <th>DESCRIPCION</th>
+            <th>CANT.</th>
+            <th>P. UNIT</th>
+            <th>TOTAL</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (x of f.detalle; track x.id) {
+
+            <tr>
+              <td class="description">
+                {{ x.nombreMarca }}/{{ x.nombreModelo }}/{{ x.ram }}RAM/{{ x.almacenamiento }}GB/{{ x.color }}
+                <br>
+                {{ x.imei1 }}
+              </td>
+
+              <td class="center">
+                {{ x.cantidad }}
+              </td>
+
+              <td class="center">
+                {{ x.subTotal | currency:'USD':'symbol':'1.2-2' }}
+              </td>
+
+              <td class="center">
+                {{ x.subTotal | currency:'USD':'symbol':'1.2-2' }}
+              </td>
+            </tr>
+
+          }
+
+          <tr class="total-row">
+            <td></td>
+            <td></td>
+
+            <td class="label-total">
+              <strong>SUBTOTAL:</strong>
+            </td>
+
+            <td class="value-total">
+              <strong>
+                {{ f.subTotal | currency:'USD':'symbol':'1.2-2' }}
+              </strong>
+            </td>
+          </tr>
+
+          <tr class="total-row">
+            <td></td>
+            <td></td>
+
+            <td class="label-total">
+              <strong>
+                IVA ({{ f.ivaAplicado }}%):
+              </strong>
+            </td>
+
+            <td class="value-total">
+              <strong>
+                {{ f.iva | currency:'USD':'symbol':'1.2-2' }}
+              </strong>
+            </td>
+          </tr>
+
+          <tr class="total-row">
+            <td></td>
+            <td></td>
+
+            <td class="label-total">
+              <strong>TOTAL:</strong>
+            </td>
+
+            <td class="value-total">
+              <strong>
+                {{ f.totalVenta | currency:'USD':'symbol':'1.2-2' }}
+              </strong>
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+      <div class="warranty">
+        <strong>GARANTIA EQUIPO NUEVO:</strong>
+        12 meses a partir de la fecha de compra por defectos de fabricación.
+        Esta garantía no cubre golpes, rayones, agua, sobre cargas eléctricas,
+        mala manipulación, VIRUS, programas mal instalados.
+        La garantía tiene un periodo de revisión de 48 a 72 horas laborables.
+
+        <br><br>
+
+        <strong>EQUIPOS USOS:</strong>
+        <br>
+        Línea telefónica 12 meses a partir de la fecha de compra.
+        <br>
+        Buen funcionamiento del equipo 30 días a partir de la fecha de compra.
+      </div>
+
+      <p class="centrado thanks">
+        ¡GRACIAS POR SU COMPRA!
+        <br>
+        M & C
+      </p>
+
+    </div>
+
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions
+  align="end"
+  class="no-print"
+>
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="cerrar()"
+  >
+    Cerrar
+  </button>
+
+  <button
+    mat-flat-button
+    type="button"
+    (click)="imprimir()"
+  >
+    <mat-icon>print</mat-icon>
+    Imprimir
+  </button>
+</mat-dialog-actions>

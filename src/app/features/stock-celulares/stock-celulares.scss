@@ -1,0 +1,299 @@
+/* =====================================================
+   WORKSTOCK - STOCK DE CELULARES
+   ESTILOS CONSOLIDADOS
+===================================================== */
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+/* ENCABEZADO */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 3px 0 0;
+    font-size: 13px;
+    color: var(--app-text-muted);
+  }
+}
+
+.primary-btn {
+  height: 38px;
+  border-radius: 7px !important;
+  font-size: 13px;
+}
+
+/* TARJETA Y BARRA DE HERRAMIENTAS */
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.search-field {
+  width: 300px;
+  max-width: 100%;
+  font-size: 13px;
+}
+
+.records {
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+:host ::ng-deep .search-field .mat-mdc-text-field-wrapper,
+:host ::ng-deep .search-field .mat-mdc-form-field-flex {
+  height: 40px;
+}
+
+:host ::ng-deep .search-field .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+:host ::ng-deep .search-field .mat-mdc-form-field-infix {
+  min-height: 40px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+/* TABLA */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table,
+table.mat-mdc-table {
+  width: 100%;
+  background: var(--app-card);
+}
+
+.mat-mdc-header-row {
+  height: 42px;
+  background: var(--app-card-secondary);
+}
+
+.mat-mdc-row {
+  height: 46px;
+  transition: background-color .15s ease;
+}
+
+.mat-mdc-row:hover {
+  background: var(--app-hover, var(--app-card-secondary));
+}
+
+.mat-mdc-header-cell {
+  vertical-align: middle;
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.mat-mdc-cell {
+  vertical-align: middle;
+  border-bottom: 1px solid var(--app-border-soft);
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+/* COLUMNAS Y CONTENIDO */
+.col-id {
+  width: 80px;
+  padding-left: 18px !important;
+}
+
+.model {
+  min-width: 220px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+td strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+td small {
+  display: block;
+  margin-top: 2px;
+  color: var(--app-text-muted);
+  font-size: 11px;
+}
+
+.price {
+  font-weight: 600;
+  color: var(--app-success);
+}
+
+.col-status {
+  width: 140px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--app-card-secondary);
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status.active,
+.status.available {
+  background: var(--app-success-bg);
+  color: var(--app-success);
+}
+
+/* =====================================================
+   ACCIONES: TRES BOTONES EN UNA SOLA LÍNEA
+===================================================== */
+.mat-column-acciones,
+.col-actions,
+.actions {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  box-sizing: border-box;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.actions-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.actions-group .action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  margin: 0;
+  border-radius: 8px;
+  transition: background-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+.actions-group .action mat-icon {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.actions-group .action.sell {
+  color: var(--app-success);
+}
+
+.actions-group .action.sell:hover:not(:disabled) {
+  background: var(--app-success-bg);
+}
+
+.actions-group .action.edit {
+  color: var(--app-primary);
+}
+
+.actions-group .action.edit:hover:not(:disabled) {
+  background: var(--app-primary-soft, rgba(37, 99, 235, .08));
+}
+
+.actions-group .action.delete {
+  color: var(--app-danger);
+}
+
+.actions-group .action.delete:hover:not(:disabled) {
+  background: var(--app-danger-bg);
+}
+
+.actions-group .action:active:not(:disabled) {
+  transform: scale(.94);
+}
+
+.actions-group .action:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+/* ESTADOS VACÍOS Y PAGINADOR */
+.no-data {
+  height: 120px;
+  text-align: center;
+  color: var(--app-text-muted);
+
+  mat-icon {
+    display: block;
+    margin: 0 auto 5px;
+  }
+}
+
+mat-paginator {
+  background: var(--app-card);
+  color: var(--app-text-muted);
+  border-top: 1px solid var(--app-border);
+}
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    padding: 10px 12px;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  .records {
+    display: none;
+  }
+}

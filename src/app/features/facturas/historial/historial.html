@@ -1,0 +1,369 @@
+<div class="page-header">
+
+  <div>
+
+    <h1>
+      Historial de facturas
+    </h1>
+
+    <p>
+      Consulta de facturas registradas
+    </p>
+
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <!-- =====================================================
+       CARGANDO
+  ====================================================== -->
+
+  @if (cargando()) {
+
+  <mat-progress-bar mode="indeterminate" />
+
+  }
+
+
+  <!-- =====================================================
+       TOOLBAR
+  ====================================================== -->
+
+  <div class="toolbar">
+
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+
+
+
+      <input matInput placeholder="Factura, cliente, identificación..." (input)="aplicarFiltro($event)">
+
+
+      <mat-icon matSuffix>
+        search
+      </mat-icon>
+
+    </mat-form-field>
+
+
+    <span class="records">
+
+      {{
+      dataSource.filteredData.length
+      }}
+
+      registros
+
+    </span>
+
+  </div>
+
+
+  <!-- =====================================================
+       TABLA
+  ====================================================== -->
+
+  <div class="table-wrapper">
+
+    <table mat-table [dataSource]="dataSource" matSort>
+
+      <!-- =================================================
+           NÚMERO FACTURA
+      ================================================== -->
+
+      <ng-container matColumnDef="numeroFactura">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Factura
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          <span class="invoice-number">
+            #{{ x.numeroFactura }}
+          </span>
+          <small> {{
+            x.fechaFactura
+            | date:'dd/MM/yyyy HH:mm'
+            }}</small>
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           FECHA
+      ================================================== -->
+
+      <ng-container matColumnDef="fechaFactura">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Fecha
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          {{
+          x.fechaFactura
+          | date:'dd/MM/yyyy HH:mm'
+          }}
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           CLIENTE
+      ================================================== -->
+
+      <ng-container matColumnDef="cliente">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Cliente
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          <span class="client-name">
+            {{ x.nombreCliente }}
+          </span>
+
+
+          <small>
+            {{ x.identificacion }}
+          </small>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           SUBTOTAL
+      ================================================== -->
+
+      <ng-container matColumnDef="subtotal">
+
+        <th mat-header-cell *matHeaderCellDef class="money-column">
+          Subtotal
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="money-column">
+
+          {{
+          x.subTotal
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           IVA
+      ================================================== -->
+
+      <ng-container matColumnDef="iva">
+
+        <th mat-header-cell *matHeaderCellDef class="money-column">
+          IVA
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="money-column">
+
+          {{
+          x.iva
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           TOTAL
+      ================================================== -->
+
+      <ng-container matColumnDef="total">
+
+        <th mat-header-cell *matHeaderCellDef class="money-column">
+          Total
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="money-column">
+
+          <span class="total-value">
+
+            {{
+            x.totalVenta
+            | currency:'USD':'symbol':'1.2-2'
+            }}
+
+          </span>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           ESTADO
+      ================================================== -->
+
+      <ng-container matColumnDef="estado">
+
+        <th mat-header-cell *matHeaderCellDef class="status-column">
+          Estado
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="status-column">
+
+          <span class="status" [class.active]="
+              x.estado === 'FACTURADO'
+            " [class.cancelled]="
+              x.estado === 'ANULADA'
+            ">
+
+            {{ x.estado }}
+
+          </span>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           VENDEDOR
+      ================================================== -->
+
+      <ng-container matColumnDef="vendedor">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Vendedor
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+          {{ x.vendedor }}
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           ACCIONES
+      ================================================== -->
+
+      <ng-container matColumnDef="acciones">
+
+        <th mat-header-cell *matHeaderCellDef class="col-actions">
+          Acciones
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="col-actions">
+
+          <!-- VISUALIZAR -->
+
+          <button mat-icon-button type="button" class="action view" matTooltip="Visualizar factura"
+            (click)="visualizar(x)">
+
+            <mat-icon>
+              visibility
+            </mat-icon>
+
+          </button>
+
+
+          <!-- ANULAR -->
+
+          @if (x.estado !== 'ANULADA') {
+
+          <button mat-icon-button type="button" class="action cancel" matTooltip="Anular factura" [disabled]="
+                anulando() === x.id
+              " (click)="anular(x)">
+
+            <mat-icon>
+
+              {{
+              anulando() === x.id
+              ? 'hourglass_top'
+              : 'cancel'
+              }}
+
+            </mat-icon>
+
+          </button>
+
+          }
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =================================================
+           FILAS
+      ================================================== -->
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+
+
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="
+    (row.estado ?? '').trim().toUpperCase() === 'ANULADA'
+  ">
+      </tr>
+
+
+
+      <!-- =================================================
+           SIN DATOS
+      ================================================== -->
+
+      <tr *matNoDataRow>
+
+        <td class="no-data" [attr.colspan]="
+            displayedColumns.length
+          ">
+
+          <mat-icon>
+            receipt_long
+          </mat-icon>
+
+          No existen facturas para mostrar
+
+        </td>
+
+      </tr>
+
+    </table>
+
+  </div>
+
+
+  <!-- =====================================================
+       PAGINADOR
+  ====================================================== -->
+
+  <mat-paginator [pageSize]="10" [pageSizeOptions]="[
+      10,
+      25,
+      50,
+      100
+    ]" showFirstLastButtons />
+
+</div>

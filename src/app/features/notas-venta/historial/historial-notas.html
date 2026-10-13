@@ -1,0 +1,304 @@
+<div class="page">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Historial de notas de venta
+      </h1>
+
+      <p>
+        Consulta y administración de notas de venta registradas.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    <div class="toolbar">
+
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+
+        <mat-label>
+          Buscar
+        </mat-label>
+
+        <mat-icon matPrefix>
+          search
+        </mat-icon>
+
+        <input matInput placeholder="Número, cliente, identificación..." (keyup)="aplicarFiltro($event)">
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- =====================================================
+         CARGANDO
+    ====================================================== -->
+
+    @if (cargando) {
+
+    <mat-progress-bar mode="indeterminate" />
+
+    }
+
+
+    <!-- =====================================================
+         TABLA
+    ====================================================== -->
+
+    <div class="table-container">
+
+      <table mat-table [dataSource]="dataSource" matSort>
+
+        <!-- =================================================
+             NÚMERO
+        ================================================== -->
+
+        <ng-container matColumnDef="numero">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            N.º Nota
+          </th>
+
+          <td mat-cell *matCellDef="let nota">
+
+            <span class="invoice-number">
+              #{{nota.numeroNV }}
+            </span>
+            <small>
+              {{nota.fechaNotaVenta | date:'dd/MM/yyyy HH:mm'}}</small>
+          </td>
+
+
+
+        </ng-container>
+
+
+        <!-- =================================================
+             FECHA
+        ================================================== -->
+
+        <ng-container matColumnDef="fecha">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Fecha
+          </th>
+
+          <td mat-cell *matCellDef="let nota">
+            {{
+            nota.fechaNotaVenta
+            | date:'dd/MM/yyyy HH:mm'
+            }}
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             CLIENTE
+        ================================================== -->
+
+        <ng-container matColumnDef="cliente">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Cliente
+          </th>
+
+          <td mat-cell *matCellDef="let nota">
+
+            <span class="client-name">
+              {{ nota.nombreCliente }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             IDENTIFICACIÓN
+        ================================================== -->
+
+        <ng-container matColumnDef="identificacion">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Identificación
+          </th>
+
+          <td mat-cell *matCellDef="let nota">
+            {{ nota.identificacion }}
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             VENDEDOR
+        ================================================== -->
+
+        <ng-container matColumnDef="vendedor">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Vendedor
+          </th>
+
+          <td mat-cell *matCellDef="let nota">
+            {{ nota.vendedor }}
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             TOTAL
+        ================================================== -->
+
+        <ng-container matColumnDef="total">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="money-column">
+            Total
+          </th>
+
+          <td mat-cell *matCellDef="let nota" class="money-column">
+
+            <span class="total-value">
+
+              {{
+              nota.totalVenta
+              | currency:'USD':'symbol':'1.2-2'
+              }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             ESTADO
+        ================================================== -->
+
+        <ng-container matColumnDef="estado">
+
+          <th mat-header-cell *matHeaderCellDef class="status-column">
+            Estado
+          </th>
+
+          <td mat-cell *matCellDef="let nota" class="status-column">
+
+            <span class="status" [class.active]="nota.estado !== 'ANULADA'"
+              [class.cancelled]="nota.estado === 'ANULADA'">
+              {{ nota.estado }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             ACCIONES
+        ================================================== -->
+
+        <ng-container matColumnDef="acciones">
+
+          <th mat-header-cell *matHeaderCellDef class="actions-header">
+            Acciones
+          </th>
+
+
+          <td mat-cell *matCellDef="let nota" class="actions-cell">
+
+            <!-- VISUALIZAR -->
+
+            <button mat-icon-button type="button" class="view-btn" matTooltip="Visualizar" (click)="visualizar(nota)">
+              <mat-icon>
+                visibility
+              </mat-icon>
+            </button>
+
+
+            <!-- ANULAR -->
+
+            @if (
+            esAdministrador() &&
+            nota.estado !== 'ANULADA'
+            ) {
+
+            <button mat-icon-button type="button" class="delete-btn" matTooltip="Anular nota" (click)="anular(nota)">
+              <mat-icon>
+                cancel
+              </mat-icon>
+            </button>
+
+            }
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- =================================================
+             FILAS
+        ================================================== -->
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="
+    (row.estado ?? '').trim().toUpperCase() === 'ANULADA'
+  ">
+        </tr>
+
+
+
+        <!-- =================================================
+             SIN DATOS
+        ================================================== -->
+
+        <tr class="mat-row no-data-row" *matNoDataRow>
+
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+
+            <mat-icon>
+              receipt_long
+            </mat-icon>
+
+            No existen notas de venta para mostrar.
+
+          </td>
+
+        </tr>
+
+      </table>
+
+    </div>
+
+
+    <!-- =====================================================
+         PAGINADOR
+    ====================================================== -->
+
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[
+        5,
+        10,
+        25,
+        50
+      ]" showFirstLastButtons />
+
+  </div>
+
+</div>

@@ -1,0 +1,15 @@
+<div class="confirm-header">
+  <div class="icon"><mat-icon>warning_amber</mat-icon></div>
+  <div>
+    <h2>{{ data.title }}</h2>
+    <p>{{ data.message }}</p>
+  </div>
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button class="danger-btn" (click)="confirmar()">
+    <mat-icon>delete</mat-icon>
+    {{ data.confirmText || 'Confirmar' }}
+  </button>
+</mat-dialog-actions>

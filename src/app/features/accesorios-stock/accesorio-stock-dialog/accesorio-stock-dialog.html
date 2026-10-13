@@ -1,0 +1,186 @@
+<div class="dialog-header">
+  <div class="header-identity">
+    <div class="header-icon">
+      <mat-icon>{{ editando() ? 'edit_note' : 'add_box' }}</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2>{{ editando() ? 'Editar accesorio' : 'Nuevo accesorio' }}</h2>
+      <p>{{ editando() ? 'Actualiza la información del accesorio.' : 'Registra un accesorio en el inventario.' }}</p>
+    </div>
+  </div>
+  <button mat-icon-button type="button" class="close-button" aria-label="Cerrar formulario" [disabled]="guardando()"
+    (click)="cerrar()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+@if (guardando()) {
+<mat-progress-bar mode="indeterminate" />
+}
+
+<mat-dialog-content class="dialog-content">
+  <section class="form-section">
+    <div class="section-heading">
+      <span class="section-icon"><mat-icon>inventory_2</mat-icon></span>
+      <div>
+        <h3>Información del accesorio</h3>
+        <p>Clasificación y características del producto</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="accesorio-categoria">Categoría</label>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <input id="accesorio-categoria" matInput type="text" placeholder="Buscar categoría..."
+            aria-label="Buscar categoría" autocomplete="off" [formControl]="busquedaCategoria"
+            [matAutocomplete]="autoCategorias">
+
+          <mat-icon matSuffix class="suffix-icon">
+            search
+          </mat-icon>
+
+          <mat-autocomplete #autoCategorias="matAutocomplete"
+            (optionSelected)="seleccionarCategoria($event.option.value)">
+            @for (categoria of categoriasFiltradas(); track categoria.id) {
+            <mat-option [value]="categoria.id">
+              {{ categoria.categoria }}
+            </mat-option>
+            } @empty {
+            <mat-option disabled>No se encontraron categorías</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="accesorio-marca">Marca</label>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <input id="accesorio-marca" matInput type="text" placeholder="Buscar marca..." aria-label="Buscar marca"
+            autocomplete="off" [formControl]="busquedaMarca" [matAutocomplete]="autoMarcas">
+
+          <mat-icon matSuffix class="suffix-icon">
+            search
+          </mat-icon>
+
+          <mat-autocomplete #autoMarcas="matAutocomplete" (optionSelected)="seleccionarMarca($event.option.value)">
+            @for (marca of marcasFiltradas(); track marca.id) {
+            <mat-option [value]="marca.id">
+              {{ marca.nombreMarca }}
+            </mat-option>
+            } @empty {
+            <mat-option disabled>No se encontraron marcas</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="accesorio-descripcion">Descripción</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <input id="accesorio-descripcion" matInput type="text" maxlength="50" placeholder="Ej. Pantalla Samsung A15"
+            [formControl]="descripcion">
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="accesorio-calidad">Calidad</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <mat-select id="accesorio-calidad" aria-label="Calidad" placeholder="Seleccionar calidad"
+            [formControl]="calidad">
+            <mat-option value="ORIGINAL">ORIGINAL</mat-option>
+            <mat-option value="GENERICO">GENÉRICO</mat-option>
+            <mat-option value="AAA">AAA</mat-option>
+            <mat-option value="OEM">OEM</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </section>
+
+  @if (!editando()) {
+  <div class="recordatorio">
+    <mat-checkbox [formControl]="recordatorio">
+      Registrar como recordatorio sin stock
+    </mat-checkbox>
+    <p>El accesorio se registrará sin existencias ni precios iniciales.</p>
+  </div>
+  }
+
+  @if (!editando() && !recordatorio.value) {
+  <section class="form-section">
+    <div class="section-heading">
+      <span class="section-icon"><mat-icon>inventory</mat-icon></span>
+      <div>
+        <h3>Stock inicial</h3>
+        <p>Información del primer ingreso al inventario</p>
+      </div>
+    </div>
+    <div class="money-grid">
+      <div class="field-group">
+        <label class="field-label" for="accesorio-cantidad">Cantidad</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <input id="accesorio-cantidad" matInput type="number" min="1" step="1" placeholder="0"
+            [formControl]="cantidad">
+        </mat-form-field>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="accesorio-precio-total">Precio total</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <span matTextPrefix>$&nbsp;</span>
+          <input id="accesorio-precio-total" matInput type="number" min="0" step="0.001" placeholder="0.000"
+            [formControl]="precioTotal">
+        </mat-form-field>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="accesorio-precio-unitario">Precio unitario</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field readonly-field">
+          <span matTextPrefix>$&nbsp;</span>
+          <input id="accesorio-precio-unitario" matInput type="number" readonly [formControl]="precioUnitario">
+        </mat-form-field>
+      </div>
+    </div>
+  </section>
+  }
+
+  @if (editando() || !recordatorio.value) {
+  <section class="form-section">
+    <div class="section-heading">
+      <span class="section-icon"><mat-icon>sell</mat-icon></span>
+      <div>
+        <h3>Precios de venta</h3>
+        <p>Configura los precios de comercialización</p>
+      </div>
+    </div>
+    <div class="price-grid">
+      <div class="field-group">
+        <label class="field-label" for="accesorio-pvp1">PVP 1 - Local</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <span matTextPrefix>$&nbsp;</span>
+          <input id="accesorio-pvp1" matInput type="number" min="0" step="0.001" placeholder="0.000"
+            [formControl]="pvp1">
+        </mat-form-field>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="accesorio-pvp2">PVP 2 - Público</label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field">
+          <span matTextPrefix>$&nbsp;</span>
+          <input id="accesorio-pvp2" matInput type="number" min="0" step="0.001" placeholder="0.000"
+            [formControl]="pvp2">
+        </mat-form-field>
+      </div>
+    </div>
+  </section>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions" align="end">
+  <button mat-stroked-button type="button" class="cancel-btn" [disabled]="guardando()"
+    (click)="cerrar()">Cancelar</button>
+  <button mat-flat-button type="button" class="save-btn" [disabled]="guardando()" (click)="guardar()">
+    <mat-icon>{{ guardando() ? 'hourglass_top' : 'save' }}</mat-icon>
+    <span>{{ guardando() ? 'Guardando...' : editando() ? 'Actualizar' : 'Guardar accesorio' }}</span>
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,139 @@
+
+/* =====================================================
+   WORKSTOCK - BREADCRUMBS
+   NAVEGACIÓN MINIMALISTA
+===================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==========================================
+   CONTENEDOR
+========================================== */
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 5px;
+  min-height: 16px;
+
+  margin: 0 0 10px;
+  padding: 0;
+
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+
+  color: var(--app-text-muted);
+}
+
+/* ==========================================
+   INICIO
+========================================== */
+
+.breadcrumb-home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 17px;
+  height: 17px;
+
+  color: var(--app-text-muted);
+  text-decoration: none;
+
+  border-radius: 4px;
+  transition: color 150ms ease;
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  &:hover {
+    color: var(--app-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--app-primary);
+    outline-offset: 3px;
+  }
+}
+
+/* ==========================================
+   SEPARADORES
+========================================== */
+
+.breadcrumb-separator {
+  flex-shrink: 0;
+
+  width: 13px;
+  height: 13px;
+
+  font-size: 13px;
+  line-height: 13px;
+
+  color: var(--app-text-muted);
+  opacity: 0.45;
+}
+
+/* ==========================================
+   NIVELES INTERMEDIOS
+========================================== */
+
+.breadcrumb-parent {
+  color: var(--app-text-muted);
+
+  font-size: 11px;
+  font-weight: 400;
+
+  white-space: nowrap;
+}
+
+/* ==========================================
+   PÁGINA ACTUAL
+========================================== */
+
+.breadcrumb-current {
+  color: var(--app-text);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+
+  .breadcrumbs {
+    gap: 4px;
+    margin-bottom: 8px;
+    font-size: 10px;
+  }
+
+  .breadcrumb-parent,
+  .breadcrumb-current {
+    font-size: 10px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .breadcrumb-home {
+    transition: none;
+  }
+
+}

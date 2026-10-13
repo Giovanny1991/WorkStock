@@ -1,0 +1,494 @@
+<div class="dialog-header no-print">
+
+  <div>
+
+    <h2>
+      Nota de venta de accesorios
+    </h2>
+
+
+    @if (nota(); as n) {
+
+      <p>
+        #{{ n.numeroNV }}
+      </p>
+
+    }
+
+  </div>
+
+
+  <button
+    mat-icon-button
+    type="button"
+    (click)="cerrar()"
+  >
+
+    <mat-icon>
+      close
+    </mat-icon>
+
+  </button>
+
+</div>
+
+
+@if (cargando()) {
+
+  <mat-progress-bar
+    mode="indeterminate"
+    class="no-print"
+  />
+
+}
+
+
+<mat-dialog-content>
+
+
+  @if (nota(); as n) {
+
+
+    <div
+      class="ticket"
+      id="ticketNotaAccesorios"
+    >
+
+
+      <!-- ==================================================
+           LOGO
+      =================================================== -->
+
+      <div
+        class="centrado logo-container"
+      >
+
+        <img
+          src="/images/logoBlancoNegro.png"
+          alt="M&C"
+          class="logo"
+        >
+
+      </div>
+
+
+      <!-- ==================================================
+           INFORMACIÓN EMPRESA
+      =================================================== -->
+
+      <div
+        class="centrado business-info"
+      >
+
+        <strong>
+
+          '' CONTRIBUYENTE RIMPE NEGOCIO POPULAR ''
+
+        </strong>
+
+
+        <br>
+        <br>
+
+
+        CARLOS MARCELO GUEVARA TORRES
+
+        <br>
+
+
+        RUC: 1719984534001
+
+        <br>
+
+
+        DIR: Bustamante s/n y Mejía D16
+
+        <br>
+
+
+        TELEFONO: 099 566 4394
+
+        <br>
+
+
+        QUITO - ECUADOR
+
+
+        <br>
+        <br>
+
+
+        <strong class="title">
+
+          LOCAL 71
+
+        </strong>
+
+
+        <br>
+
+
+        VENTA Y REPARACION PROFESIONAL
+
+
+        <br>
+        <br>
+
+
+        <strong class="title">
+
+          NOTA DE VENTA
+
+        </strong>
+
+
+        <br>
+        <br>
+
+      </div>
+
+
+      <!-- ==================================================
+           INFORMACIÓN NOTA
+      =================================================== -->
+
+      <table class="info-table">
+
+
+        <tr>
+
+          <td>
+            N° DOCUMENTO:
+          </td>
+
+          <td>
+
+            <strong>
+
+              {{ n.numeroNV }}
+
+            </strong>
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            FECHA:
+          </td>
+
+          <td>
+
+            {{
+              n.fechaNotaVenta
+                | date:'dd/MM/yyyy HH:mm'
+            }}
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            CAJA:
+          </td>
+
+          <td>
+
+            {{ n.vendedor }}
+
+          </td>
+
+        </tr>
+
+
+        <!-- ==================================================
+             CLIENTE
+        =================================================== -->
+
+        <tr>
+
+          <td
+            colspan="2"
+            class="client-title"
+          >
+
+            CLIENTE
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            RUC:
+          </td>
+
+          <td>
+
+            {{ n.identificacion }}
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            NOMBRE:
+          </td>
+
+          <td>
+
+            {{ n.nombreCliente }}
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            TELEFONO:
+          </td>
+
+          <td>
+
+            {{ n.telefono || '-' }}
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            CORREO:
+          </td>
+
+          <td>
+
+            {{ n.correo || '-' }}
+
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td>
+            DIRECCION:
+          </td>
+
+          <td>
+
+            {{ n.direccion || '-' }}
+
+          </td>
+
+        </tr>
+
+      </table>
+
+
+      <br>
+
+
+      <!-- ==================================================
+           PRODUCTOS
+      =================================================== -->
+
+      <table class="products-table">
+
+
+        <thead>
+
+          <tr>
+
+            <th>
+              CANT.
+            </th>
+
+            <th>
+              DESCRIPCION
+            </th>
+
+            <th>
+              P. UNIT
+            </th>
+
+            <th>
+              TOTAL
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+
+          @for (
+            x of n.detalle;
+            track x.id
+          ) {
+
+            <tr>
+
+
+              <td class="center">
+
+                {{ x.cantidad }}
+
+              </td>
+
+
+              <td class="description">
+
+                {{ x.accesorio }}
+
+              </td>
+
+
+              <td class="center">
+
+                {{
+                  x.precioUnitario
+                    | currency:'USD':'symbol':'1.2-2'
+                }}
+
+              </td>
+
+
+              <td class="center">
+
+                {{
+                  x.precioTotal
+                    | currency:'USD':'symbol':'1.2-2'
+                }}
+
+              </td>
+
+
+            </tr>
+
+          }
+
+
+          <!-- ==================================================
+               TOTAL
+          =================================================== -->
+
+          <tr class="total-row">
+
+            <td>
+            </td>
+
+            <td>
+            </td>
+
+
+            <td class="label-total">
+
+              <strong>
+                TOTAL:
+              </strong>
+
+            </td>
+
+
+            <td class="value-total">
+
+              <strong>
+
+                {{
+                  n.totalVenta
+                    | currency:'USD':'symbol':'1.2-2'
+                }}
+
+              </strong>
+
+            </td>
+
+          </tr>
+
+
+        </tbody>
+
+      </table>
+
+
+      <!-- ==================================================
+           PIE
+      =================================================== -->
+
+      <p class="centrado thanks">
+
+        ¡GRACIAS POR SU COMPRA!
+
+        <br>
+
+        M & C
+
+      </p>
+
+
+    </div>
+
+  }
+
+
+</mat-dialog-content>
+
+
+<!-- ==================================================
+     ACCIONES
+=================================================== -->
+
+<mat-dialog-actions
+  align="end"
+  class="no-print"
+>
+
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="cerrar()"
+  >
+
+    Cerrar
+
+  </button>
+
+
+  <button
+    mat-flat-button
+    type="button"
+    (click)="imprimir()"
+    [disabled]="
+      cargando() ||
+      !nota()
+    "
+  >
+
+    <mat-icon>
+      print
+    </mat-icon>
+
+    Imprimir
+
+  </button>
+
+</mat-dialog-actions>

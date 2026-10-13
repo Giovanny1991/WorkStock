@@ -1,0 +1,488 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--app-text);
+}
+
+:host * {
+  box-sizing: border-box;
+}
+
+.stock-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--app-card);
+}
+
+/* ========== ENCABEZADO ========== */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 20px;
+  background: var(--app-card);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.header-identity {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+
+  mat-icon {
+    width: 21px;
+    height: 21px;
+    font-size: 21px;
+    line-height: 21px;
+  }
+}
+
+.header-text {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  p {
+    overflow: hidden;
+    margin: 3px 0 0;
+    color: var(--app-text-muted);
+    font-size: 11px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.close-button {
+  flex-shrink: 0;
+  color: var(--app-text-muted);
+  border-radius: 9px;
+
+  &:hover:not(:disabled) {
+    color: var(--app-text);
+    background: var(--app-primary-soft);
+  }
+}
+
+.dialog-progress {
+  flex: 0 0 auto;
+  height: 3px;
+}
+
+/* ========== CONTENIDO ========== */
+.dialog-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  max-height: min(68vh, 640px);
+  padding: 18px 20px 20px !important;
+  background: var(--app-card);
+}
+
+/* ========== RESUMEN DE STOCK ========== */
+.current-stock {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-card);
+}
+
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
+
+  mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+    line-height: 19px;
+  }
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  > span {
+    color: var(--app-text-muted);
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  strong {
+    overflow: hidden;
+    margin-top: 2px;
+    color: var(--app-text);
+    font-size: 19px;
+    font-weight: 750;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    margin-top: 1px;
+    color: var(--app-text-muted);
+    font-size: 10px;
+    line-height: 1.4;
+  }
+}
+
+/* ========== SECCIONES ========== */
+.form-section {
+  min-width: 0;
+}
+
+.section-heading {
+  margin-bottom: 14px;
+
+  p {
+    margin: 5px 0 0;
+    color: var(--app-text-muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  mat-icon {
+    width: 17px;
+    height: 17px;
+    color: var(--app-primary);
+    font-size: 17px;
+    line-height: 17px;
+  }
+
+  h3 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.prices-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+/* ========== CAMPOS ANGULAR MATERIAL ========== */
+.compact-field {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: var(--app-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--app-text-muted);
+  --mdc-outlined-text-field-focus-outline-color: var(--app-primary);
+  --mdc-outlined-text-field-label-text-color: var(--app-text-muted);
+  --mdc-outlined-text-field-focus-label-text-color: var(--app-primary);
+  --mdc-outlined-text-field-input-text-color: var(--app-text);
+  --mdc-outlined-text-field-input-text-placeholder-color: var(--app-text-muted);
+}
+
+:host ::ng-deep .compact-field .mat-mdc-text-field-wrapper {
+  height: 48px;
+}
+
+:host ::ng-deep .compact-field .mat-mdc-form-field-flex {
+  height: 48px;
+  align-items: center;
+}
+
+:host ::ng-deep .compact-field .mat-mdc-form-field-infix {
+  min-height: 48px;
+  padding-top: 14px !important;
+  padding-bottom: 7px !important;
+}
+
+:host ::ng-deep .compact-field input.mat-mdc-input-element {
+  min-width: 0;
+  font-size: 12px;
+  color: var(--app-text);
+  caret-color: var(--app-primary);
+}
+
+:host ::ng-deep .compact-field .mat-mdc-form-field-text-prefix {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  height: 48px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+:host ::ng-deep .compact-field .mdc-floating-label {
+  font-size: 12px;
+}
+
+:host ::ng-deep .compact-field .mat-mdc-form-field-error {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+:host ::ng-deep .readonly-field .mat-mdc-text-field-wrapper {
+  background: var(--app-primary-soft);
+}
+
+:host ::ng-deep .readonly-field input.mat-mdc-input-element {
+  font-weight: 650;
+  cursor: default;
+}
+
+/* ========== COSTO DE REFERENCIA ========== */
+.reference-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+  margin: 17px 0 23px;
+  padding: 14px 16px;
+  border: 1px solid var(--app-border);
+  border-left: 3px solid var(--app-primary);
+  border-radius: 10px;
+  background: var(--app-primary-soft);
+
+  > strong {
+    flex-shrink: 0;
+    color: var(--app-primary);
+    font-size: 20px;
+    font-weight: 750;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+}
+
+.reference-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.reference-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: var(--app-primary);
+  background: var(--app-card);
+
+  mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+    line-height: 19px;
+  }
+}
+
+.reference-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+
+  span {
+    color: var(--app-text);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  small {
+    color: var(--app-text-muted);
+    font-size: 10px;
+    line-height: 1.35;
+  }
+}
+
+/* ========== ACCIONES ========== */
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  min-height: 63px;
+  margin: 0;
+  padding: 12px 20px !important;
+  background: var(--app-card);
+  border-top: 1px solid var(--app-border);
+}
+
+.cancel-btn,
+.save-btn {
+  height: 37px;
+  border-radius: 8px !important;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.cancel-btn {
+  min-width: 104px;
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+.save-btn {
+  min-width: 152px;
+
+  --mdc-filled-button-container-color: var(--app-primary);
+  --mdc-filled-button-label-text-color: #fff;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 670px) {
+  .dialog-header {
+    padding: 12px 15px;
+  }
+
+  .dialog-content {
+    padding: 15px !important;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid .readonly-field {
+    grid-column: 1 / -1;
+  }
+
+  .dialog-actions {
+    padding: 11px 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-icon {
+    flex-basis: 35px;
+    width: 35px;
+    height: 35px;
+  }
+
+  .current-stock {
+    gap: 8px;
+  }
+
+  .summary-item {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .summary-icon {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      line-height: 16px;
+    }
+  }
+
+  .summary-info strong {
+    font-size: 15px;
+  }
+
+  .form-grid,
+  .prices-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .form-grid .readonly-field {
+    grid-column: auto;
+  }
+
+  .reference-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .reference-card > strong {
+    padding-left: 44px;
+  }
+
+  .dialog-actions {
+    gap: 8px;
+  }
+
+  .cancel-btn,
+  .save-btn {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}

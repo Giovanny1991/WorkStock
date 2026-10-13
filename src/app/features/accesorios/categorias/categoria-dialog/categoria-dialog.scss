@@ -1,0 +1,290 @@
+
+/* =====================================================
+   WORKSTOCK - FORMULARIO CATEGORÍAS
+===================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--app-text);
+}
+
+:host * {
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   ENCABEZADO
+===================================================== */
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 12px 16px;
+
+  background: var(--app-card);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.header-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 7px;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+.header-text {
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 10px;
+    line-height: 1.4;
+    color: var(--app-text-muted);
+  }
+}
+
+.close-button {
+  flex-shrink: 0;
+  color: var(--app-text-muted);
+
+  &:hover:not(:disabled) {
+    background: var(--app-hover);
+    color: var(--app-text);
+  }
+}
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+.dialog-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 18px 16px !important;
+  background: var(--app-card);
+}
+
+.dialog-content form {
+  width: 100%;
+  margin: 0;
+}
+
+/* =====================================================
+   CAMPO
+===================================================== */
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--app-text);
+}
+
+.compact-field {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+
+  --mdc-outlined-text-field-container-shape: 7px;
+
+  --mdc-outlined-text-field-outline-color:
+    var(--app-border);
+
+  --mdc-outlined-text-field-hover-outline-color:
+    var(--app-text-muted);
+
+  --mdc-outlined-text-field-focus-outline-color:
+    var(--app-primary);
+
+  --mdc-outlined-text-field-input-text-color:
+    var(--app-text);
+
+  --mdc-outlined-text-field-input-text-placeholder-color:
+    var(--app-text-muted);
+}
+
+/* ALTURA FIJA */
+
+:host ::ng-deep
+.compact-field .mat-mdc-text-field-wrapper {
+  height: 38px;
+}
+
+:host ::ng-deep
+.compact-field .mat-mdc-form-field-flex {
+  height: 38px;
+  align-items: center;
+}
+
+:host ::ng-deep
+.compact-field .mat-mdc-form-field-infix {
+  display: flex;
+  align-items: center;
+
+  height: 38px;
+  min-height: 38px;
+
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* TEXTO */
+
+:host ::ng-deep
+.compact-field input.mat-mdc-input-element {
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+
+  font-size: 12px;
+  line-height: normal;
+
+  color: var(--app-text);
+  caret-color: var(--app-primary);
+}
+
+:host ::ng-deep
+.compact-field input::placeholder {
+  color: var(--app-text-muted);
+  opacity: .8;
+}
+
+/* ERRORES */
+
+:host ::ng-deep
+.compact-field .mat-mdc-form-field-error {
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* =====================================================
+   PIE DEL CAMPO
+===================================================== */
+
+.field-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--app-text-muted);
+}
+
+.counter {
+  flex-shrink: 0;
+
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  white-space: nowrap;
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+
+  margin: 0;
+  padding: 10px 16px !important;
+
+  border-top: 1px solid var(--app-border);
+  background: var(--app-card);
+}
+
+.cancel-btn,
+.save-btn {
+  height: 34px;
+  border-radius: 6px !important;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cancel-btn {
+  color: var(--app-text);
+}
+
+.save-btn {
+  min-width: 110px;
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 480px) {
+
+  .dialog-header {
+    padding: 10px 12px;
+  }
+
+  .dialog-content {
+    padding: 14px 12px !important;
+  }
+
+  .dialog-actions {
+    padding: 10px 12px !important;
+  }
+
+  .cancel-btn,
+  .save-btn {
+    flex: 1;
+    min-width: 0;
+  }
+}

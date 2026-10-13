@@ -1,0 +1,88 @@
+/* WorkStock | tokens compartidos para las pantallas de la aplicación.
+   Importar en src/styles.scss: @use './app/workstock-theme';
+   No altera lógica ni rutas. */
+
+:root, :root[data-workstock-theme='light'] {
+  color-scheme: light;
+  --app-bg: #f5f7fb;
+  --app-card: #ffffff;
+  --app-card-secondary: #f8fafc;
+  --app-text: #1f2937;
+  --app-text-muted: #667085;
+  --app-border: #e5e7eb;
+  --app-border-soft: #f0f2f5;
+  --app-hover: #f1f5f9;
+  --app-primary: #2563eb;
+  --app-primary-soft: #eff6ff;
+  --app-success: #166534;
+  --app-success-bg: #dcfce7;
+  --app-danger: #b42318;
+  --app-danger-bg: #fee2e2;
+  --app-warning: #b54708;
+  --app-warning-bg: #fffaeb;
+  --app-input-bg: #ffffff;
+}
+:root[data-workstock-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #0f172a;
+  --app-card: #1e293b;
+  --app-card-secondary: #263449;
+  --app-text: #f1f5f9;
+  --app-text-muted: #94a3b8;
+  --app-border: #334155;
+  --app-border-soft: #304054;
+  --app-hover: #293a51;
+  --app-primary: #93c5fd;
+  --app-primary-soft: #223d60;
+  --app-success: #86efac;
+  --app-success-bg: #153e32;
+  --app-danger: #fca5a5;
+  --app-danger-bg: #51272d;
+  --app-warning: #fcd34d;
+  --app-warning-bg: #49371c;
+  --app-input-bg: #263449;
+}
+
+/* Tokens Angular Material MDC, integrados con el selector actual. */
+:root[data-workstock-theme='dark'] {
+  --mat-table-background-color: var(--app-card);
+  --mat-table-header-headline-color: var(--app-text-muted);
+  --mat-table-row-item-label-text-color: var(--app-text);
+  --mat-table-row-item-outline-color: var(--app-border-soft);
+  --mat-paginator-container-background-color: var(--app-card);
+  --mat-paginator-container-text-color: var(--app-text-muted);
+  --mdc-dialog-container-color: var(--app-card);
+  --mat-dialog-subhead-color: var(--app-text);
+  --mat-dialog-supporting-text-color: var(--app-text-muted);
+  --mat-menu-container-color: var(--app-card);
+  --mat-menu-item-label-text-color: var(--app-text);
+  --mdc-outlined-text-field-input-text-color: var(--app-text);
+  --mdc-outlined-text-field-label-text-color: var(--app-text-muted);
+  --mdc-outlined-text-field-outline-color: var(--app-border);
+  --mat-select-enabled-trigger-text-color: var(--app-text);
+}
+
+:root[data-workstock-theme='dark'] .mat-mdc-table,
+:root[data-workstock-theme='dark'] .mat-mdc-paginator,
+:root[data-workstock-theme='dark'] .mat-mdc-dialog-surface,
+:root[data-workstock-theme='dark'] .mat-mdc-menu-panel {
+  background-color: var(--app-card);
+  color: var(--app-text);
+}
+:root[data-workstock-theme='dark'] .mat-mdc-input-element {
+  color: var(--app-text);
+  caret-color: var(--app-primary);
+}
+:root[data-workstock-theme='dark'] .mat-mdc-input-element::placeholder {
+  color: var(--app-text-muted);
+}
+:root[data-workstock-theme='dark'] .mat-mdc-header-row {
+  background: var(--app-card-secondary);
+}
+:root[data-workstock-theme='dark'] .mat-mdc-row:hover {
+  background: var(--app-hover);
+}
+/* Los tickets están exceptuados de la recolorización: papel blanco. */
+@media print {
+  :root, :root[data-workstock-theme='dark'] { color-scheme: light; }
+}

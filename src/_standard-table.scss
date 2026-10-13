@@ -1,0 +1,326 @@
+@mixin standard-table {
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+     color: var(--app-text);
+    }
+
+    p {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: #667085;
+    }
+  }
+
+
+  .card {
+    position: relative;
+    overflow: hidden;
+
+   background: var(--app-card);
+  border: 1px solid var(--app-border);
+    border-radius: 8px;
+
+    box-shadow:
+      0 1px 3px rgba(16, 24, 40, .05);
+  }
+
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    border-bottom:
+      1px solid #eaecf0;
+  }
+
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+  }
+
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+  }
+
+
+  .search-field {
+    width: 300px;
+
+    font-size: 13px;
+  }
+
+
+  .records {
+    font-size: 12px;
+
+    color: #667085;
+
+    white-space: nowrap;
+  }
+
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+
+  table {
+    width: 100%;
+
+    min-width: 1100px;
+
+    background: #fff;
+  }
+
+
+  .mat-mdc-header-row {
+    height: 42px;
+
+    background: #f8fafc;
+  }
+
+
+  .mat-mdc-row {
+    height: 46px;
+
+    transition:
+      background .15s ease;
+  }
+
+
+  .mat-mdc-row:hover {
+    background: #f8fafc;
+  }
+
+
+  .mat-mdc-header-cell {
+    border-bottom:
+      1px solid #e5e7eb;
+
+    color: #475467;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .02em;
+  }
+
+
+  .mat-mdc-cell {
+    border-bottom:
+      1px solid #f0f2f5;
+
+    color: #344054;
+
+    font-size: 13px;
+  }
+
+
+  .invoice-number,
+  .record-number {
+    font-weight: 700;
+
+    color: #2563eb;
+  }
+
+
+  .client-name {
+    font-weight: 600;
+
+    color: #1f2937;
+  }
+
+
+  td small,
+  .secondary-text {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #667085;
+
+    font-size: 11px;
+  }
+
+
+  .total-value {
+    font-weight: 700;
+
+    color: #166534;
+  }
+
+
+  .status {
+    display: inline-flex;
+
+    padding: 3px 9px;
+
+    border-radius: 20px;
+
+    background: #f2f4f7;
+
+    color: #475467;
+
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+
+  .status.active {
+    background: #dcfce7;
+
+    color: #166534;
+  }
+
+
+  .status.pending {
+    background: #fef3c7;
+
+    color: #92400e;
+  }
+
+
+  .status.cancelled {
+    background: #fee2e2;
+
+    color: #991b1b;
+  }
+
+
+  .col-actions {
+    width: 120px;
+
+    text-align: center;
+  }
+
+
+  .action {
+    width: 32px;
+    height: 32px;
+
+    margin: 0 1px;
+
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+
+      font-size: 18px;
+    }
+  }
+
+
+  .action.view {
+    color: #2563eb;
+  }
+
+
+  .action.edit {
+    color: #475467;
+  }
+
+
+  .action.delete {
+    color: #dc2626;
+  }
+
+
+  .no-data {
+    height: 120px;
+
+    text-align: center;
+
+    color: #98a2b3;
+
+
+    mat-icon {
+      display: block;
+
+      margin: 0 auto 5px;
+    }
+  }
+
+
+  mat-paginator {
+    border-top:
+      1px solid #eaecf0;
+  }
+
+
+  ::ng-deep .search-field {
+
+    .mat-mdc-text-field-wrapper {
+      height: 40px;
+    }
+
+
+    .mat-mdc-form-field-infix {
+      min-height: 40px;
+
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+
+  }
+
+
+  @media (
+    max-width: 700px
+  ) {
+
+    .page-header {
+      align-items: stretch;
+
+      flex-direction: column;
+    }
+
+
+    .toolbar {
+      align-items: stretch;
+
+      flex-direction: column;
+    }
+
+
+    .toolbar-left,
+    .toolbar-right {
+      width: 100%;
+    }
+
+
+    .search-field {
+      width: 100%;
+    }
+
+
+    .records {
+      display: none;
+    }
+
+  }
+
+}

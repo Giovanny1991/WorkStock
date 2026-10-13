@@ -1,0 +1,156 @@
+<div class="page-header">
+  <div>
+    <h1>Historial de órdenes</h1>
+    <p>Consulta de órdenes de trabajo registradas</p>
+  </div>
+
+  <button mat-stroked-button type="button" [disabled]="cargando()" (click)="refrescar()">
+    <mat-icon>refresh</mat-icon>
+    Actualizar
+  </button>
+</div>
+
+<!-- Se conserva el diseño actual sin tarjetas de resumen visibles. -->
+<div class="summary-grid"></div>
+
+<div class="card">
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <div class="toolbar">
+    <div class="filters">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+        <mat-label>Buscar</mat-label>
+        <input matInput placeholder="Orden, cliente, identificación..." autocomplete="off"
+          [formControl]="buscarControl">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- <mat-form-field appearance="outline" class="status-field" subscriptSizing="dynamic">
+        <mat-label>Estado</mat-label>
+        <mat-select [formControl]="estadoControl">
+          <mat-option value="TODOS">Todos</mat-option>
+          <mat-option value="INGRESADO">Ingresado</mat-option>
+          <mat-option value="FINALIZADO">Finalizado</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button type="button" class="clear-button" (click)="limpiarFiltros()">
+        <mat-icon>filter_alt_off</mat-icon>
+        Limpiar
+      </button> -->
+    </div>
+
+    <span class="records">{{ ordenesFiltradas().length }} registros</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="ordenesPaginadas()"
+      matSort
+      [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()"
+      (matSortChange)="cambiarOrden($event)">
+
+      <ng-container matColumnDef="numeroOrden">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="numeroOrden">Orden</th>
+        <td mat-cell *matCellDef="let x">
+          <span class="invoice-number">#{{ x.numeroOrden }}</span>
+          <small>{{ x.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</small>
+        </td>
+      </ng-container>
+
+      <!-- Columna opcional: habilitar 'fecha' en displayedColumns si se desea mostrar. -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="fecha">Fecha</th>
+        <td mat-cell *matCellDef="let x">
+          {{ x.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">Cliente</th>
+        <td mat-cell *matCellDef="let x">
+          <div class="client-name">{{ x.nombreCliente }}</div>
+          <small>{{ x.identificacion }}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="equipo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="equipo">Equipo</th>
+        <td mat-cell *matCellDef="let x">
+          <div class="client-name">{{ x.modeloDispositivo }}</div>
+          <small>IMEI: {{ x.imei }}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="valor">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="valor">Valor</th>
+        <td mat-cell *matCellDef="let x">
+          @if (valorOrden(x) === null) {
+            <span class="status pending">POR CONFIRMAR</span>
+          } @else {
+            <span class="total-value">
+              {{ valorOrden(x) | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="saldo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="saldo">Saldo</th>
+        <td mat-cell *matCellDef="let x">
+          @if (saldoOrden(x) === null) {
+            <span class="status pending">POR CONFIRMAR</span>
+          } @else {
+            <span
+              [class.balance-pending]="(saldoOrden(x) ?? 0) > 0"
+              [class.balance-paid]="(saldoOrden(x) ?? 0) === 0">
+              {{ saldoOrden(x) | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Columna opcional: habilitar 'estado' en displayedColumns si se desea mostrar. -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado">Estado</th>
+        <td mat-cell *matCellDef="let x">
+          <span class="status"
+            [class.active]="x.estado === 'FINALIZADO'"
+            [class.pending]="x.estado === 'INGRESADO'">
+            {{ x.estado }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="col-actions">Acciones</th>
+        <td mat-cell *matCellDef="let x" class="col-actions">
+          <button mat-icon-button type="button" class="action view"
+            matTooltip="Visualizar orden" (click)="visualizar(x)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+          <mat-icon>receipt_long</mat-icon>
+          No existen órdenes para mostrar
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    [length]="ordenesFiltradas().length"
+    [pageIndex]="paginaActual()"
+    [pageSize]="tamanioPagina()"
+    [pageSizeOptions]="opcionesPagina"
+    showFirstLastButtons
+    (page)="cambiarPagina($event)" />
+</div>

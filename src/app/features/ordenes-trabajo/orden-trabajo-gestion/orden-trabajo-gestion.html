@@ -1,0 +1,886 @@
+<div class="dialog-header">
+
+  <div>
+
+    <h2>
+
+      Gestionar orden de trabajo
+
+    </h2>
+
+    @if (orden(); as o) {
+
+    <p>
+
+      Orden #{{ o.numeroOrden }}
+
+    </p>
+
+    }
+
+  </div>
+
+  <button mat-icon-button type="button" matTooltip="Cerrar" [disabled]="guardando()" (click)="cerrar()">
+
+    <mat-icon>
+
+      close
+
+    </mat-icon>
+
+  </button>
+
+</div>
+
+@if (cargando()) {
+
+<mat-progress-bar mode="indeterminate" />
+
+}
+
+<mat-dialog-content>
+
+  @if (orden(); as o) {
+
+  <!-- ==================================================
+
+         INFORMACIÓN GENERAL
+
+    ================================================== -->
+
+  <section class="section-card">
+
+    <div class="section-header">
+
+      <div class="section-icon">
+
+        <mat-icon>
+
+          assignment
+
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <h3>
+
+          Información de la orden
+
+        </h3>
+
+        <p>
+
+          Datos registrados al momento de recibir el equipo.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="info-grid">
+
+      <div class="info-item">
+
+        <span>
+
+          N.º Orden
+
+        </span>
+
+        <strong>
+
+          {{ o.numeroOrden }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Fecha de ingreso
+
+        </span>
+
+        <strong>
+
+          {{
+
+          o.fechaIngreso
+
+          | date:'dd/MM/yyyy HH:mm'
+
+          }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Cliente
+
+        </span>
+
+        <strong>
+
+          {{ o.nombreCliente }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Identificación
+
+        </span>
+
+        <strong>
+
+          {{ o.identificacion }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Teléfono
+
+        </span>
+
+        <strong>
+
+          {{ o.telefono || '-' }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Vendedor / Caja
+
+        </span>
+
+        <strong>
+
+          {{ o.vendedor || '-' }}
+
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ==================================================
+
+         EQUIPO
+
+    ================================================== -->
+
+  <section class="section-card">
+
+    <div class="section-header">
+
+      <div class="section-icon">
+
+        <mat-icon>
+
+          smartphone
+
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <h3>
+
+          Equipo recibido
+
+        </h3>
+
+        <p>
+
+          Información original de recepción.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="info-grid">
+
+      <div class="info-item">
+
+        <span>
+
+          Modelo
+
+        </span>
+
+        <strong>
+
+          {{ o.modeloDispositivo }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          IMEI
+
+        </span>
+
+        <strong class="mono">
+
+          {{ o.imei }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Estado de recepción
+
+        </span>
+
+        <strong>
+
+          {{ estadoRecepcion() }}
+
+        </strong>
+
+      </div>
+
+      <div class="info-item">
+
+        <span>
+
+          Elementos recibidos
+
+        </span>
+
+        <strong>
+
+          {{ accesoriosRecepcion() }}
+
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div class="damage-box">
+
+      <span>
+
+        Daño reportado
+
+      </span>
+
+      <strong>
+
+        {{ o.danoDispositivo }}
+
+      </strong>
+
+    </div>
+
+  </section>
+
+  <!-- ==================================================
+
+         VALORES
+
+    ================================================== -->
+
+  <section class="section-card">
+
+    <div class="section-header">
+
+      <div class="section-icon">
+
+        <mat-icon>
+
+          payments
+
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <h3>
+
+          Valores del servicio
+
+        </h3>
+
+        <p>
+
+          Actualiza el valor, abono y saldo de la reparación.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="pending-check">
+
+      <mat-checkbox [formControl]="totalPendiente">
+
+        Valor del servicio por confirmar
+
+      </mat-checkbox>
+
+    </div>
+
+    <div class="form-grid money-grid">
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+
+        <mat-label>
+
+          Valor del servicio
+
+        </mat-label>
+
+        <span matTextPrefix>
+
+          $&nbsp;
+
+        </span>
+
+        <input matInput type="number" min="0" step="0.01" [formControl]="total" [readonly]="totalPendiente.value">
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+
+        <mat-label>
+
+          Abono
+
+        </mat-label>
+
+        <span matTextPrefix>
+
+          $&nbsp;
+
+        </span>
+
+        <input matInput type="number" min="0" step="0.01" [formControl]="abono" [readonly]="totalPendiente.value">
+
+      </mat-form-field>
+
+      <div class="saldo-card">
+
+        <span>
+
+          Saldo pendiente
+
+        </span>
+
+        @if (totalPendiente.value) {
+
+        <strong class="pending-value">
+
+          POR CONFIRMAR
+
+        </strong>
+
+        } @else {
+
+        <strong [class.saldo-pendiente]="saldo() > 0" [class.saldo-pagado]="saldo() === 0">
+
+          {{
+
+          saldo()
+
+          | currency:'USD':'symbol':'1.2-2'
+
+          }}
+
+        </strong>
+
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ==================================================
+
+         ACCESORIOS UTILIZADOS
+
+    ================================================== -->
+
+  <section class="section-card">
+
+    <div class="section-header">
+
+      <div class="section-icon">
+
+        <mat-icon>
+
+          construction
+
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <h3>
+
+          Accesorios utilizados
+
+        </h3>
+
+        <p>
+
+          Registra repuestos o accesorios consumidos durante la reparación.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="accessory-form">
+
+      <!-- BUSCADOR DE ACCESORIOS -->
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="accessory-select ws-search">
+
+        <input matInput type="text" placeholder="Buscar accesorio..." aria-label="Buscar accesorio" autocomplete="off"
+          [formControl]="busquedaAccesorio" [matAutocomplete]="autoAccesorios">
+
+        <mat-icon matSuffix>search</mat-icon>
+
+        <mat-autocomplete #autoAccesorios="matAutocomplete" [displayWith]="mostrarAccesorio"
+          (optionSelected)="seleccionarAccesorio($event.option.value)">
+
+          @for (
+
+          accesorio of accesoriosFiltrados();
+
+          track accesorio.id
+
+          ) {
+
+          <mat-option [value]="accesorio.id" [disabled]="accesorio.cantidadStock <= 0">
+
+            {{ accesorio.accesorio }}  Stock: {{ accesorio.cantidadStock }}
+
+          </mat-option>
+
+          }
+
+        </mat-autocomplete>
+
+      </mat-form-field>
+
+      <!-- CANTIDAD -->
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="quantity-field">
+
+        <mat-label>Cantidad</mat-label>
+
+        <input matInput type="number" min="1" step="1" [formControl]="cantidadAccesorio">
+
+      </mat-form-field>
+
+      <!-- AGREGAR -->
+
+      <button mat-flat-button type="button" class="add-button"
+        [disabled]="procesandoAccesorio() || !puedeAgregarAccesorio()" (click)="agregarAccesorio()">
+
+        <mat-icon>add</mat-icon>
+
+        Agregar
+
+      </button>
+
+    </div>
+
+    @if (
+
+    accesorioSeleccionado();
+
+    as accesorio
+
+    ) {
+
+    <div class="stock-info">
+
+      Disponible:
+
+      <strong>
+
+        {{ accesorio.cantidadStock }}
+
+      </strong>
+
+    </div>
+
+    }
+
+    @if (
+
+    accesoriosUsados().length > 0
+
+    ) {
+
+    <div class="accessories-table-wrapper">
+
+      <table mat-table [dataSource]="accesoriosUsados()" class="accessories-table">
+
+        <ng-container matColumnDef="accesorio">
+
+          <th mat-header-cell *matHeaderCellDef>
+
+            ACCESORIO
+
+          </th>
+
+          <td mat-cell *matCellDef="let accesorio">
+
+            {{ accesorio.accesorio }}
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="cantidad">
+
+          <th mat-header-cell *matHeaderCellDef>
+
+            CANTIDAD
+
+          </th>
+
+          <td mat-cell *matCellDef="let accesorio">
+
+            <strong>
+
+              {{ accesorio.cantidad }}
+
+            </strong>
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+
+          <th mat-header-cell *matHeaderCellDef class="actions-column">
+
+            ACCIÓN
+
+          </th>
+
+          <td mat-cell *matCellDef="let accesorio" class="actions-column">
+
+            <button mat-icon-button type="button" matTooltip="Eliminar accesorio" [disabled]="procesandoAccesorio()"
+              (click)="eliminarAccesorio(accesorio)">
+
+              <mat-icon>
+
+                delete
+
+              </mat-icon>
+
+            </button>
+
+          </td>
+
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="
+
+                displayedColumnsAccesorios
+
+              "></tr>
+
+        <tr mat-row *matRowDef="
+
+                let row;
+
+                columns:
+
+                  displayedColumnsAccesorios
+
+              "></tr>
+
+      </table>
+
+    </div>
+
+    } @else {
+
+    <div class="empty-accessories">
+
+      <mat-icon>
+
+        inventory_2
+
+      </mat-icon>
+
+      <span>
+
+        No se han registrado accesorios utilizados en esta orden.
+
+      </span>
+
+    </div>
+
+    }
+
+  </section>
+
+  <!-- ==================================================
+
+         GESTIÓN
+
+    ================================================== -->
+
+  <section class="section-card">
+
+    <div class="section-header">
+
+      <div class="section-icon">
+
+        <mat-icon>
+
+          build
+
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <h3>
+
+          Gestión técnica
+
+        </h3>
+
+        <p>
+
+          Registra el trabajo realizado y actualiza el estado de la orden.
+
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="gestion-grid">
+
+      <!-- OBSERVACIONES -->
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="observaciones-field">
+
+        <mat-label>
+
+          Observaciones realizadas
+
+        </mat-label>
+
+        <textarea matInput rows="3" maxlength="1000" [formControl]="observaciones"
+          placeholder="Detalle del diagnóstico, reparación o trabajo realizado"></textarea>
+
+      </mat-form-field>
+
+      <!-- ESTADO -->
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="estado-field">
+
+        <mat-label>
+
+          Estado
+
+        </mat-label>
+
+        <mat-select [formControl]="estado">
+
+          <mat-option value="INGRESADO">
+
+            INGRESADO
+
+          </mat-option>
+
+          <mat-option value="FINALIZADO">
+
+            FINALIZADO
+
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+    </div>
+
+    @if (
+
+    estado.value === 'FINALIZADO' &&
+
+    saldo() > 0
+
+    ) {
+
+    <div class="warning-box">
+
+      <mat-icon>
+
+        warning
+
+      </mat-icon>
+
+      <span>
+
+        La orden no podrá finalizarse mientras exista un saldo pendiente.
+
+      </span>
+
+    </div>
+
+    }
+
+  </section>
+
+  }
+
+  <app-orden-trabajo-imagenes [idOrden]="data.idOrden" />
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <!-- CANCELAR -->
+
+  <button mat-stroked-button type="button" [disabled]="guardando()" (click)="cerrar()">
+
+    <mat-icon>
+
+      close
+
+    </mat-icon>
+
+    <span>
+
+      Cancelar
+
+    </span>
+
+  </button>
+
+  <!-- GUARDANDO -->
+
+  @if (guardando()) {
+
+  <button mat-flat-button type="button" disabled>
+
+    <mat-icon>
+
+      hourglass_top
+
+    </mat-icon>
+
+    <span>
+
+      Guardando...
+
+    </span>
+
+  </button>
+
+  } @else if (
+
+  estado.value === 'FINALIZADO'
+
+  ) {
+
+  <!-- FINALIZAR -->
+
+  <button mat-flat-button type="button" [disabled]="
+
+        cargando() ||
+
+        procesandoAccesorio()
+
+      " (click)="guardar()">
+
+    <mat-icon>
+
+      task_alt
+
+    </mat-icon>
+
+    <span>
+
+      Finalizar orden
+
+    </span>
+
+  </button>
+
+  } @else {
+
+  <!-- ACTUALIZAR -->
+
+  <button mat-flat-button type="button" [disabled]="
+
+        cargando() ||
+
+        procesandoAccesorio()
+
+      " (click)="guardar()">
+
+    <mat-icon>
+
+      save
+
+    </mat-icon>
+
+    <span>
+
+      Actualizar
+
+    </span>
+
+  </button>
+
+  }
+
+</mat-dialog-actions>

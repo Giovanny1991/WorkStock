@@ -1,0 +1,325 @@
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<div class="dialog-header">
+
+  <div class="header-identity">
+
+    <div class="header-icon">
+      <mat-icon>
+        {{ esEdicion ? 'edit_note' : 'add_box' }}
+      </mat-icon>
+    </div>
+
+    <div class="header-text">
+      <h2>
+        {{ esEdicion ? 'Editar modelo' : 'Nuevo modelo' }}
+      </h2>
+
+      <p>
+        {{
+          esEdicion
+            ? 'Actualiza las características del modelo.'
+            : 'Registra un nuevo modelo de dispositivo.'
+        }}
+      </p>
+    </div>
+
+  </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    class="close-button"
+    aria-label="Cerrar formulario"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    <mat-icon>close</mat-icon>
+
+  </button>
+
+</div>
+
+
+<!-- ==========================================
+     CONTENIDO
+========================================== -->
+
+<mat-dialog-content class="dialog-content">
+
+  <form [formGroup]="form" class="model-form">
+
+    <!-- ======================================
+         IDENTIFICACIÓN
+    ====================================== -->
+
+    <section class="form-section">
+
+      <div class="section-heading">
+
+        <mat-icon>smartphone</mat-icon>
+
+        <div>
+          <h3>Información del modelo</h3>
+          <p>Marca y denominación comercial</p>
+        </div>
+
+      </div>
+
+      <div class="form-grid">
+
+        <!-- MARCA -->
+
+        <div class="field-group full">
+
+          <label class="field-label" for="modelo-marca">
+            Marca
+          </label>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="compact-field">
+
+            <input
+              id="modelo-marca"
+              matInput
+              type="text"
+              placeholder="Buscar marca..."
+              aria-label="Buscar marca"
+              autocomplete="off"
+              [formControl]="marcaTexto"
+              [matAutocomplete]="autoMarca">
+
+            <mat-icon matSuffix class="suffix-icon">
+              search
+            </mat-icon>
+
+            <mat-autocomplete
+              #autoMarca="matAutocomplete"
+              (optionSelected)="seleccionarMarca($event.option.value)">
+
+              @for (marca of marcasFiltradas(); track marca.id) {
+
+                <mat-option [value]="marca.nombreMarca">
+                  {{ marca.nombreMarca }}
+                </mat-option>
+
+              } @empty {
+
+                <mat-option disabled>
+                  No se encontraron marcas
+                </mat-option>
+
+              }
+
+            </mat-autocomplete>
+
+            @if (
+              form.controls.idMarca.invalid &&
+              form.controls.idMarca.touched
+            ) {
+              <mat-error>
+                Seleccione una marca válida
+              </mat-error>
+            }
+
+          </mat-form-field>
+
+        </div>
+
+
+        <!-- NOMBRE MODELO -->
+
+        <div class="field-group full">
+
+          <label class="field-label" for="modelo-nombre">
+            Modelo
+          </label>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="compact-field">
+
+            <input
+              id="modelo-nombre"
+              matInput
+              type="text"
+              formControlName="nombreModelo"
+              maxlength="20"
+              placeholder="Ej. Galaxy A15"
+              autocomplete="off">
+
+            @if (form.controls.nombreModelo.hasError('required')) {
+              <mat-error>
+                Ingrese el modelo
+              </mat-error>
+            }
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ======================================
+         ESPECIFICACIONES
+    ====================================== -->
+
+    <section class="form-section">
+
+      <div class="section-heading">
+
+        <mat-icon>memory</mat-icon>
+
+        <div>
+          <h3>Características técnicas</h3>
+          <p>Memoria, almacenamiento y color</p>
+        </div>
+
+      </div>
+
+      <div class="form-grid">
+
+        <!-- RAM -->
+
+        <div class="field-group">
+
+          <label class="field-label" for="modelo-ram">
+            Memoria RAM
+          </label>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="compact-field">
+
+            <input
+              id="modelo-ram"
+              matInput
+              formControlName="ram"
+              maxlength="5"
+              inputmode="numeric"
+              placeholder="Ej. 8">
+
+            <span matTextSuffix class="unit-suffix">
+              GB
+            </span>
+
+          </mat-form-field>
+
+        </div>
+
+
+        <!-- ALMACENAMIENTO -->
+
+        <div class="field-group">
+
+          <label class="field-label" for="modelo-almacenamiento">
+            Almacenamiento
+          </label>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="compact-field">
+
+            <input
+              id="modelo-almacenamiento"
+              matInput
+              formControlName="almacenamiento"
+              maxlength="5"
+              inputmode="numeric"
+              placeholder="Ej. 128">
+
+            <span matTextSuffix class="unit-suffix">
+              GB
+            </span>
+
+          </mat-form-field>
+
+        </div>
+
+
+        <!-- COLOR -->
+
+        <div class="field-group full">
+
+          <label class="field-label" for="modelo-color">
+            Color
+          </label>
+
+          <mat-form-field
+            appearance="outline"
+            subscriptSizing="dynamic"
+            class="compact-field">
+
+            <input
+              id="modelo-color"
+              matInput
+              formControlName="color"
+              maxlength="10"
+              placeholder="Ej. Negro"
+              autocomplete="off">
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </form>
+
+</mat-dialog-content>
+
+
+<!-- ==========================================
+     ACCIONES
+========================================== -->
+
+<mat-dialog-actions class="dialog-actions" align="end">
+
+  <button
+    mat-stroked-button
+    type="button"
+    class="cancel-btn"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    Cancelar
+
+  </button>
+
+  <button
+    mat-flat-button
+    type="button"
+    class="save-btn"
+    [disabled]="form.invalid || guardando()"
+    (click)="guardar()">
+
+    <mat-icon>
+      {{ guardando() ? 'hourglass_top' : 'save' }}
+    </mat-icon>
+
+    <span>
+      {{
+        guardando()
+          ? 'Guardando...'
+          : esEdicion
+            ? 'Actualizar modelo'
+            : 'Guardar modelo'
+      }}
+    </span>
+
+  </button>
+
+</mat-dialog-actions>

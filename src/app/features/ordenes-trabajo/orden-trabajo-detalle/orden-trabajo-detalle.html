@@ -1,0 +1,411 @@
+<div class="dialog-header no-print">
+  <div>
+    <h2>Orden de trabajo</h2>
+
+    @if (orden(); as o) {
+      <p>#{{ o.numeroOrden }}</p>
+    }
+  </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    (click)="cerrar()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+
+@if (cargando()) {
+  <mat-progress-bar
+    mode="indeterminate"
+    class="no-print"
+  />
+}
+
+
+<mat-dialog-content>
+
+  @if (orden(); as o) {
+
+    <div
+      class="ticket"
+      id="ticketOrdenTrabajo"
+    >
+
+      <!-- LOGO -->
+      <div class="centrado logo-container">
+
+        <img
+          src="/images/logoBlancoNegro.png"
+          alt="M&C"
+          class="logo"
+        >
+
+      </div>
+
+
+      <!-- INFORMACIÓN EMPRESA -->
+      <div class="centrado business-info">
+
+        <strong>
+          '' CONTRIBUYENTE RIMPE NEGOCIO POPULAR ''
+        </strong>
+
+        <br><br>
+
+        CARLOS MARCELO GUEVARA TORRES
+        <br>
+
+        RUC: 1719984534001
+        <br>
+
+        DIRECCION: BUSTAMANTE S/N y MEJIA D16
+        <br>
+
+        TELEFONO: 099 566 4394
+        <br>
+
+        QUITO - ECUADOR
+
+        <br><br>
+
+        <strong class="title">
+          LOCAL 71
+        </strong>
+
+        <br>
+
+        VENTA Y REPARACION PROFESIONAL
+
+        <br><br>
+
+        <strong class="title">
+          ORDEN DE TRABAJO
+        </strong>
+
+        <br><br>
+
+      </div>
+
+
+      <!-- DATOS ORDEN / CLIENTE -->
+      <table class="info-table">
+
+        <tr>
+          <td>N° ORDEN:</td>
+
+          <td>
+            <strong>
+              {{ o.numeroOrden }}
+            </strong>
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>FECHA:</td>
+
+          <td>
+            {{
+              o.fechaIngreso
+                | date:'dd/MM/yyyy HH:mm'
+            }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>CAJA:</td>
+
+          <td>
+            {{ o.vendedor || '-' }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td
+            colspan="2"
+            class="client-title"
+          >
+            CLIENTE
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>RUC:</td>
+
+          <td>
+            {{ o.identificacion }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>NOMBRE:</td>
+
+          <td>
+            {{ o.nombreCliente }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>TELEFONO:</td>
+
+          <td>
+            {{ o.telefono || '-' }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>CORREO:</td>
+
+          <td>
+            {{ o.correo || '-' }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>DIRECCION:</td>
+
+          <td>
+            {{ o.direccion || '-' }}
+          </td>
+        </tr>
+
+      </table>
+
+
+      <br>
+
+
+      <!-- RECEPCIÓN -->
+      <div class="centrado">
+
+        <strong class="section-title">
+          DATOS DE RECEPCION DEL DISPOSITIVO
+        </strong>
+
+      </div>
+
+
+      <br>
+
+
+      <table class="device-table">
+
+        <tr>
+          <td>MODELO:</td>
+
+          <td>
+            {{ o.modeloDispositivo }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>IMEI:</td>
+
+          <td>
+            {{ o.imei }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>
+            PRENDIDO/APAGADO:
+          </td>
+
+          <td>
+            {{ estadoRecepcion(o) }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>ACCESORIOS:</td>
+
+          <td>
+            {{ accesoriosRecibidos(o) }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>
+            VALOR DE SERVICIO:
+          </td>
+
+          <td>
+
+            @if (o.totalPendiente) {
+
+              <strong>
+                NO ESTABLECIDO
+              </strong>
+
+            } @else {
+
+              <strong>
+                {{
+                  o.total
+                    | currency:'USD':'symbol':'1.2-2'
+                }}
+              </strong>
+
+            }
+
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>ABONO:</td>
+
+          <td>
+            {{
+              o.abono
+                | currency:'USD':'symbol':'1.2-2'
+            }}
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>
+            SALDO PENDIENTE:
+          </td>
+
+          <td>
+            <strong>
+
+              @if (o.totalPendiente) {
+
+                NO ESTABLECIDO
+
+              } @else {
+
+                {{
+                  o.saldo
+                    | currency:'USD':'symbol':'1.2-2'
+                }}
+
+              }
+
+            </strong>
+          </td>
+        </tr>
+
+
+        <tr class="damage-title-row">
+
+          <td colspan="2">
+            <strong>
+              DAÑO DISPOSITIVO:
+            </strong>
+          </td>
+
+        </tr>
+
+
+        <tr>
+
+          <td
+            colspan="2"
+            class="damage-description"
+          >
+            {{ o.danoDispositivo }}
+          </td>
+
+        </tr>
+
+      </table>
+
+
+      @if (o.observaciones) {
+
+        <div class="observations">
+
+          <strong>
+            OBSERVACIONES:
+          </strong>
+
+          <br>
+
+          {{ o.observaciones }}
+
+        </div>
+
+      }
+
+
+      <!-- NOTA -->
+      <div class="note">
+
+        <strong>
+          NOTA:
+        </strong>
+
+        <span>
+          <strong>NO</strong>
+          nos hacemos responsables de su equipo
+          después de 30 días de haber ingresado
+          a nuestro local.
+        </span>
+
+      </div>
+
+
+      <!-- GRACIAS -->
+      <p class="centrado thanks">
+
+        ¡GRACIAS POR SU PREFERENCIA!
+
+        <br>
+
+        M & C
+
+      </p>
+
+    </div>
+
+  }
+
+  <app-orden-trabajo-imagenes [idOrden]="data.idOrden" [soloLectura]="true" />
+
+</mat-dialog-content>
+
+
+<mat-dialog-actions align="end" class="no-print" >
+
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="cerrar()"
+  >
+    Cerrar
+  </button>
+
+
+  <button
+    mat-flat-button
+    type="button"
+    (click)="imprimir()"
+  >
+
+    <mat-icon>
+      print
+    </mat-icon>
+
+    Imprimir
+
+  </button>
+
+</mat-dialog-actions>

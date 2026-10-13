@@ -1,0 +1,43 @@
+<mat-toolbar class="header">
+  <button mat-icon-button type="button" class="menu-button"
+          (click)="toggleMenu()" aria-label="Abrir o cerrar menú">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="page-heading">
+    <span class="page-eyebrow">{{ authService.esSuperAdmin() ? 'WORKSTOCK · PLATAFORMA' : 'ESPACIO DE TRABAJO' }}</span>
+    <strong>{{ authService.esSuperAdmin() ? 'Administración global' : 'Panel de gestión' }}</strong>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- Selector visible de tema -->
+  <button mat-icon-button type="button" class="theme-toggle"
+          (click)="cambiarTema.emit()"
+          [attr.aria-label]="tema === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'"
+          [attr.title]="tema === 'dark' ? 'Modo claro' : 'Modo oscuro'">
+    <mat-icon>{{ tema === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+
+  @if (authService.usuario(); as usuario) {
+    <button mat-button type="button" [matMenuTriggerFor]="userMenu"
+            class="user-button" aria-label="Opciones de usuario">
+      <!-- Un contenedor flex interno evita que Angular Material apile los elementos -->
+      <span class="profile-content">
+        <span class="avatar" aria-hidden="true"><mat-icon>person_outline</mat-icon></span>
+        <span class="user-info">
+          <span class="name">{{ usuario.nombre }}</span>
+          <span class="role">{{ authService.esSuperAdmin() ? 'SUPERADMINISTRADOR' : usuario.rol }}</span>
+        </span>
+        <mat-icon class="arrow" aria-hidden="true">keyboard_arrow_down</mat-icon>
+      </span>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item (click)="cerrarSesion()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar sesión</span>
+      </button>
+    </mat-menu>
+  }
+</mat-toolbar>

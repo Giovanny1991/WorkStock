@@ -1,0 +1,140 @@
+/* WORKSTOCK - ADMINISTRACIÓN | MISMO ESTILO DEL MÓDULO MODELOS */
+/* ViewEncapsulation.None; estilos acotados por .ws-admin-page y .ws-admin-dialog */
+.ws-admin-page {
+  display: block; min-width: 0; color: var(--app-text); padding-bottom: 18px;
+
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px;
+    h1 { margin: 0; font-size: 22px; font-weight: 700; color: var(--app-text); }
+    p { margin: 3px 0 0; font-size: 12px; color: var(--app-text-muted); }
+    > button { height: 36px; font-size: 12px; border-radius: 7px; }
+  }
+  .loading-bar { margin-bottom: 10px; }
+
+  .summary-strip {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 12px;
+    > span { display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 4px 10px; border-radius: 6px;
+      border: 1px solid var(--app-border); background: var(--app-card); color: var(--app-text-muted); font-size: 11px; }
+    strong { font-size: 13px; color: var(--app-text); font-variant-numeric: tabular-nums; }
+    mat-icon { width: 15px; height: 15px; font-size: 15px; color: var(--app-primary); }
+  }
+
+  .tabs {
+    display: flex; gap: 4px; border-bottom: 1px solid var(--app-border); margin-bottom: 12px;
+    button { display: flex; align-items: center; gap: 6px; border: 0; border-bottom: 2px solid transparent;
+      background: transparent; color: var(--app-text-muted); padding: 9px 13px; font: inherit;
+      font-size: 12px; font-weight: 600; cursor: pointer; }
+    button.active { color: var(--app-primary); border-bottom-color: var(--app-primary); }
+    button:hover { color: var(--app-primary); }
+    mat-icon { width: 17px; height: 17px; font-size: 17px; }
+  }
+
+  .card { position: relative; overflow: hidden; background: var(--app-card); border: 1px solid var(--app-border);
+    border-radius: 8px; box-shadow: 0 1px 3px rgba(16, 24, 40, .05); }
+
+  .card-title { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 14px; border-bottom: 1px solid var(--app-border);
+    h2 { margin: 0; font-size: 14px; font-weight: 700; }
+    p { margin: 3px 0 0; font-size: 11px; color: var(--app-text-muted); }
+    button { flex-shrink: 0; }
+  }
+  .primary-btn { height: 36px; border-radius: 7px !important; font-size: 12px; }
+  .toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+    padding: 10px 14px; border-bottom: 1px solid var(--app-border); }
+  .search-field { width: 300px; max-width: 100%; font-size: 12px; }
+  .company-select { width: 235px; max-width: 100%; }
+  .role-select { width: 155px; max-width: 100%; }
+  .records { font-size: 12px; color: var(--app-text-muted); margin-left: auto; white-space: nowrap; }
+
+  .table-wrapper { overflow-x: auto; width: 100%; }
+  table.compact-table { width: 100%; min-width: 850px; background: var(--app-card); }
+  .mat-mdc-header-row { height: 42px; background: var(--app-card-secondary); }
+  .mat-mdc-row { height: 46px; transition: background .15s ease; }
+  .mat-mdc-row:hover { background: var(--app-card-secondary); }
+  .mat-mdc-header-cell { color: var(--app-text-muted); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; border-bottom: 1px solid var(--app-border); white-space: nowrap; }
+  .mat-mdc-cell { color: var(--app-text); font-size: 12px;
+    border-bottom: 1px solid var(--app-border-soft, var(--app-border)); }
+  .col-id { width: 58px; padding-left: 18px !important; }
+  .name-cell { font-weight: 600; min-width: 160px; }
+  .code-tag { display: inline-block; padding: 3px 7px; border-radius: 5px;
+    background: var(--app-primary-soft, rgba(7,93,176,.1)); color: var(--app-primary);
+    font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .status { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 20px;
+    background: var(--app-warning-bg, var(--app-card-secondary)); color: var(--app-warning, var(--app-text-muted));
+    font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .status.active { background: var(--app-success-bg); color: var(--app-success); }
+  .col-actions { width: 110px; text-align: center; white-space: nowrap; }
+  .action { width: 32px; height: 32px;
+    mat-icon { width: 18px; height: 18px; font-size: 18px; } }
+  .action.edit, .action.users { color: var(--app-primary); }
+  .action:disabled { opacity: .35; }
+  .no-data { height: 100px; text-align: center; color: var(--app-text-muted); font-size: 12px;
+    mat-icon { vertical-align: middle; width: 18px; height: 18px; font-size: 18px; margin-right: 5px; } }
+  mat-paginator { border-top: 1px solid var(--app-border); background: var(--app-card); color: var(--app-text); }
+  .footnote { margin: 0; padding: 9px 14px; border-top: 1px solid var(--app-border);
+    display: flex; gap: 7px; align-items: center; font-size: 10px; color: var(--app-text-muted);
+    mat-icon { width: 15px; height: 15px; font-size: 15px; } }
+}
+
+/* Campos compactos como en Modelos */
+.ws-admin-page .toolbar .mat-mdc-text-field-wrapper { height: 40px; }
+.ws-admin-page .toolbar .mat-mdc-form-field-infix {
+  min-height: 40px; padding-top: 8px !important; padding-bottom: 8px !important;
+}
+
+/* Los diálogos existentes se conservan; solo se compactan visualmente. */
+.ws-admin-overlay .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: var(--app-card);
+  --mdc-dialog-container-shape: 9px;
+}
+.ws-admin-overlay .mat-mdc-dialog-surface {
+  background: var(--app-card) !important; color: var(--app-text) !important;
+  border: 1px solid var(--app-border); border-radius: 9px !important;
+}
+.ws-admin-dialog {
+  display: flex; flex-direction: column; max-height: 94dvh; color: var(--app-text); background: var(--app-card);
+  .dialog-heading { display: flex; align-items: center; gap: 11px; padding: 14px 17px;
+    border-bottom: 1px solid var(--app-border); }
+  .dialog-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px;
+    border-radius: 8px; color: var(--app-primary); background: var(--app-primary-soft, rgba(7,93,176,.1)); }
+  .dialog-heading > div { min-width: 0; flex: 1; }
+  .dialog-heading h2 { margin: 0; font-size: 15px; font-weight: 700; }
+  .dialog-heading p { margin: 4px 0 0; font-size: 11px; color: var(--app-text-muted); }
+  .dialog-heading > button { color: var(--app-text-muted); }
+  .dialog-content { padding: 16px 17px !important; color: var(--app-text); }
+  .dialog-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
+  .form-section-label { margin: 0 0 12px; font-size: 10px; font-weight: 700; letter-spacing: .5px; color: var(--app-text-muted); }
+  .section-gap { margin-top: 8px; }
+  mat-form-field { width: 100%; min-width: 0; }
+  .full-field { grid-column: 1 / -1; }
+  .dialog-actions { margin: 0; padding: 11px 17px; display: flex; gap: 8px;
+    border-top: 1px solid var(--app-border); }
+  .dialog-actions button { border-radius: 7px; font-size: 12px; }
+  .notice-block { display: flex; align-items: flex-start; gap: 9px; padding: 10px 11px;
+    margin-bottom: 14px; border: 1px solid var(--app-border); border-radius: 7px;
+    background: var(--app-primary-soft, rgba(7,93,176,.07)); color: var(--app-primary);
+    font-size: 11px; line-height: 1.5; }
+  .notice-block mat-icon { flex-shrink: 0; width: 17px; height: 17px; font-size: 17px; }
+  .notice-block.subtle { margin: 12px 0 0; color: var(--app-text-muted); background: var(--app-card-secondary); }
+  .notice-block.warning { color: var(--app-warning); background: var(--app-warning-bg); }
+  .password-label { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 7px;
+    grid-column: 1 / -1; margin: 0 0 5px; font-size: 12px; font-weight: 600; }
+  .text-action { display: inline-flex; align-items: center; gap: 4px; padding: 3px; border: 0;
+    background: transparent; color: var(--app-primary); font-size: 11px; font-weight: 700; cursor: pointer; }
+  .text-action mat-icon { width: 15px; height: 15px; font-size: 15px; }
+}
+@media(max-width: 700px) {
+  .ws-admin-page {
+    .page-header { flex-direction: column; align-items: flex-start; }
+    .card-title { flex-direction: column; align-items: flex-start; }
+    .toolbar .search-field, .toolbar .company-select, .toolbar .role-select { width: 100%; }
+    .records { margin-left: 0; }
+  }
+  .ws-admin-dialog {
+    .dialog-fields { grid-template-columns: 1fr; }
+    .dialog-content { padding: 14px !important; }
+    .dialog-heading { padding: 12px 14px; }
+    .dialog-actions { padding: 10px 14px; }
+  }
+}

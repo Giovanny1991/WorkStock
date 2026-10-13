@@ -1,0 +1,147 @@
+:host { display: block; min-width: 0; }
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  min-height: 60px;
+  box-sizing: border-box;
+  padding: 0 18px;
+  gap: 10px;
+  position: relative;
+  z-index: 10;
+  background: var(--ws-surface);
+  color: var(--ws-text);
+  border-bottom: 1px solid var(--ws-border);
+}
+
+.menu-button { flex: 0 0 auto; color: var(--ws-muted); width: 36px; height: 36px; }
+
+.page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.15;
+
+  .page-eyebrow { font-size: 9px; font-weight: 600; letter-spacing: .9px; color: var(--ws-muted); }
+  strong { font-size: 13px; font-weight: 650; white-space: nowrap; }
+}
+
+.spacer { flex: 1 1 auto; min-width: 8px; }
+
+.user-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 40px;
+  min-width: 0;
+  max-width: 218px;
+  padding: 0 8px !important;
+  border-radius: 10px;
+  line-height: normal;
+  text-align: left;
+  &:hover { background: var(--ws-hover); }
+}
+
+// Importante: Material MDC envuelve el contenido del botón en .mdc-button__label.
+// El flex debe estar DENTRO de esa envoltura, no depender del botón externo.
+.profile-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  vertical-align: middle;
+  text-transform: none;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: var(--ws-brand-soft);
+  color: var(--ws-brand);
+
+  mat-icon { display: block; width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 140px;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  line-height: normal;
+
+  .name {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 650;
+    color: var(--ws-text-strong);
+  }
+  .role {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 9px;
+    line-height: 12px;
+    font-weight: 400;
+    color: var(--ws-muted);
+    text-transform: capitalize;
+  }
+}
+
+.arrow { display: block; width: 17px; height: 17px; font-size: 17px; line-height: 17px; color: var(--ws-muted); flex: 0 0 17px; margin: 0; }
+
+@media (max-width: 520px) {
+  .header { padding: 0 10px; }
+  .page-eyebrow { display: none; }
+  .user-info, .arrow { display: none; }
+  .user-button { padding: 0 5px !important; }
+  .profile-content { gap: 0; }
+}
+
+.theme-button {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  color: var(--ws-muted);
+  border-radius: 10px;
+  transition: background-color 160ms ease, color 160ms ease;
+  &:hover { background: var(--ws-hover); color: var(--ws-brand); }
+  mat-icon { font-size: 19px; width: 19px; height: 19px; }
+}
+
+
+/* Botón de apariencia con presencia discreta y evidente */
+.theme-toggle {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  color: var(--ws-brand) !important;
+  background: var(--ws-brand-soft) !important;
+  border-radius: 10px;
+  transition: background-color .18s ease, color .18s ease;
+}
+.theme-toggle:hover { background: var(--ws-active) !important; }
+.theme-toggle mat-icon { font-size: 19px; width: 19px; height: 19px; }

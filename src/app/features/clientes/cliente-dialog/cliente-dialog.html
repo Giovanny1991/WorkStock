@@ -1,0 +1,255 @@
+
+<!-- ==========================================
+     WORKSTOCK - NUEVO / EDITAR CLIENTE
+========================================== -->
+
+<!-- ENCABEZADO -->
+
+<div class="dialog-header">
+
+  <div class="header-identity">
+
+    <span class="header-icon">
+      <mat-icon>
+        {{ esEdicion ? 'edit_note' : 'person_add' }}
+      </mat-icon>
+    </span>
+
+    <div class="header-text">
+
+      <h2>
+        {{ esEdicion ? 'Editar cliente' : 'Nuevo cliente' }}
+      </h2>
+
+      <p>
+        {{
+          esEdicion
+            ? 'Actualiza la información del cliente.'
+            : 'Registra un nuevo cliente en el sistema.'
+        }}
+      </p>
+
+    </div>
+
+  </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    class="close-button"
+    aria-label="Cerrar formulario"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    <mat-icon>close</mat-icon>
+
+  </button>
+
+</div>
+
+
+<!-- CONTENIDO -->
+
+<mat-dialog-content class="dialog-content">
+
+  <form [formGroup]="form" class="form-grid">
+
+    <!-- IDENTIFICACIÓN -->
+
+    <div class="field-group">
+
+      <label class="field-label" for="cliente-identificacion">
+        Identificación
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="cliente-identificacion"
+          matInput
+          type="text"
+          formControlName="identificacion"
+          maxlength="13"
+          placeholder="Cédula o RUC"
+          autocomplete="off">
+
+        @if (
+          form.controls.identificacion.hasError('required') &&
+          form.controls.identificacion.touched
+        ) {
+          <mat-error>
+            Ingrese la identificación
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- TELÉFONO -->
+
+    <div class="field-group">
+
+      <label class="field-label" for="cliente-telefono">
+        Teléfono
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="cliente-telefono"
+          matInput
+          type="tel"
+          formControlName="telefono"
+          maxlength="10"
+          inputmode="numeric"
+          placeholder="Ej. 0991234567"
+          autocomplete="off">
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- NOMBRE COMPLETO -->
+
+    <div class="field-group full">
+
+      <label class="field-label" for="cliente-nombre">
+        Nombre completo
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="cliente-nombre"
+          matInput
+          type="text"
+          formControlName="nombreCliente"
+          maxlength="50"
+          placeholder="Nombre y apellido del cliente"
+          autocomplete="off">
+
+        @if (
+          form.controls.nombreCliente.hasError('required') &&
+          form.controls.nombreCliente.touched
+        ) {
+          <mat-error>
+            Ingrese el nombre del cliente
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- CORREO -->
+
+    <div class="field-group full">
+
+      <label class="field-label" for="cliente-correo">
+        Correo electrónico
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="cliente-correo"
+          matInput
+          type="email"
+          formControlName="correo"
+          maxlength="100"
+          placeholder="Ej. cliente@correo.com"
+          autocomplete="off">
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- DIRECCIÓN -->
+
+    <div class="field-group full">
+
+      <label class="field-label" for="cliente-direccion">
+        Dirección
+      </label>
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field textarea-field"
+        subscriptSizing="dynamic">
+
+        <textarea
+          id="cliente-direccion"
+          matInput
+          formControlName="direccion"
+          maxlength="100"
+          rows="2"
+          placeholder="Ingrese la dirección del cliente">
+        </textarea>
+
+      </mat-form-field>
+
+    </div>
+
+  </form>
+
+</mat-dialog-content>
+
+
+<!-- ACCIONES -->
+
+<mat-dialog-actions
+  class="dialog-actions"
+  align="end">
+
+  <button
+    mat-stroked-button
+    type="button"
+    class="cancel-btn"
+    [disabled]="guardando()"
+    (click)="cancelar()">
+
+    Cancelar
+
+  </button>
+
+  <button
+    mat-flat-button
+    type="button"
+    class="save-btn"
+    [disabled]="form.invalid || guardando()"
+    (click)="guardar()">
+
+    <mat-icon>
+      {{ guardando() ? 'hourglass_top' : 'save' }}
+    </mat-icon>
+
+    <span>
+      {{
+        guardando()
+          ? 'Guardando...'
+          : esEdicion
+            ? 'Actualizar cliente'
+            : 'Guardar cliente'
+      }}
+    </span>
+
+  </button>
+
+</mat-dialog-actions>

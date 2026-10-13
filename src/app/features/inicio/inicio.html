@@ -1,0 +1,31 @@
+<div class="page-header">
+
+  <h1>
+    Inicio
+  </h1>
+
+  <p>
+    Panel principal de WorkStock
+  </p>
+
+</div>
+
+
+@if (authService.usuario(); as usuario) {
+
+  <div class="welcome-card">
+
+    <h2>
+      Bienvenido, {{ usuario.nombre }}
+    </h2>
+
+    <p>
+      Has iniciado sesión como
+      <strong>
+        {{ usuario.rol }}
+      </strong>.
+    </p>
+
+  </div>
+
+}

@@ -1,0 +1,230 @@
+
+<!-- ==========================================
+     ENCABEZADO
+========================================== -->
+
+<div class="page-header">
+
+  <div>
+    <h1>Actualización del IVA</h1>
+    <p>Administración de parámetros tributarios</p>
+  </div>
+
+</div>
+
+
+<!-- ==========================================
+     CONTENIDO PRINCIPAL
+========================================== -->
+
+<div class="card">
+
+  @if (cargando() || guardando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+
+  <!-- BARRA SUPERIOR -->
+
+  <div class="toolbar">
+
+    <div class="toolbar-title">
+
+      <mat-icon>settings</mat-icon>
+
+      <span>Configuración del IVA</span>
+
+    </div>
+
+    <span class="toolbar-info">
+      Parámetro general del sistema
+    </span>
+
+  </div>
+
+
+  <!-- FORMULARIO Y VALOR VIGENTE -->
+
+  <div class="card-body">
+
+    <!-- IVA ACTUAL -->
+
+    <div class="current-iva">
+
+      <div class="section-label">
+        <mat-icon>percent</mat-icon>
+        <span>IVA vigente</span>
+      </div>
+
+      <div class="iva-value">
+
+        @if (cargando()) {
+
+          <span class="loading-text">
+            Consultando...
+          </span>
+
+        } @else if (ivaActual() !== null) {
+
+          {{ ivaActual() | number:'1.2-2' }}%
+
+        } @else {
+
+          --
+
+        }
+
+      </div>
+
+      <p class="current-description">
+        Porcentaje configurado actualmente
+        en el sistema.
+      </p>
+
+    </div>
+
+
+    <!-- SEPARADOR -->
+
+    <div class="vertical-divider"></div>
+
+
+    <!-- MODIFICAR IVA -->
+
+    <div class="edit-iva">
+
+      <div class="section-label">
+        <mat-icon>edit</mat-icon>
+        <span>Modificar porcentaje</span>
+      </div>
+
+
+      <div class="form-area">
+
+        <mat-form-field
+          appearance="outline"
+          class="iva-field"
+          subscriptSizing="dynamic">
+
+          <mat-label>
+            Nuevo porcentaje de IVA
+          </mat-label>
+
+          <input
+            matInput
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            [formControl]="ivaControl"
+            [readonly]="cargando() || guardando()"
+            autocomplete="off">
+
+          <span matTextSuffix>%</span>
+
+
+          @if (ivaControl.hasError('required')) {
+            <mat-error>
+              Ingrese el porcentaje de IVA
+            </mat-error>
+          }
+
+          @if (
+            ivaControl.hasError('min') ||
+            ivaControl.hasError('max')
+          ) {
+            <mat-error>
+              El porcentaje debe estar entre 0 y 100
+            </mat-error>
+          }
+
+          @if (ivaControl.hasError('decimalInvalido')) {
+            <mat-error>
+              Se permiten máximo dos decimales
+            </mat-error>
+          }
+
+        </mat-form-field>
+
+
+        <p class="field-help">
+          Ingrese un porcentaje entre 0 y 100,
+          con máximo dos decimales.
+        </p>
+
+
+        @if (hayCambios && ivaControl.valid) {
+
+          <div class="change-notice">
+
+            <mat-icon>info_outline</mat-icon>
+
+            <span>
+              Existen cambios pendientes de guardar.
+            </span>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- INFORMACIÓN -->
+
+  <div class="info-section">
+
+    <mat-icon>info_outline</mat-icon>
+
+    <span>
+      La actualización modifica el porcentaje de IVA
+      vigente. No recalcula automáticamente los valores
+      de comprobantes registrados anteriormente.
+    </span>
+
+  </div>
+
+
+  <!-- ACCIONES -->
+
+  <div class="card-actions">
+
+    <button
+      mat-button
+      type="button"
+      class="cancel-btn"
+      [disabled]="!hayCambios || guardando()"
+      (click)="cancelar()">
+
+      Cancelar
+
+    </button>
+
+
+    <button
+      mat-flat-button
+      type="button"
+      class="primary-btn"
+      [disabled]="
+        cargando() ||
+        guardando() ||
+        ivaControl.invalid ||
+        !hayCambios
+      "
+      (click)="guardar()">
+
+      <mat-icon>
+        {{ guardando() ? 'hourglass_top' : 'save' }}
+      </mat-icon>
+
+      {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+
+    </button>
+
+  </div>
+
+</div>

@@ -1,0 +1,96 @@
+/* Tokens compartidos por header, sidebar y contenido. */
+.layout-container {
+  --ws-canvas: #f5f7fb;
+  --ws-surface: #ffffff;
+  --ws-surface-muted: #f8fafd;
+  --ws-border: #e8edf4;
+  --ws-text: #24364b;
+  --ws-text-strong: #1c2d44;
+  --ws-muted: #8290a2;
+  --ws-icon: #8795a8;
+  --ws-hover: #f0f5fb;
+  --ws-active: #eaf2fd;
+  --ws-active-text: #135d9e;
+  --ws-brand-soft: #eaf3fd;
+  --ws-brand: #1b67a6;
+  --ws-scroll: #d4deeb;
+  color-scheme: light;
+}
+
+.layout-container[data-workstock-theme='dark'] {
+  --ws-canvas: #101827;
+  --ws-surface: #182335;
+  --ws-surface-muted: #202d41;
+  --ws-border: #2b394c;
+  --ws-text: #cfdaea;
+  --ws-text-strong: #ecf2fb;
+  --ws-muted: #96a6ba;
+  --ws-icon: #99acc2;
+  --ws-hover: #27374c;
+  --ws-active: #203e60;
+  --ws-active-text: #a6d1ff;
+  --ws-brand-soft: #203d5c;
+  --ws-brand: #9ac6f6;
+  --ws-scroll: #3e4e62;
+  color-scheme: dark;
+  /* Colores MDC para que los componentes internos hereden correctamente. */
+  --mdc-theme-surface: var(--ws-surface);
+  --mdc-theme-on-surface: var(--ws-text);
+  --mat-expansion-container-background-color: var(--ws-surface);
+  --mat-expansion-container-text-color: var(--ws-text);
+  --mat-expansion-header-text-color: var(--ws-text);
+  --mat-sidenav-container-background-color: var(--ws-canvas);
+  --mat-sidenav-content-background-color: var(--ws-canvas);
+  --mat-sidenav-container-text-color: var(--ws-text);
+}
+
+.layout-container {
+    height: 100dvh;
+    background: var(--ws-canvas);
+}
+
+.sidebar {
+    width: 264px;
+    max-width: calc(100vw - 45px);
+    border-right: 1px solid var(--ws-border);
+    background: var(--ws-surface);
+}
+
+.sidebar.mat-drawer {
+    border-radius: 0 !important;
+}
+
+.main-column {
+    height: 100%;
+    background: var(--ws-canvas);
+}
+
+.content {
+    box-sizing: border-box;
+    min-height: calc(100dvh - 60px);
+    padding: 18px 22px 30px;
+}
+
+@media (max-width: 900px) {
+    .content {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 520px) {
+    .content {
+        padding: 12px;
+    }
+}
+
+/* El contenedor padre transmite todos los tokens CSS al Header y Sidebar. */
+.layout-container[data-workstock-theme='dark'] {
+  --mat-sidenav-container-background-color: var(--ws-canvas);
+  --mat-sidenav-content-background-color: var(--ws-canvas);
+  --mat-expansion-container-background-color: var(--ws-surface-muted);
+  --mat-expansion-header-text-color: var(--ws-text);
+  --mdc-list-list-item-label-text-color: var(--ws-text);
+  --mdc-list-list-item-leading-icon-color: var(--ws-icon);
+}
+.layout-container .main-column,
+.layout-container .sidebar { transition: background-color .2s ease, color .2s ease; }
