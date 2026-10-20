@@ -1,0 +1,34 @@
+<!-- ================================================
+     WORKSTOCK - INDICADOR GLOBAL DE CARGA
+================================================ -->
+
+@if (loadingService.visible()) {
+
+<div class="global-loading-overlay" role="status" aria-live="polite" aria-label="Procesando solicitud">
+
+    <div class="loading-card">
+
+        <!-- SPINNER -->
+
+        <mat-spinner [diameter]="52" [strokeWidth]="5" aria-label="Cargando">
+        </mat-spinner>
+
+        <!-- MENSAJE -->
+
+        <div class="loading-message">
+
+            <strong>
+                Procesando solicitud...
+            </strong>
+
+            <span>
+                Por favor, espera un momento.
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

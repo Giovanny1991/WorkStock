@@ -1,15 +1,15 @@
+
 import {
   inject,
   Injectable
 } from '@angular/core';
 
 import {
-  HttpClient
+  HttpClient,
+  HttpParams
 } from '@angular/common/http';
 
-import {
-  Observable
-} from 'rxjs';
+import { Observable } from 'rxjs';
 
 import {
   AccesorioStock,
@@ -24,74 +24,189 @@ import {
   PrecioReferenciaRequest
 } from './accesorio-stock.model';
 
+// =====================================================
+// FILTROS DEL INVENTARIO
+// =====================================================
+
+export type FiltroInventario =
+  | 'disponible'
+  | 'todos'
+  | 'sin_stock'
+  | 'revisar_precio'
+  | 'disponibles';
+
+// =====================================================
+// ORDENAMIENTO
+// =====================================================
+
+export type AccesorioStockOrden =
+  | 'accesorio'
+  | 'calidad'
+  | 'stock'
+  | 'costo'
+  | 'pvp1'
+  | 'pvp2'
+  | 'actualizado'
+  | 'estado';
+
+export type DireccionOrdenStock =
+  | 'asc'
+  | 'desc';
+
+// =====================================================
+// PARÁMETROS LISTADO PAGINADO
+// =====================================================
+
+export interface AccesoriosStockListadoParametros {
+  page: number;
+  pageSize: number;
+  filtro: FiltroInventario;
+  busqueda: string;
+  sortBy: AccesorioStockOrden;
+  sortDir: DireccionOrdenStock;
+}
+
+// =====================================================
+// PAGINACIÓN
+// =====================================================
+
+export interface AccesoriosStockPaginacion {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+// =====================================================
+// RESUMEN GLOBAL
+// =====================================================
+
+export interface AccesoriosStockResumen {
+  totalAccesorios: number;
+  totalUnidades: number;
+  sinStock: number;
+  preciosAdvertencia: number;
+}
+
+// =====================================================
+// RESPUESTA PAGINADA
+// =====================================================
+
+export interface AccesoriosStockListadoResponse {
+  success: boolean;
+  data: AccesorioStock[];
+  pagination: AccesoriosStockPaginacion;
+  summary: AccesoriosStockResumen;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccesoriosStockService {
 
-  private readonly http =
-    inject(HttpClient);
-
+  private readonly http = inject(HttpClient);
 
   private readonly apiUrl =
     '/api/accesorios-stock';
 
-
-  /*
-    Estas dos rutas corresponden a los módulos
-    de categorías y marcas ya migrados.
-
-    Si actualmente tienen otro endpoint,
-    modifica únicamente estas constantes.
-  */
-
   private readonly categoriasUrl =
     '/api/categorias';
-
 
   private readonly marcasUrl =
     '/api/marcas';
 
+  // ===================================================
+  // LISTAR COMPLETO
+  //
+  // Se conserva por compatibilidad con otros módulos.
+  // ===================================================
 
-  /* =====================================================
-     STOCK
-  ===================================================== */
+  listar(): Observable<ApiResponse<AccesorioStock[]>> {
 
-  listar():
-    Observable<
-      ApiResponse<AccesorioStock[]>
-    > {
-
-    return this.http.get<
-      ApiResponse<AccesorioStock[]>
-    >(
+    return this.http.get<ApiResponse<AccesorioStock[]>>(
       this.apiUrl
     );
 
   }
 
+  // ===================================================
+  // LISTAR PAGINADO
+  //
+  // Mantiene funcionamiento de Inventario.
+  // También admite filtro = disponibles.
+  // ===================================================
+
+  listarPaginado(
+    parametros: AccesoriosStockListadoParametros
+  ): Observable<AccesoriosStockListadoResponse> {
+
+    let params = new HttpParams()
+      .set('page', String(parametros.page))
+      .set('pageSize', String(parametros.pageSize))
+      .set('filtro', parametros.filtro)
+      .set('sortBy', parametros.sortBy)
+      .set('sortDir', parametros.sortDir);
+
+    const busqueda = parametros.busqueda.trim();
+
+    if (busqueda) {
+      params = params.set('busqueda', busqueda);
+    }
+
+    return this.http.get<AccesoriosStockListadoResponse>(
+      this.apiUrl,
+      { params }
+    );
+
+  }
+
+  // ===================================================
+  // NUEVO: BÚSQUEDA REMOTA PARA AUTOCOMPLETE
+  //
+  // Consulta 25 accesorios por solicitud.
+  // El filtrado ocurre en SQL Server.
+  // No descarga todo el inventario.
+  // ===================================================
+
+  buscarParaAutocomplete(
+    texto: string
+  ): Observable<AccesoriosStockListadoResponse> {
+
+    return this.listarPaginado({
+      page: 1,
+      pageSize: 25,
+      filtro: 'disponibles',
+      busqueda: texto
+        .trim()
+        .replace(/\s+/g, ' ')
+        .slice(0, 100),
+      sortBy: 'accesorio',
+      sortDir: 'asc'
+    });
+
+  }
+
+  // ===================================================
+  // OBTENER
+  // ===================================================
 
   obtener(
     id: number
-  ):
-    Observable<
-      ApiResponse<AccesorioStock>
-    > {
+  ): Observable<ApiResponse<AccesorioStock>> {
 
-    return this.http.get<
-      ApiResponse<AccesorioStock>
-    >(
+    return this.http.get<ApiResponse<AccesorioStock>>(
       `${this.apiUrl}/${id}`
     );
 
   }
 
+  // ===================================================
+  // CREAR
+  // ===================================================
 
   crear(
     data: AccesorioStockCrear
-  ):
-    Observable<ApiMessage> {
+  ): Observable<ApiMessage> {
 
     return this.http.post<ApiMessage>(
       this.apiUrl,
@@ -100,12 +215,14 @@ export class AccesoriosStockService {
 
   }
 
+  // ===================================================
+  // ACTUALIZAR
+  // ===================================================
 
   actualizar(
     id: number,
     data: AccesorioStockActualizar
-  ):
-    Observable<ApiMessage> {
+  ): Observable<ApiMessage> {
 
     return this.http.put<ApiMessage>(
       `${this.apiUrl}/${id}`,
@@ -114,11 +231,13 @@ export class AccesoriosStockService {
 
   }
 
+  // ===================================================
+  // ELIMINAR
+  // ===================================================
 
   eliminar(
     id: number
-  ):
-    Observable<ApiMessage> {
+  ): Observable<ApiMessage> {
 
     return this.http.delete<ApiMessage>(
       `${this.apiUrl}/${id}`
@@ -126,16 +245,14 @@ export class AccesoriosStockService {
 
   }
 
-
-  /* =====================================================
-     INGRESAR STOCK
-  ===================================================== */
+  // ===================================================
+  // INGRESAR STOCK
+  // ===================================================
 
   ingresarStock(
     id: number,
     data: AccesorioStockIngreso
-  ):
-    Observable<ApiMessage> {
+  ): Observable<ApiMessage> {
 
     return this.http.post<ApiMessage>(
       `${this.apiUrl}/${id}/stock`,
@@ -144,51 +261,43 @@ export class AccesoriosStockService {
 
   }
 
+  // ===================================================
+  // CALCULAR PRECIO REFERENCIA
+  // ===================================================
 
   calcularPrecioReferencia(
     id: number,
     data: PrecioReferenciaRequest
-  ):
-    Observable<
-      ApiResponse<PrecioReferencia>
-    > {
+  ): Observable<ApiResponse<PrecioReferencia>> {
 
-    return this.http.post<
-      ApiResponse<PrecioReferencia>
-    >(
+    return this.http.post<ApiResponse<PrecioReferencia>>(
       `${this.apiUrl}/${id}/calcular-precio`,
       data
     );
 
   }
 
-
-  /* =====================================================
-     CATÁLOGOS
-  ===================================================== */
+  // ===================================================
+  // CATEGORÍAS
+  // ===================================================
 
   listarCategorias():
-    Observable<
-      ApiResponse<CategoriaAccesorio[]>
-    > {
+    Observable<ApiResponse<CategoriaAccesorio[]>> {
 
-    return this.http.get<
-      ApiResponse<CategoriaAccesorio[]>
-    >(
+    return this.http.get<ApiResponse<CategoriaAccesorio[]>>(
       this.categoriasUrl
     );
 
   }
 
+  // ===================================================
+  // MARCAS
+  // ===================================================
 
   listarMarcas():
-    Observable<
-      ApiResponse<MarcaAccesorio[]>
-    > {
+    Observable<ApiResponse<MarcaAccesorio[]>> {
 
-    return this.http.get<
-      ApiResponse<MarcaAccesorio[]>
-    >(
+    return this.http.get<ApiResponse<MarcaAccesorio[]>>(
       this.marcasUrl
     );
 

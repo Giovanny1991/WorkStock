@@ -1,13 +1,17 @@
+
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
-  signal
+  signal,
+  ViewChild
 } from '@angular/core';
 
 import {
-  CurrencyPipe, DecimalPipe
+  CurrencyPipe,
+  DecimalPipe
 } from '@angular/common';
 
 import {
@@ -16,8 +20,20 @@ import {
 } from '@angular/forms';
 
 import {
-  finalize
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  of,
+  switchMap,
+  tap
 } from 'rxjs';
+
+import {
+  takeUntilDestroyed
+} from '@angular/core/rxjs-interop';
 
 import {
   MatAutocompleteModule
@@ -84,11 +100,18 @@ import {
   OrdenTrabajoDetalleComponent
 } from '../orden-trabajo-detalle/orden-trabajo-detalle';
 
-import { OrdenTrabajoImagenesComponent } from '../orden-trabajo-imagenes/orden-trabajo-imagenes';
-import { ViewChild } from '@angular/core';
+import {
+  OrdenTrabajoImagenesComponent
+} from '../orden-trabajo-imagenes/orden-trabajo-imagenes';
+
+// =====================================================
+// COMPONENTE
+// =====================================================
+
 @Component({
   selector: 'app-nueva-orden',
   standalone: true,
+
   imports: [
     OrdenTrabajoImagenesComponent,
     CurrencyPipe,
@@ -104,68 +127,143 @@ import { ViewChild } from '@angular/core';
     MatRadioModule,
     MatTooltipModule
   ],
+
   templateUrl: './nueva-orden.html',
   styleUrl: './nueva-orden.scss'
 })
 export class NuevaOrden implements OnInit {
-  @ViewChild(OrdenTrabajoImagenesComponent) galeria?: OrdenTrabajoImagenesComponent;
-  private readonly clientesService = inject(ClientesService);
-  private readonly service = inject(OrdenesTrabajoService);
-  private readonly notify = inject(NotificationService);
-  private readonly dialog = inject(MatDialog);
 
-  readonly clientes = signal<Cliente[]>([]);
-  readonly clientesFiltrados = signal<Cliente[]>([]);
-  readonly clienteSeleccionado = signal<Cliente | null>(null);
+  // ===================================================
+  // GALERÍA DE IMÁGENES
+  // ===================================================
 
-  readonly idCliente = signal(0);
-  readonly busquedaCliente = signal('');
+  @ViewChild(OrdenTrabajoImagenesComponent)
+  galeria?: OrdenTrabajoImagenesComponent;
 
-  readonly guardando = signal(false);
+  // ===================================================
+  // SERVICIOS
+  // ===================================================
 
-  readonly modelo = new FormControl('', {
-    nonNullable: true
-  });
+  private readonly clientesService =
+    inject(ClientesService);
 
-  readonly imei = new FormControl('', {
-    nonNullable: true
-  });
+  private readonly service =
+    inject(OrdenesTrabajoService);
 
-  readonly dano = new FormControl('', {
-    nonNullable: true
-  });
+  private readonly notify =
+    inject(NotificationService);
 
-  readonly clienteTexto = new FormControl('', {
-    nonNullable: true
-  });
+  private readonly dialog =
+    inject(MatDialog);
 
-  readonly estadoRecepcion = new FormControl<
-    'ENCENDIDO' | 'APAGADO' | null
-  >(null);
+  private readonly destroyRef =
+    inject(DestroyRef);
 
-  readonly tapa = new FormControl(false, {
-    nonNullable: true
-  });
+  // ===================================================
+  // CLIENTES - BÚSQUEDA REMOTA PAGINADA
+  // ===================================================
 
-  readonly bateria = new FormControl(false, {
-    nonNullable: true
-  });
+  readonly clientes =
+    signal<Cliente[]>([]);
 
-  readonly banSIM = new FormControl(false, {
-    nonNullable: true
-  });
+  readonly clientesFiltrados =
+    signal<Cliente[]>([]);
 
-  readonly totalPendiente = new FormControl(false, {
-    nonNullable: true
-  });
+  readonly clienteSeleccionado =
+    signal<Cliente | null>(null);
 
-  readonly total = new FormControl(0, {
-    nonNullable: true
-  });
+  readonly idCliente =
+    signal(0);
 
-  readonly abono = new FormControl(0, {
-    nonNullable: true
-  });
+  readonly busquedaCliente =
+    signal('');
+
+  readonly buscandoClientes =
+    signal(false);
+
+  readonly errorBusquedaClientes =
+    signal(false);
+
+  readonly clienteTexto =
+    new FormControl<string | Cliente>(
+      '',
+      { nonNullable: true }
+    );
+
+  private versionBusquedaCliente = 0;
+
+  // ===================================================
+  // ESTADO GENERAL
+  // ===================================================
+
+  readonly guardando =
+    signal(false);
+
+  // ===================================================
+  // EQUIPO RECIBIDO
+  // ===================================================
+
+  readonly modelo = new FormControl(
+    '',
+    { nonNullable: true }
+  );
+
+  readonly imei = new FormControl(
+    '',
+    { nonNullable: true }
+  );
+
+  readonly dano = new FormControl(
+    '',
+    { nonNullable: true }
+  );
+
+  readonly estadoRecepcion =
+    new FormControl<
+      'ENCENDIDO' | 'APAGADO' | null
+    >(null);
+
+  // ===================================================
+  // ELEMENTOS RECIBIDOS
+  // ===================================================
+
+  readonly tapa = new FormControl(
+    false,
+    { nonNullable: true }
+  );
+
+  readonly bateria = new FormControl(
+    false,
+    { nonNullable: true }
+  );
+
+  readonly banSIM = new FormControl(
+    false,
+    { nonNullable: true }
+  );
+
+  // ===================================================
+  // VALORES
+  // ===================================================
+
+  readonly totalPendiente = new FormControl(
+    false,
+    { nonNullable: true }
+  );
+
+  readonly total = new FormControl(
+    0,
+    { nonNullable: true }
+  );
+
+  readonly abono = new FormControl(
+    0,
+    { nonNullable: true }
+  );
+
+  // ===================================================
+  // SALDO
+  // ===================================================
 
   saldo(): number {
 
@@ -183,17 +281,37 @@ export class NuevaOrden implements OnInit {
       total - abono,
       0
     );
+
   }
 
-  readonly clienteExiste = computed(() =>
-    this.clientes().some(
-      x =>
-        x.identificacion.toUpperCase() ===
-        this.busquedaCliente().toUpperCase()
-    )
-  );
+  // ===================================================
+  // CLIENTE EXISTE EN LOS RESULTADOS
+  //
+  // La validación definitiva de duplicados
+  // continúa realizándose en el backend.
+  // ===================================================
+
+  readonly clienteExiste = computed(() => {
+
+    const identificacion =
+      this.busquedaCliente()
+        .trim()
+        .toUpperCase();
+
+    return this.clientes().some(
+      cliente =>
+        cliente.identificacion
+          .toUpperCase() === identificacion
+    );
+
+  });
+
+  // ===================================================
+  // PERMITIR REGISTRAR CLIENTE
+  // ===================================================
 
   readonly puedeRegistrarCliente = computed(() => {
+
     const valor =
       this.busquedaCliente()
         .trim()
@@ -209,97 +327,249 @@ export class NuevaOrden implements OnInit {
       /^P[A-Z0-9]{1,12}$/.test(valor);
 
     return (
-      esCedula ||
-      esRuc ||
-      esPasaporte
-    ) &&
+      (esCedula || esRuc || esPasaporte) &&
+      !this.buscandoClientes() &&
+      !this.errorBusquedaClientes() &&
       !this.clienteExiste() &&
-      !this.clienteSeleccionado();
+      !this.clienteSeleccionado()
+    );
+
   });
 
+  // ===================================================
+  // INICIALIZACIÓN
+  // ===================================================
+
   ngOnInit(): void {
-    this.cargarClientes();
+
+    this.configurarBusquedaClientes();
+
+    this.configurarValorPendiente();
+
+  }
+
+  // ===================================================
+  // DESCRIPCIÓN DEL CLIENTE
+  // ===================================================
+
+  descripcionCliente(
+    cliente: Cliente
+  ): string {
+
+    return (
+      `${cliente.identificacion} - ` +
+      `${cliente.nombreCliente}`
+    );
+
+  }
+
+  // ===================================================
+  // MOSTRAR CLIENTE EN MAT-AUTOCOMPLETE
+  //
+  // Evita mostrar el ID numérico.
+  // ===================================================
+
+  readonly mostrarCliente = (
+    valor: string | Cliente | null
+  ): string => {
+
+    if (!valor) {
+      return '';
+    }
+
+    if (typeof valor === 'string') {
+      return valor;
+    }
+
+    return this.descripcionCliente(valor);
+
+  };
+
+  // ===================================================
+  // BUSCAR CLIENTES EN SQL SERVER
+  //
+  // - Mínimo 2 caracteres.
+  // - Espera 300 ms.
+  // - Consulta paginada.
+  // - Cancelación de búsquedas anteriores.
+  // - Selección por objeto.
+  // ===================================================
+
+  private configurarBusquedaClientes(): void {
 
     this.clienteTexto.valueChanges
-      .subscribe(value => {
+      .pipe(
 
-        if (typeof value !== 'string') {
+        // Solo las modificaciones de texto deben
+        // iniciar búsquedas en SQL.
+        filter(
+          (valor): valor is string =>
+            typeof valor === 'string'
+        ),
+
+        tap(valor => {
+
+          this.versionBusquedaCliente++;
+
+          // Si el usuario cambia el texto, la selección
+          // anterior deja de ser válida.
+          this.idCliente.set(0);
+
+          this.clienteSeleccionado.set(null);
+
+          const texto = valor.trim();
+
+          this.busquedaCliente.set(
+            texto.toUpperCase()
+          );
+
+          this.clientes.set([]);
+
+          this.clientesFiltrados.set([]);
+
+          this.errorBusquedaClientes.set(false);
+
+          this.buscandoClientes.set(
+            texto.length >= 2
+          );
+
+        }),
+
+        debounceTime(300),
+
+        map(valor => valor.trim()),
+
+        distinctUntilChanged(),
+
+        switchMap(texto => {
+
+          const version =
+            this.versionBusquedaCliente;
+
+          if (
+            texto.length < 2 ||
+            this.clienteSeleccionado()
+          ) {
+
+            this.buscandoClientes.set(false);
+
+            return of<Cliente[]>([]);
+
+          }
+
+          this.buscandoClientes.set(true);
+
+          return this.clientesService
+            .buscarParaAutocomplete(texto)
+            .pipe(
+
+              map(response => {
+
+                if (
+                  version !==
+                  this.versionBusquedaCliente
+                ) {
+                  return [];
+                }
+
+                return response.data ?? [];
+
+              }),
+
+              catchError(error => {
+
+                if (
+                  version ===
+                  this.versionBusquedaCliente
+                ) {
+
+                  this.errorBusquedaClientes.set(true);
+
+                  this.notify.error(
+                    error?.error?.message ??
+                    'No fue posible buscar los clientes'
+                  );
+
+                }
+
+                return of<Cliente[]>([]);
+
+              }),
+
+              finalize(() => {
+
+                if (
+                  version ===
+                  this.versionBusquedaCliente
+                ) {
+
+                  this.buscandoClientes.set(false);
+
+                }
+
+              })
+
+            );
+
+        }),
+
+        takeUntilDestroyed(this.destroyRef)
+
+      )
+      .subscribe(clientes => {
+
+        // Una respuesta anterior no debe sustituir
+        // un cliente que ya fue seleccionado.
+        if (this.clienteSeleccionado()) {
           return;
         }
 
-        this.idCliente.set(0);
-        this.clienteSeleccionado.set(null);
+        this.clientes.set(clientes);
 
-        const texto =
-          value.trim().toLowerCase();
-
-        this.busquedaCliente.set(
-          value.trim().toUpperCase()
-        );
-
-        this.clientesFiltrados.set(
-          this.clientes().filter(x =>
-            x.identificacion
-              .toLowerCase()
-              .includes(texto) ||
-            x.nombreCliente
-              .toLowerCase()
-              .includes(texto)
-          )
-        );
+        this.clientesFiltrados.set(clientes);
 
       });
 
-    this.totalPendiente.valueChanges
-      .subscribe(pendiente => {
-        if (pendiente) {
-          this.total.setValue(
-            0,
-            { emitEvent: false }
-          );
-
-          this.abono.setValue(
-            0,
-            { emitEvent: false }
-          );
-        }
-      });
   }
 
-  cargarClientes(): void {
-    this.clientesService.listar()
-      .subscribe({
-        next: r => {
-          this.clientes.set(r.data);
-          this.clientesFiltrados.set(r.data);
-        },
-
-        error: e => {
-          this.notify.error(
-            e?.error?.message ??
-            'No fue posible cargar los clientes'
-          );
-        }
-      });
-  }
+  // ===================================================
+  // SELECCIONAR CLIENTE
+  // ===================================================
 
   seleccionarCliente(
-    descripcion: string
+    cliente: Cliente
   ): void {
 
-    const cliente =
-      this.clientes().find(
-        x =>
-          this.descripcionCliente(x) ===
-          descripcion
+    if (
+      !cliente ||
+      !Number.isSafeInteger(Number(cliente.id)) ||
+      Number(cliente.id) <= 0
+    ) {
+
+      this.notify.warning(
+        'No fue posible identificar el cliente seleccionado'
       );
 
-    if (!cliente) {
       return;
+
     }
 
+    this.establecerCliente(cliente);
+
+  }
+
+  // ===================================================
+  // ESTABLECER CLIENTE
+  // ===================================================
+
+  private establecerCliente(
+    cliente: Cliente
+  ): void {
+
+    this.versionBusquedaCliente++;
+
     this.idCliente.set(
-      cliente.id
+      Number(cliente.id)
     );
 
     this.clienteSeleccionado.set(
@@ -310,8 +580,20 @@ export class NuevaOrden implements OnInit {
       cliente.identificacion
     );
 
+    this.clientes.set([
+      cliente
+    ]);
+
+    this.clientesFiltrados.set([]);
+
+    this.buscandoClientes.set(false);
+
+    this.errorBusquedaClientes.set(false);
+
+    // El objeto permite que displayWith muestre
+    // identificación y nombre correctamente.
     this.clienteTexto.setValue(
-      this.descripcionCliente(cliente),
+      cliente,
       {
         emitEvent: false
       }
@@ -319,7 +601,15 @@ export class NuevaOrden implements OnInit {
 
   }
 
+  // ===================================================
+  // REGISTRAR CLIENTE
+  // ===================================================
+
   registrarCliente(): void {
+
+    if (!this.puedeRegistrarCliente()) {
+      return;
+    }
 
     const identificacion =
       this.busquedaCliente();
@@ -331,7 +621,6 @@ export class NuevaOrden implements OnInit {
         maxWidth: '94vw',
         disableClose: true,
         autoFocus: false,
-
         data: {
           identificacionInicial:
             identificacion
@@ -339,6 +628,9 @@ export class NuevaOrden implements OnInit {
       }
     )
       .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(resultado => {
 
         if (
@@ -351,51 +643,18 @@ export class NuevaOrden implements OnInit {
         const cliente =
           resultado as Cliente;
 
-
-        // Agregarlo al listado local
-        // si todavía no existe.
-        this.clientes.update(
-          actual => {
-
-            const existe =
-              actual.some(
-                x => x.id === cliente.id
-              );
-
-            return existe
-              ? actual
-              : [...actual, cliente];
-
-          }
-        );
-
-
-        this.idCliente.set(
-          cliente.id
-        );
-
-        this.clienteSeleccionado.set(
-          cliente
-        );
-
-        this.busquedaCliente.set(
-          cliente.identificacion
-        );
-
-        this.clienteTexto.setValue(
-          this.descripcionCliente(cliente),
-          {
-            emitEvent: false
-          }
-        );
-
-        this.clientesFiltrados.set(
-          this.clientes()
-        );
+        this.establecerCliente(cliente);
 
       });
 
   }
+
+  // ===================================================
+  // EDITAR CLIENTE
+  //
+  // Se obtiene únicamente el registro actualizado.
+  // No se descarga toda la tabla.
+  // ===================================================
 
   editarCliente(): void {
 
@@ -406,7 +665,6 @@ export class NuevaOrden implements OnInit {
       return;
     }
 
-
     this.dialog.open(
       ClienteDialog,
       {
@@ -414,66 +672,45 @@ export class NuevaOrden implements OnInit {
         maxWidth: '94vw',
         disableClose: true,
         autoFocus: false,
-
         data: {
           cliente
         }
       }
     )
       .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(resultado => {
 
         if (!resultado) {
           return;
         }
 
-
         this.clientesService
-          .listar()
+          .obtenerPorId(cliente.id)
+          .pipe(
+            takeUntilDestroyed(this.destroyRef)
+          )
           .subscribe({
 
-            next: r => {
-
-              this.clientes.set(
-                r.data
-              );
-
-              this.clientesFiltrados.set(
-                r.data
-              );
-
+            next: response => {
 
               const actualizado =
-                r.data.find(
-                  x =>
-                    x.id === cliente.id
-                );
-
+                response.data;
 
               if (!actualizado) {
+
+                this.notify.error(
+                  'No se encontraron los datos del cliente actualizado'
+                );
+
                 return;
+
               }
 
-
-              this.idCliente.set(
-                actualizado.id
-              );
-
-              this.clienteSeleccionado.set(
+              this.establecerCliente(
                 actualizado
-              );
-
-              this.busquedaCliente.set(
-                actualizado.identificacion
-              );
-
-              this.clienteTexto.setValue(
-                this.descripcionCliente(
-                  actualizado
-                ),
-                {
-                  emitEvent: false
-                }
               );
 
             },
@@ -492,13 +729,53 @@ export class NuevaOrden implements OnInit {
 
   }
 
+  // ===================================================
+  // VALOR POR CONFIRMAR
+  //
+  // Se conserva el comportamiento existente.
+  // ===================================================
+
+  private configurarValorPendiente(): void {
+
+    this.totalPendiente.valueChanges
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(pendiente => {
+
+        if (pendiente) {
+
+          this.total.setValue(
+            0,
+            { emitEvent: false }
+          );
+
+          this.abono.setValue(
+            0,
+            { emitEvent: false }
+          );
+
+        }
+
+      });
+
+  }
+
+  // ===================================================
+  // CONFIRMAR REGISTRO
+  // ===================================================
+
   guardar(): void {
+
     const error =
       this.validar();
 
     if (error) {
+
       this.notify.warning(error);
+
       return;
+
     }
 
     this.dialog.open(
@@ -508,20 +785,37 @@ export class NuevaOrden implements OnInit {
         maxWidth: '92vw',
         disableClose: true,
         data: {
-          title: 'Confirmar orden de trabajo',
+          title:
+            'Confirmar orden de trabajo',
           message:
             '¿Desea registrar esta orden de trabajo?',
-          confirmText: 'Registrar'
+          confirmText:
+            'Registrar'
         }
       }
     )
       .afterClosed()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(confirmado => {
-        if (!confirmado) return;
+
+        if (!confirmado) {
+          return;
+        }
 
         this.registrar();
+
       });
+
   }
+
+  // ===================================================
+  // REGISTRAR ORDEN
+  //
+  // Mantiene el payload original.
+  // Mantiene la carga de fotografías.
+  // ===================================================
 
   private registrar(): void {
 
@@ -574,60 +868,80 @@ export class NuevaOrden implements OnInit {
 
     })
       .pipe(
-        finalize(() =>
-          this.guardando.set(false)
-        )
+        finalize(() => {
+          this.guardando.set(false);
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
 
-        next: async r => {
+        next: async response => {
 
           const idOrden =
-            r.data.idOrden;
+            response.data.idOrden;
 
           try {
-            await this.galeria?.guardarPendientes(idOrden);
-          } catch (error: any) {
+
+            await this.galeria
+              ?.guardarPendientes(idOrden);
+
+          } catch (error: unknown) {
+
             this.notify.warning(
               `Orden ${idOrden} registrada, pero no se pudieron subir las fotografías. Puedes agregarlas desde Gestionar orden.`
             );
+
             this.guardando.set(false);
+
             return;
+
           }
 
           this.notify.success(
-            `${r.message} - N.º ${idOrden}`
+            `${response.message} - N.º ${idOrden}`
           );
 
           this.limpiar();
 
-          this.visualizarOrden(
-            idOrden
-          );
+          this.visualizarOrden(idOrden);
 
         },
 
-        error: e => {
+        error: error => {
 
           this.notify.error(
-            e?.error?.message ??
+            error?.error?.message ??
             'No fue posible registrar la orden de trabajo'
           );
 
         }
 
       });
+
   }
 
+  // ===================================================
+  // VALIDAR ORDEN
+  //
+  // Conserva las reglas originales.
+  // ===================================================
+
   private validar(): string | null {
-    if (this.idCliente() <= 0) {
+
+    if (
+      this.idCliente() <= 0
+    ) {
+
       return 'Seleccione un cliente';
+
     }
 
     if (
       this.modelo.value.trim().length < 3
     ) {
+
       return 'El modelo debe tener mínimo 3 caracteres';
+
     }
 
     if (
@@ -635,24 +949,31 @@ export class NuevaOrden implements OnInit {
         this.imei.value.trim()
       )
     ) {
+
       return 'El IMEI debe contener 15 dígitos';
+
     }
 
     if (
       this.dano.value.trim().length < 3
     ) {
+
       return 'Ingrese el daño reportado del dispositivo';
+
     }
 
     if (
       !this.estadoRecepcion.value
     ) {
+
       return 'Seleccione si el equipo fue recibido encendido o apagado';
+
     }
 
     if (
       !this.totalPendiente.value
     ) {
+
       const total =
         Number(this.total.value);
 
@@ -660,27 +981,50 @@ export class NuevaOrden implements OnInit {
         Number(this.abono.value);
 
       if (total <= 0) {
+
         return 'Ingrese el valor del servicio o marque Valor por confirmar';
+
       }
 
       if (abono < 0) {
+
         return 'El abono no puede ser negativo';
+
       }
 
       if (abono > total) {
+
         return 'El abono no puede ser mayor al valor del servicio';
+
       }
+
     }
 
     return null;
+
   }
 
+  // ===================================================
+  // LIMPIAR FORMULARIO
+  // ===================================================
+
   limpiar(): void {
+
+    this.versionBusquedaCliente++;
+
     this.idCliente.set(0);
 
     this.clienteSeleccionado.set(null);
 
     this.busquedaCliente.set('');
+
+    this.clientes.set([]);
+
+    this.clientesFiltrados.set([]);
+
+    this.buscandoClientes.set(false);
+
+    this.errorBusquedaClientes.set(false);
 
     this.clienteTexto.setValue(
       '',
@@ -688,15 +1032,17 @@ export class NuevaOrden implements OnInit {
     );
 
     this.modelo.setValue('');
+
     this.imei.setValue('');
+
     this.dano.setValue('');
 
-    this.estadoRecepcion.setValue(
-      null
-    );
+    this.estadoRecepcion.setValue(null);
 
     this.tapa.setValue(false);
+
     this.bateria.setValue(false);
+
     this.banSIM.setValue(false);
 
     this.totalPendiente.setValue(
@@ -705,20 +1051,14 @@ export class NuevaOrden implements OnInit {
     );
 
     this.total.setValue(0);
+
     this.abono.setValue(0);
 
-    this.clientesFiltrados.set(
-      this.clientes()
-    );
   }
 
-  descripcionCliente(
-    cliente: Cliente
-  ): string {
-
-    return `${cliente.identificacion} - ${cliente.nombreCliente}`;
-
-  }
+  // ===================================================
+  // VISUALIZAR ORDEN
+  // ===================================================
 
   visualizarOrden(
     idOrden: number
@@ -730,10 +1070,8 @@ export class NuevaOrden implements OnInit {
         width: '430px',
         maxWidth: '95vw',
         maxHeight: '95vh',
-
         disableClose: true,
         autoFocus: false,
-
         data: {
           idOrden
         }
@@ -741,4 +1079,5 @@ export class NuevaOrden implements OnInit {
     );
 
   }
+
 }

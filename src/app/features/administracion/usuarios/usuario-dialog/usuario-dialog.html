@@ -1,0 +1,493 @@
+<!-- ==========================================
+     WORKSTOCK - NUEVO / EDITAR USUARIO
+========================================== -->
+
+
+<!-- ENCABEZADO -->
+
+<div class="dialog-header">
+
+  <div class="header-identity">
+
+    <span class="header-icon">
+
+      <mat-icon>
+        {{ esEdicion ? 'manage_accounts' : 'person_add' }}
+      </mat-icon>
+
+    </span>
+
+
+    <div class="header-text">
+
+      <h2>
+        {{ esEdicion ? 'Editar usuario' : 'Nuevo usuario' }}
+      </h2>
+
+
+      <p>
+
+        Empresa:
+
+        <strong>
+          {{ data.nombreEmpresa || 'Empresa' }}
+        </strong>
+
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <button
+    mat-icon-button
+    type="button"
+    class="close-button"
+    aria-label="Cerrar formulario"
+    (click)="cancelar()">
+
+    <mat-icon>
+      close
+    </mat-icon>
+
+  </button>
+
+</div>
+
+
+<!-- ==========================================
+     CONTENIDO
+========================================== -->
+
+<mat-dialog-content
+  class="dialog-content">
+
+
+  <form
+    [formGroup]="form"
+    class="form-grid">
+
+
+    <!-- ===============================================
+         NOMBRE
+    ================================================ -->
+
+    <div class="field-group full">
+
+      <label
+        class="field-label"
+        for="usuario-nombre">
+
+        Nombre completo
+
+      </label>
+
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="usuario-nombre"
+          matInput
+          type="text"
+          formControlName="nombreUsuario"
+          maxlength="50"
+          placeholder="Nombre y apellido del usuario"
+          autocomplete="name">
+
+
+        @if (
+          form.controls.nombreUsuario.hasError('required')
+          &&
+          form.controls.nombreUsuario.touched
+        ) {
+
+          <mat-error>
+            Ingrese el nombre del usuario
+          </mat-error>
+
+        } @else if (
+          form.controls.nombreUsuario.invalid
+          &&
+          form.controls.nombreUsuario.touched
+        ) {
+
+          <mat-error>
+            Debe contener entre 3 y 50 caracteres
+          </mat-error>
+
+        }
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- ===============================================
+         LOGIN
+    ================================================ -->
+
+    <div class="field-group full">
+
+      <label
+        class="field-label"
+        for="usuario-login">
+
+        Usuario para iniciar sesión
+
+      </label>
+
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <input
+          id="usuario-login"
+          matInput
+          type="text"
+          formControlName="login"
+          maxlength="40"
+          placeholder="Ej. maria.perez"
+          autocomplete="off">
+
+
+        @if (
+          form.controls.login.hasError('required')
+          &&
+          form.controls.login.touched
+        ) {
+
+          <mat-error>
+            Ingrese el usuario de acceso
+          </mat-error>
+
+        } @else if (
+          form.controls.login.invalid
+          &&
+          form.controls.login.touched
+        ) {
+
+          <mat-error>
+            Utilice entre 4 y 40 caracteres válidos
+          </mat-error>
+
+        }
+
+      </mat-form-field>
+
+
+      @if (
+        esEdicion
+      ) {
+
+        <span class="field-help">
+          El usuario de acceso no puede modificarse.
+        </span>
+
+      }
+
+    </div>
+
+
+    <!-- ===============================================
+         CONTRASEÑA
+    ================================================ -->
+
+    @if (
+      !esEdicion
+    ) {
+
+      <div class="field-group full">
+
+        <div class="label-row">
+
+          <label
+            class="field-label"
+            for="usuario-password">
+
+            Contraseña temporal
+
+          </label>
+
+
+          <button
+            mat-button
+            type="button"
+            class="generate-btn"
+            (click)="generarPassword()">
+
+            <mat-icon>
+              auto_awesome
+            </mat-icon>
+
+            Generar contraseña
+
+          </button>
+
+        </div>
+
+
+        <mat-form-field
+          appearance="outline"
+          class="compact-field"
+          subscriptSizing="dynamic">
+
+          <input
+            id="usuario-password"
+            matInput
+            formControlName="password"
+            [type]="
+              mostrarPassword()
+                ? 'text'
+                : 'password'
+            "
+            placeholder="Mínimo 12 caracteres"
+            autocomplete="new-password">
+
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="password-button"
+            [attr.aria-label]="
+              mostrarPassword()
+                ? 'Ocultar contraseña'
+                : 'Mostrar contraseña'
+            "
+            (click)="cambiarVisibilidad()">
+
+            <mat-icon>
+
+              {{
+                mostrarPassword()
+                  ? 'visibility_off'
+                  : 'visibility'
+              }}
+
+            </mat-icon>
+
+          </button>
+
+
+          @if (
+            form.controls.password.hasError('required')
+            &&
+            form.controls.password.touched
+          ) {
+
+            <mat-error>
+              Ingrese una contraseña
+            </mat-error>
+
+          } @else if (
+            form.controls.password.invalid
+            &&
+            form.controls.password.touched
+          ) {
+
+            <mat-error>
+              Debe contener entre 12 y 128 caracteres
+            </mat-error>
+
+          }
+
+        </mat-form-field>
+
+      </div>
+
+    }
+
+
+    <!-- ===============================================
+         ROL
+    ================================================ -->
+
+    <div
+      class="field-group"
+      [class.full]="!esEdicion">
+
+      <label
+        class="field-label"
+        for="usuario-rol">
+
+        Rol
+
+      </label>
+
+
+      <mat-form-field
+        appearance="outline"
+        class="compact-field"
+        subscriptSizing="dynamic">
+
+        <mat-select
+          id="usuario-rol"
+          formControlName="rol">
+
+          <mat-option
+            value="ADMINISTRADOR">
+
+            Administrador
+
+          </mat-option>
+
+
+          <mat-option
+            value="VENDEDOR">
+
+            Vendedor
+
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+    </div>
+
+
+    <!-- ===============================================
+         ESTADO
+    ================================================ -->
+
+    @if (
+      esEdicion
+    ) {
+
+      <div class="field-group">
+
+        <label
+          class="field-label"
+          for="usuario-estado">
+
+          Estado
+
+        </label>
+
+
+        <mat-form-field
+          appearance="outline"
+          class="compact-field"
+          subscriptSizing="dynamic">
+
+          <mat-select
+            id="usuario-estado"
+            formControlName="estado">
+
+            <mat-option
+              value="ACTIVO">
+
+              Activo
+
+            </mat-option>
+
+
+            <mat-option
+              value="INACTIVO">
+
+              Inactivo
+
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+
+      </div>
+
+    }
+
+  </form>
+
+
+  <!-- ==========================================
+       INFORMACIÓN
+  ========================================== -->
+
+  <div class="security-note">
+
+    <mat-icon>
+      shield
+    </mat-icon>
+
+
+    <span>
+
+      Puedes modificar el rol y cambiar el usuario entre
+
+      <strong>
+        ACTIVO
+      </strong>
+
+      e
+
+      <strong>
+        INACTIVO
+      </strong>.
+
+      La cuenta SuperAdmin permanece protegida.
+
+    </span>
+
+  </div>
+
+</mat-dialog-content>
+
+
+<!-- ==========================================
+     ACCIONES
+========================================== -->
+
+<mat-dialog-actions
+  class="dialog-actions"
+  align="end">
+
+
+  <button
+    mat-stroked-button
+    type="button"
+    class="cancel-btn"
+    (click)="cancelar()">
+
+    Cancelar
+
+  </button>
+
+
+  <button
+    mat-flat-button
+    type="button"
+    class="save-btn"
+    [disabled]="form.invalid"
+    (click)="guardar()">
+
+    <mat-icon>
+
+      {{
+        esEdicion
+          ? 'save'
+          : 'person_add'
+      }}
+
+    </mat-icon>
+
+
+    <span>
+
+      {{
+        esEdicion
+          ? 'Actualizar usuario'
+          : 'Guardar usuario'
+      }}
+
+    </span>
+
+  </button>
+
+</mat-dialog-actions>

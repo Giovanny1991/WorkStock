@@ -1,3 +1,4 @@
+
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners
@@ -21,20 +22,43 @@ import {
   credentialsInterceptor
 } from './core/interceptors/credentials.interceptor';
 
+import {
+  loadingInterceptor
+} from './core/interceptors/loading.interceptor';
+
+import {
+  authInterceptor
+} from './core/interceptors/auth.interceptor';
+
 
 export const appConfig: ApplicationConfig = {
 
   providers: [
 
+    // ============================================
+    // ERRORES GLOBALES
+    // ============================================
+
     provideBrowserGlobalErrorListeners(),
+
+    // ============================================
+    // RUTAS
+    // ============================================
 
     provideRouter(
       routes
     ),
 
+    // ============================================
+    // HTTP CLIENT
+    // ============================================
+
     provideHttpClient(
 
-      // Configuración CSRF/XSRF
+      // ==========================================
+      // SEGURIDAD CSRF / XSRF
+      // ==========================================
+
       withXsrfConfiguration({
 
         cookieName:
@@ -45,10 +69,20 @@ export const appConfig: ApplicationConfig = {
 
       }),
 
-      // Interceptores HTTP
+      // ==========================================
+      // INTERCEPTORES HTTP
+      // ==========================================
+
       withInterceptors([
 
-        credentialsInterceptor
+        // Cookies y credenciales.
+        credentialsInterceptor,
+
+        // Detectar y redirigir sesiones expiradas.
+        authInterceptor,
+
+        // Indicador de procesamiento global.
+        loadingInterceptor
 
       ])
 

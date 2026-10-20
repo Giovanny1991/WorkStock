@@ -1,194 +1,557 @@
+/* =====================================================
+   WORKSTOCK - SIDEBAR
+   VERSION DEPURADA
+
+   - Seis paletas de navegación
+   - Modo oscuro automático
+   - Paleta original blanca
+   - Angular Material
+   - SuperAdmin y empresas
+   - Menús expandibles
+   - Navegación responsive
+
+   El modo oscuro se detecta mediante:
+   data-workstock-theme="dark"
+===================================================== */
+
+/* =====================================================
+   1. VARIABLES GENERALES
+===================================================== */
+
 :host {
   display: block;
+
+  width: 100%;
   height: 100%;
+
+  min-width: 0;
   min-height: 0;
+
+  /* Paleta seleccionada */
+
+  --sidebar-bg:
+    var(--ws-side-bg, #222d32);
+
+  --sidebar-text:
+    var(--ws-side-text, #ffffff);
+
+  --sidebar-muted:
+    var(--ws-side-muted, #b8c7ce);
+
+  --sidebar-icon:
+    var(--ws-side-muted, #b8c7ce);
+
+  --sidebar-hover:
+    var(--ws-side-hover, #26363d);
+
+  --sidebar-expanded:
+    var(--ws-side-expanded, #2c3b41);
+
+  --sidebar-active:
+    var(--ws-side-active, #1a2226);
+
+  --sidebar-active-text: #ffffff;
+  --sidebar-active-icon: #ffffff;
+
+  --sidebar-scroll:
+    var(--ws-side-hover, #52656e);
+
+  color: var(--sidebar-text);
+
+  /* Angular Material */
+
+  --mat-expansion-container-background-color:
+    transparent;
+
+  --mat-expansion-container-text-color:
+    var(--sidebar-text);
+
+  --mat-expansion-header-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-hover-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-leading-icon-color:
+    var(--sidebar-icon);
 }
+
+/* =====================================================
+   2. WORKSTOCK ORIGINAL - MODO CLARO
+===================================================== */
+
+:host-context(.layout-container[data-workstock-palette='original']) {
+  --sidebar-bg: #ffffff;
+
+  --sidebar-text: #172b4d;
+  --sidebar-muted: #64748b;
+  --sidebar-icon: #64748b;
+
+  --sidebar-hover: #f1f5f9;
+  --sidebar-expanded: #f8fafc;
+
+  --sidebar-active: #e8f1fc;
+  --sidebar-active-text: #172b4d;
+  --sidebar-active-icon: #075db0;
+
+  --sidebar-scroll: #cbd5e1;
+}
+
+/* =====================================================
+   3. MODO OSCURO AUTOMATICO
+
+   IMPORTANTE:
+   Esta regla debe estar DESPUES de WorkStock original.
+
+   Cuando se activa el modo oscuro, reemplaza
+   los colores de cualquier paleta seleccionada.
+
+   No modifica el header.
+===================================================== */
+
+:host-context(.layout-container[data-workstock-theme='dark']) {
+  --sidebar-bg: #17212f;
+
+  --sidebar-text: #f1f5f9;
+  --sidebar-muted: #aab9c9;
+  --sidebar-icon: #aab9c9;
+
+  --sidebar-hover: #2c4056;
+  --sidebar-expanded: #233247;
+
+  --sidebar-active: #293d55;
+  --sidebar-active-text: #ffffff;
+  --sidebar-active-icon: #93c5fd;
+
+  --sidebar-scroll: #475569;
+
+  --mat-expansion-container-text-color:
+    var(--sidebar-text);
+
+  --mat-expansion-header-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-hover-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-leading-icon-color:
+    var(--sidebar-icon);
+}
+
+/* =====================================================
+   4. CONTENEDOR GENERAL
+===================================================== */
 
 .sidebar-container {
   box-sizing: border-box;
-  height: 100%;
+
   display: flex;
   flex-direction: column;
-  background: var(--ws-surface);
-  color: var(--ws-text);
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+}
+
+/* =====================================================
+   5. IDENTIDAD DE EMPRESA
+
+   Altura de 60px alineada con el header.
+   El fondo blanco protege la visibilidad del logo.
+===================================================== */
+
+.sidebar-company {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  height: 60px;
+  min-height: 60px;
+  max-height: 60px;
+
+  flex: 0 0 60px;
+
+  padding: 3px 12px 2px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, 0.12);
+
+  text-align: center;
+}
+
+/* =====================================================
+   6. AREA DEL LOGO
+===================================================== */
+
+.sidebar-company-logo-area {
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+
+  flex: 0 0 36px;
+
+  margin: 0;
+
   overflow: hidden;
 }
 
-.sidebar-logo {
-  box-sizing: border-box;
-  min-height: 60px;
-  height: 60px;
-  flex: 0 0 60px;
-  display: flex;
-  gap: 10px;
+/* =====================================================
+   7. LOGO REAL
+===================================================== */
+
+.sidebar-company-logo {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  max-width: 155px;
+  max-height: 30px;
+
+  margin: 0 auto;
+
+  object-fit: contain;
+  object-position: center;
+
+  user-select: none;
+}
+
+/* =====================================================
+   8. LOGO ALTERNATIVO
+===================================================== */
+
+.sidebar-company-fallback {
+  display: inline-flex;
+
   align-items: center;
-  padding: 0 17px;
-  border-bottom: 1px solid var(--ws-border);
+  justify-content: center;
 
-  >mat-icon {
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    font-size: 20px;
-    flex-shrink: 0;
-    background: var(--ws-brand-soft);
-    color: var(--ws-brand);
-    border-radius: 9px;
-  }
+  width: 28px;
+  height: 28px;
 
-  >div {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 2px;
+  flex: 0 0 28px;
+
+  border-radius: 7px;
+
+  background: #e8f1fc;
+  color: #075db0;
+
+  mat-icon {
+    display: block;
+
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
+    line-height: 17px;
   }
+}
+
+/* =====================================================
+   9. INFORMACION EMPRESA
+===================================================== */
+
+.sidebar-company-info {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+
+  height: 17px;
+  min-height: 17px;
+
+  flex: 0 0 17px;
+
+  gap: 0;
+
+  overflow: hidden;
 
   strong {
-    font-size: 14px;
-    line-height: 18px;
-    font-weight: 700;
-    letter-spacing: -.35px;
+    display: block;
+
+    width: 100%;
+    max-width: 210px;
+    min-width: 0;
+
+    margin: 0;
+
+    overflow: hidden;
+
+    color: #1c2d44;
+
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 12px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    text-align: center;
   }
 
   small {
-    font-size: 10px;
-    line-height: 14px;
-    color: var(--ws-muted);
-    font-weight: 400;
-    white-space: nowrap;
+    display: none;
   }
 }
 
+/* =====================================================
+   10. IDENTIDAD SUPERADMIN
+===================================================== */
+
+.sidebar-company-platform {
+  box-sizing: border-box;
+
+  height: 60px;
+  min-height: 60px;
+  max-height: 60px;
+
+  flex: 0 0 60px;
+
+  flex-direction: row;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 10px;
+
+  padding: 0 14px;
+
+  text-align: left;
+
+  .sidebar-company-info {
+    height: auto;
+    min-height: 0;
+
+    flex: 1 1 auto;
+
+    align-items: flex-start;
+
+    overflow: hidden;
+    text-align: left;
+
+    strong {
+      max-width: 165px;
+
+      color: #1c2d44;
+
+      font-size: 11px;
+      font-weight: 650;
+      line-height: 14px;
+
+      text-align: left;
+    }
+
+    small {
+      display: block;
+
+      width: 100%;
+      max-width: 165px;
+
+      overflow: hidden;
+
+      color: #64748b;
+
+      font-size: 9px;
+      font-weight: 400;
+      line-height: 12px;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      text-align: left;
+    }
+  }
+}
+
+/* =====================================================
+   11. NAVEGACION
+===================================================== */
+
 mat-nav-list {
+  box-sizing: border-box;
+
   flex: 1 1 auto;
   min-height: 0;
+
   overflow-y: auto;
   overflow-x: hidden;
+
   padding: 9px 9px 14px !important;
+
   scrollbar-width: thin;
-  scrollbar-color: var(--ws-scroll) transparent;
+
+  scrollbar-color:
+    var(--sidebar-scroll) transparent;
 }
+
+/* =====================================================
+   12. SCROLLBAR
+===================================================== */
+
+mat-nav-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+mat-nav-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+mat-nav-list::-webkit-scrollbar-thumb {
+  background: var(--sidebar-scroll);
+  border-radius: 10px;
+}
+
+/* =====================================================
+   13. SECCIONES DEL MENU
+===================================================== */
 
 .menu-section {
   margin: 18px 11px 7px;
+  color: var(--sidebar-muted);
   font-size: 9px;
-  line-height: 12px;
   font-weight: 650;
+  line-height: 12px;
   letter-spacing: 1px;
-  color: var(--ws-muted);
+  white-space: nowrap;
+ 
 }
+
+/* =====================================================
+   14. EXPANSION PANELS
+===================================================== */
 
 .menu-panel {
   margin: 2px 0 !important;
+
   border-radius: 9px !important;
+
   box-shadow: none !important;
+
   background: transparent !important;
-  color: var(--ws-text);
+  color: var(--sidebar-text) !important;
 
   &::before {
     display: none;
   }
 
   &.mat-expanded {
-    background: var(--ws-surface-muted) !important;
+    background:
+      var(--sidebar-expanded) !important;
   }
 
   mat-panel-title {
     display: flex;
     align-items: center;
+
     gap: 10px;
+
     min-width: 0;
+    margin: 0;
+
+    color: var(--sidebar-text);
+
     font-size: 12px;
-    line-height: 18px;
     font-weight: 550;
-    color: var(--ws-text);
+    line-height: 18px;
 
     mat-icon {
-      flex-shrink: 0;
       width: 18px;
       height: 18px;
+
+      flex: 0 0 18px;
+
+      color: var(--sidebar-icon);
+
       font-size: 18px;
-      color: var(--ws-icon);
+      line-height: 18px;
     }
 
     span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      display: block;
+
       min-width: 0;
+      overflow: hidden;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }
 
-a[mat-list-item] {
-  box-sizing: border-box;
-  width: 100%;
-  margin: 1px 0;
-  border-radius: 7px !important;
-  height: 39px !important;
-  min-height: 39px !important;
-  color: var(--ws-text);
-  text-decoration: none;
-  --mdc-list-list-item-label-text-size: 12px;
-  --mdc-list-list-item-label-text-weight: 450;
-  --mdc-list-list-item-label-text-line-height: 18px;
-  --mdc-list-list-item-leading-icon-size: 18px;
+/* =====================================================
+   15. ENCABEZADO EXPANSION PANEL
+===================================================== */
 
-  &:hover {
-    background: var(--ws-hover);
-  }
-
-  &.active {
-    background: var(--ws-active) !important;
-    color: var(--ws-active-text) !important;
-    --mdc-list-list-item-label-text-color: var(--ws-active-text);
-    --mdc-list-list-item-label-text-weight: 600;
-
-    mat-icon {
-      color: var(--ws-brand) !important;
-    }
-  }
-
-  mat-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    color: var(--ws-icon);
-  }
-}
-
-a.submenu-item {
-  height: 34px !important;
-  min-height: 34px !important;
-  --mdc-list-list-item-label-text-size: 11px;
-  --mdc-list-list-item-label-text-weight: 450;
-  --mdc-list-list-item-label-text-line-height: 16px;
-  --mdc-list-list-item-leading-icon-size: 16px;
-
-  mat-icon {
-    width: 16px;
-    height: 16px;
-    font-size: 16px;
-  }
-}
-
-/* Sobrescribe las dimensiones reales de los componentes MDC, no solo del enlace. */
 :host ::ng-deep .menu-panel .mat-expansion-panel-header {
   box-sizing: border-box;
+
   height: 39px !important;
   min-height: 39px !important;
+
   padding: 0 12px !important;
+
+  color: var(--sidebar-text) !important;
+
   font-family: inherit;
 }
 
 :host ::ng-deep .menu-panel .mat-expansion-panel-header:hover {
-  background: var(--ws-hover) !important;
+  background:
+    var(--sidebar-hover) !important;
 }
+
+:host ::ng-deep .menu-panel.mat-expanded .mat-expansion-panel-header {
+  background: transparent !important;
+}
+
+/* =====================================================
+   16. CUERPO EXPANSION PANEL
+===================================================== */
 
 :host ::ng-deep .menu-panel .mat-expansion-panel-body {
   padding: 0 5px 6px 11px !important;
 }
+
+/* =====================================================
+   17. FLECHA EXPANSION PANEL
+===================================================== */
 
 :host ::ng-deep .menu-panel .mat-expansion-indicator {
   margin-left: 2px;
@@ -196,37 +559,218 @@ a.submenu-item {
 
 :host ::ng-deep .menu-panel .mat-expansion-indicator::after {
   padding: 3px !important;
+
+  color: var(--sidebar-muted) !important;
 }
 
+/* =====================================================
+   18. TITULO EXPANSION PANEL
+===================================================== */
+
 :host ::ng-deep .menu-panel .mat-expansion-panel-header-title {
-  margin-right: 5px !important;
   min-width: 0;
+
+  margin-right: 5px !important;
+
+  color: var(--sidebar-text);
 }
+
+/* =====================================================
+   19. ITEMS DEL MENU
+===================================================== */
+
+a[mat-list-item] {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  height: 39px !important;
+  min-height: 39px !important;
+
+  margin: 1px 0;
+
+  border-radius: 7px !important;
+
+  color: var(--sidebar-text) !important;
+
+  text-decoration: none;
+
+  --mdc-list-list-item-label-text-size: 12px;
+  --mdc-list-list-item-label-text-weight: 450;
+  --mdc-list-list-item-label-text-line-height: 18px;
+
+  --mdc-list-list-item-leading-icon-size: 18px;
+
+  --mdc-list-list-item-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-hover-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-leading-icon-color:
+    var(--sidebar-icon);
+
+  &:hover {
+    background: var(--sidebar-hover);
+  }
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 18px;
+
+    color: var(--sidebar-icon);
+
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+/* =====================================================
+   20. ITEM SELECCIONADO
+===================================================== */
+
+a[mat-list-item].active,
+a[mat-list-item][aria-current='page'] {
+  background:
+    var(--sidebar-active) !important;
+
+  color:
+    var(--sidebar-active-text) !important;
+
+  --mdc-list-list-item-label-text-color:
+    var(--sidebar-active-text);
+
+  --mdc-list-list-item-hover-label-text-color:
+    var(--sidebar-active-text);
+
+  --mdc-list-list-item-focus-label-text-color:
+    var(--sidebar-active-text);
+
+  --mdc-list-list-item-label-text-weight: 600;
+
+  mat-icon {
+    color:
+      var(--sidebar-active-icon) !important;
+  }
+}
+
+/* =====================================================
+   21. SUBMENU
+===================================================== */
+
+a.submenu-item {
+  height: 34px !important;
+  min-height: 34px !important;
+
+  --mdc-list-list-item-label-text-size: 11px;
+  --mdc-list-list-item-label-text-weight: 450;
+  --mdc-list-list-item-label-text-line-height: 16px;
+
+  --mdc-list-list-item-leading-icon-size: 16px;
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+
+    flex: 0 0 16px;
+
+    font-size: 16px;
+    line-height: 16px;
+  }
+}
+
+/* =====================================================
+   22. ANGULAR MATERIAL - LIST
+===================================================== */
+
+:host ::ng-deep a.mat-mdc-list-item {
+  --mdc-list-list-item-label-text-color:
+    var(--sidebar-text);
+
+  --mdc-list-list-item-hover-label-text-color:
+    var(--sidebar-text);
+}
+
+:host ::ng-deep a.mat-mdc-list-item:hover:not(.active) {
+  --mdc-list-list-item-hover-label-text-color:
+    var(--sidebar-text);
+}
+
+/* =====================================================
+   23. CONTENIDO ITEM
+===================================================== */
 
 :host ::ng-deep a.mat-mdc-list-item .mdc-list-item__content {
   min-width: 0 !important;
 }
 
+/* =====================================================
+   24. TEXTO PRINCIPAL
+===================================================== */
+
 :host ::ng-deep a.mat-mdc-list-item .mdc-list-item__primary-text {
   display: block;
+
   overflow: hidden;
-  text-overflow: ellipsis;
+
+  color: var(--sidebar-text);
+
   white-space: nowrap !important;
+
+  text-overflow: ellipsis;
+
   font-size: 12px !important;
-  line-height: 18px !important;
   font-weight: 450;
+
+  line-height: 18px !important;
   letter-spacing: 0 !important;
 }
 
+/* =====================================================
+   25. TEXTO SUBMENU
+===================================================== */
+
 :host ::ng-deep a.submenu-item.mat-mdc-list-item .mdc-list-item__primary-text {
   font-size: 11px !important;
+
+  font-weight: 450;
+
   line-height: 16px !important;
-  font-weight: 450 !important;
 }
 
-:host ::ng-deep a.active.mat-mdc-list-item .mdc-list-item__primary-text {
+/* =====================================================
+   26. TEXTO ACTIVO
+===================================================== */
+
+:host ::ng-deep a.active.mat-mdc-list-item .mdc-list-item__primary-text,
+
+:host ::ng-deep a[aria-current='page'].mat-mdc-list-item .mdc-list-item__primary-text {
+  color:
+    var(--sidebar-active-text) !important;
+
   font-weight: 600 !important;
+
+  opacity: 1 !important;
 }
+
+/* =====================================================
+   27. ICONOS ACTIVOS
+===================================================== */
+
+:host ::ng-deep a.active.mat-mdc-list-item mat-icon,
+
+:host ::ng-deep a[aria-current='page'].mat-mdc-list-item mat-icon {
+  color:
+    var(--sidebar-active-icon) !important;
+
+  opacity: 1 !important;
+}
+
+/* =====================================================
+   28. ICONOS INICIALES
+===================================================== */
 
 :host ::ng-deep a.mat-mdc-list-item .mdc-list-item__start {
   margin-right: 11px !important;
@@ -236,34 +780,41 @@ a.submenu-item {
   margin-right: 9px !important;
 }
 
+/* =====================================================
+   29. ELEMENTO FINAL
+===================================================== */
+
 :host ::ng-deep a.mat-mdc-list-item .mdc-list-item__end {
   display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    scroll-behavior: auto !important;
+/* =====================================================
+   30. RESPONSIVE
+===================================================== */
+
+@media (max-width: 900px) {
+  .sidebar-company-logo {
+    max-width: 145px;
+  }
+
+  .sidebar-company-info strong {
+    max-width: 195px;
   }
 }
-/* Ajuste visual para Angular Material en ambos modos */
-:host ::ng-deep .menu-panel .mat-expansion-panel-header {
-  color: var(--ws-text) !important;
-}
-:host ::ng-deep .menu-panel .mat-expansion-indicator::after {
-  color: var(--ws-muted) !important;
-}
-:host ::ng-deep a.mat-mdc-list-item {
-  --mdc-list-list-item-label-text-color: var(--ws-text);
-}
-:host ::ng-deep a.mat-mdc-list-item:hover {
-  --mdc-list-list-item-hover-label-text-color: var(--ws-text);
-}
 
-/* Variables Material aplicadas en el host para evitar tonos de tema fijo */
-:host {
-  --mat-expansion-container-background-color: var(--ws-surface-muted);
-  --mat-expansion-container-text-color: var(--ws-text);
-  --mat-expansion-header-text-color: var(--ws-text);
-  --mdc-list-list-item-label-text-color: var(--ws-text);
-  --mdc-list-list-item-leading-icon-color: var(--ws-icon);
+/* =====================================================
+   31. ACCESIBILIDAD
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

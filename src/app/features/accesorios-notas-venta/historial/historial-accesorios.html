@@ -1,13 +1,29 @@
 <div class="page-header">
 
   <div>
-    <h1>Historial de notas de accesorios</h1>
-    <p>Consulta las ventas de accesorios registradas.</p>
+
+    <h1>
+      Historial de notas de accesorios
+    </h1>
+
+    <p>
+      Consulta las ventas de accesorios registradas
+    </p>
+
   </div>
 
-  <button mat-stroked-button type="button" (click)="cargar()" [disabled]="cargando()">
 
-    <mat-icon>refresh</mat-icon>
+  <button
+    mat-stroked-button
+    type="button"
+    (click)="cargar()"
+    [disabled]="cargando()"
+  >
+
+    <mat-icon>
+      refresh
+    </mat-icon>
+
     Actualizar
 
   </button>
@@ -15,72 +31,256 @@
 </div>
 
 
-<!-- ==========================================
-     CARGANDO
-========================================== -->
-
-@if (cargando()) {
-<mat-progress-bar mode="indeterminate" />
-}
-
-
 <div class="card">
 
-  <!-- ========================================
+  <!-- =====================================================
+       CARGANDO
+  ====================================================== -->
+
+  @if (cargando()) {
+
+    <mat-progress-bar
+      mode="indeterminate"
+    >
+    </mat-progress-bar>
+
+  }
+
+
+  <!-- =====================================================
        TOOLBAR
-  ======================================== -->
+  ====================================================== -->
 
   <div class="toolbar">
 
-    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+    <!-- =================================================
+         BÚSQUEDA
+    ================================================== -->
 
-      <mat-label>Buscar</mat-label>
+    <mat-form-field
+      appearance="outline"
+      class="search-field"
+      subscriptSizing="dynamic"
+    >
 
-      <input matInput [formControl]="buscarControl" placeholder="Nota, cliente, identificación..." autocomplete="off">
+      <input
+        matInput
+        type="text"
+        [formControl]="buscarControl"
+        placeholder="Nota, cliente, identificación, vendedor..."
+        autocomplete="off"
+      >
 
-      <mat-icon matSuffix>search</mat-icon>
+
+      @if (buscarControl.value) {
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="clear-search"
+          matTooltip="Limpiar búsqueda"
+          aria-label="Limpiar búsqueda"
+          (click)="limpiarBusqueda()"
+        >
+
+          <mat-icon>
+            close
+          </mat-icon>
+
+        </button>
+
+      } @else {
+
+        <mat-icon matSuffix>
+          search
+        </mat-icon>
+
+      }
 
     </mat-form-field>
 
 
-    <span class="records">
-      {{ registrosFiltrados().length }}
-      registros
-    </span>
+    <!-- =================================================
+         FILTROS
+    ================================================== -->
+
+    <div class="toolbar-right">
+
+      <div
+        class="document-filters"
+        role="group"
+        aria-label="Filtrar notas de accesorios"
+      >
+
+        <!-- TODOS -->
+
+        <button
+          type="button"
+          class="filter-chip"
+          [class.selected]="
+            filtroEstado() === 'TODOS'
+          "
+          [attr.aria-pressed]="
+            filtroEstado() === 'TODOS'
+          "
+          (click)="
+            cambiarFiltroEstado('TODOS')
+          "
+        >
+
+          Todos
+
+        </button>
+
+
+        <!-- FACTURADOS -->
+
+        <button
+          type="button"
+          class="filter-chip"
+          [class.selected]="
+            filtroEstado() === 'FACTURADO'
+          "
+          [attr.aria-pressed]="
+            filtroEstado() === 'FACTURADO'
+          "
+          (click)="
+            cambiarFiltroEstado('FACTURADO')
+          "
+        >
+
+          <mat-icon>
+            task_alt
+          </mat-icon>
+
+          Facturados
+
+        </button>
+
+
+        <!-- ANULADOS -->
+
+        <button
+          type="button"
+          class="filter-chip"
+          [class.selected]="
+            filtroEstado() === 'ANULADA'
+          "
+          [attr.aria-pressed]="
+            filtroEstado() === 'ANULADA'
+          "
+          (click)="
+            cambiarFiltroEstado('ANULADA')
+          "
+        >
+
+          <mat-icon>
+            cancel
+          </mat-icon>
+
+          Anulados
+
+        </button>
+
+      </div>
+
+
+      <!-- =================================================
+           TOTAL REAL EN SQL
+      ================================================== -->
+
+      <span class="records">
+
+        @if (
+          totalRegistros() > 0
+        ) {
+
+          {{
+            registroDesde()
+          }}
+
+          -
+
+          {{
+            registroHasta()
+          }}
+
+          de
+
+          {{
+            totalRegistros()
+          }}
+
+          registros
+
+        } @else {
+
+          0 registros
+
+        }
+
+      </span>
+
+    </div>
 
   </div>
 
 
-  <!-- ========================================
+  <!-- =====================================================
        TABLA
-  ======================================== -->
+  ====================================================== -->
 
   <div class="table-wrapper">
 
-    <table mat-table [dataSource]="registrosPagina()" matSort [matSortActive]="columnaOrden()"
-      [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
+    <table
+      mat-table
+      [dataSource]="registros()"
+      matSort
+      matSortDisableClear
+      [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()"
+      (matSortChange)="cambiarOrden($event)"
+    >
 
-
-      <!-- ====================================
+      <!-- =================================================
            NÚMERO DE NOTA
-      ==================================== -->
+      ================================================== -->
 
-      <ng-container matColumnDef="numeroNV">
+      <ng-container
+        matColumnDef="numeroNV"
+      >
 
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="numeroNV">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="numero"
+        >
 
           Nota
 
         </th>
 
-        <td mat-cell *matCellDef="let x">
+
+        <td
+          mat-cell
+          *matCellDef="let x"
+        >
 
           <span class="invoice-number">
+
             #{{ x.numeroNV }}
+
           </span>
 
+
           <small>
-            {{ x.fechaNotaVenta | date:'dd/MM/yyyy HH:mm' }}
+
+            {{
+              x.fechaNotaVenta
+              | date:'dd/MM/yyyy HH:mm'
+            }}
+
           </small>
 
         </td>
@@ -88,53 +288,41 @@
       </ng-container>
 
 
-      <!-- ====================================
-           FECHA (OPCIONAL)
-      ==================================== -->
-
-      <ng-container matColumnDef="fecha">
-
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="fecha">
-
-          Fecha
-
-        </th>
-
-        <td mat-cell *matCellDef="let x">
-
-          <strong>
-            {{ x.fechaNotaVenta | date:'dd/MM/yyyy' }}
-          </strong>
-
-          <small>
-            {{ x.fechaNotaVenta | date:'HH:mm' }}
-          </small>
-
-        </td>
-
-      </ng-container>
-
-
-      <!-- ====================================
+      <!-- =================================================
            CLIENTE
-      ==================================== -->
+      ================================================== -->
 
-      <ng-container matColumnDef="cliente">
+      <ng-container
+        matColumnDef="cliente"
+      >
 
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="cliente"
+        >
 
           Cliente
 
         </th>
 
-        <td mat-cell *matCellDef="let x">
+
+        <td
+          mat-cell
+          *matCellDef="let x"
+        >
 
           <span class="client-name">
+
             {{ x.nombreCliente }}
+
           </span>
 
+
           <small>
+
             {{ x.identificacion }}
+
           </small>
 
         </td>
@@ -142,44 +330,68 @@
       </ng-container>
 
 
-      <!-- ====================================
+      <!-- =================================================
            VENDEDOR
-      ==================================== -->
+      ================================================== -->
 
-      <ng-container matColumnDef="vendedor">
+      <ng-container
+        matColumnDef="vendedor"
+      >
 
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="vendedor">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="vendedor"
+        >
 
           Vendedor
 
         </th>
 
-        <td mat-cell *matCellDef="let x">
+
+        <td
+          mat-cell
+          *matCellDef="let x"
+        >
+
           {{ x.vendedor }}
+
         </td>
 
       </ng-container>
 
 
-      <!-- ====================================
+      <!-- =================================================
            TOTAL
-      ==================================== -->
+      ================================================== -->
 
-      <ng-container matColumnDef="total">
+      <ng-container
+        matColumnDef="total"
+      >
 
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="total" class="money-column">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="total"
+          class="money-column"
+        >
 
           Total
 
         </th>
 
-        <td mat-cell *matCellDef="let x" class="money-column">
+
+        <td
+          mat-cell
+          *matCellDef="let x"
+          class="money-column"
+        >
 
           <span class="total-value">
 
             {{
-            x.totalVenta
-            | currency:'USD':'symbol':'1.2-2'
+              x.totalVenta
+              | currency:'USD':'symbol':'1.2-2'
             }}
 
           </span>
@@ -189,21 +401,41 @@
       </ng-container>
 
 
-      <!-- ====================================
+      <!-- =================================================
            ESTADO
-      ==================================== -->
+      ================================================== -->
 
-      <ng-container matColumnDef="estado">
+      <ng-container
+        matColumnDef="estado"
+      >
 
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="estado"
+          class="status-column"
+        >
 
           Estado
 
         </th>
 
-        <td mat-cell *matCellDef="let x" class="status-column">
 
-          <span class="status" [class.active]="x.estado !== 'ANULADA'" [class.cancelled]="x.estado === 'ANULADA'">
+        <td
+          mat-cell
+          *matCellDef="let x"
+          class="status-column"
+        >
+
+          <span
+            class="status"
+            [class.active]="
+              x.estado === 'FACTURADO'
+            "
+            [class.cancelled]="
+              x.estado === 'ANULADA'
+            "
+          >
 
             {{ x.estado }}
 
@@ -214,41 +446,87 @@
       </ng-container>
 
 
-      <!-- ====================================
+      <!-- =================================================
            ACCIONES
-      ==================================== -->
+      ================================================== -->
 
-      <ng-container matColumnDef="acciones">
+      <ng-container
+        matColumnDef="acciones"
+      >
 
-        <th mat-header-cell *matHeaderCellDef class="col-actions">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="actions-header"
+        >
 
           Acciones
 
         </th>
 
-        <td mat-cell *matCellDef="let nota" class="actions-cell">
 
-          <!-- VISUALIZAR -->
+        <td
+          mat-cell
+          *matCellDef="let nota"
+          class="actions-cell"
+        >
 
-          <button mat-icon-button type="button" matTooltip="Visualizar" class="view-btn" (click)="visualizar(nota)">
+          <!-- =============================================
+               VISUALIZAR
 
-            <mat-icon>visibility</mat-icon>
+               FACTURADO ✅
+               ANULADA ✅
+          ============================================== -->
+
+          <button
+            mat-icon-button
+            type="button"
+            matTooltip="Visualizar"
+            class="view-btn"
+            (click)="visualizar(nota)"
+          >
+
+            <mat-icon>
+              visibility
+            </mat-icon>
 
           </button>
 
 
-          <!-- ANULAR -->
+          <!-- =============================================
+               ANULAR
+
+               ADMINISTRADOR + FACTURADO
+          ============================================== -->
 
           @if (
-          esAdministrador() &&
-          nota.estado !== 'ANULADA'
+            esAdministrador()
+            &&
+            nota.estado === 'FACTURADO'
           ) {
 
-          <button mat-icon-button type="button" matTooltip="Anular nota" class="delete-btn" (click)="anular(nota)">
+            <button
+              mat-icon-button
+              type="button"
+              matTooltip="Anular nota"
+              class="delete-btn"
+              [disabled]="
+                anulando() === nota.id
+              "
+              (click)="anular(nota)"
+            >
 
-            <mat-icon>cancel</mat-icon>
+              <mat-icon>
 
-          </button>
+                {{
+                  anulando() === nota.id
+                  ? 'hourglass_top'
+                  : 'cancel'
+                }}
+
+              </mat-icon>
+
+            </button>
 
           }
 
@@ -257,32 +535,66 @@
       </ng-container>
 
 
-      <!-- ====================================
+      <!-- =================================================
            FILAS
-      ==================================== -->
+      ================================================== -->
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns">
+      <tr
+        mat-header-row
+        *matHeaderRowDef="
+          displayedColumns
+        "
+      >
       </tr>
 
 
-      <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="
-    (row.estado ?? '').trim().toUpperCase() === 'ANULADA'
-  ">
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          columns: displayedColumns
+        "
+        [class.row-cancelled]="
+          row.estado === 'ANULADA'
+        "
+      >
       </tr>
 
 
-
-      <!-- ====================================
+      <!-- =================================================
            SIN DATOS
-      ==================================== -->
+      ================================================== -->
 
-      <tr class="mat-row no-data-row" *matNoDataRow>
+      <tr
+        *matNoDataRow
+        class="no-data-row"
+      >
 
-        <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+        <td
+          class="no-data"
+          [attr.colspan]="
+            displayedColumns.length
+          "
+        >
 
-          <mat-icon>receipt_long</mat-icon>
+          <mat-icon>
+            receipt_long
+          </mat-icon>
 
-          No existen notas de accesorios para mostrar.
+
+          @if (
+            busqueda()
+            ||
+            filtroEstado() !== 'TODOS'
+          ) {
+
+            No existen notas que coincidan con los filtros aplicados
+
+          } @else {
+
+            No existen notas de accesorios para mostrar
+
+          }
 
         </td>
 
@@ -293,12 +605,18 @@
   </div>
 
 
-  <!-- ========================================
-       PAGINADOR
-  ======================================== -->
+  <!-- =====================================================
+       PAGINADOR REMOTO
+  ====================================================== -->
 
-  <mat-paginator [length]="registrosFiltrados().length" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
-    [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons (page)="cambiarPagina($event)">
+  <mat-paginator
+    [length]="totalRegistros()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="opcionesPagina"
+    showFirstLastButtons
+    (page)="cambiarPagina($event)"
+  >
   </mat-paginator>
 
 </div>

@@ -1,147 +1,479 @@
-:host { display: block; min-width: 0; }
+/* =====================================================
+   WORKSTOCK - HEADER
+   ESTILOS DEPURADOS Y UNIFICADOS
+
+   Compatible con:
+   - WorkStock original (blanco)
+   - M&C clásico
+   - Azul WorkStock
+   - Verde
+   - Morado
+   - Grafito
+
+   Conserva el modo claro / oscuro
+===================================================== */
+
+/* =====================================================
+   HOST
+===================================================== */
+
+:host {
+  display: block;
+  min-width: 0;
+
+  /*
+   * Colores predeterminados para paletas oscuras.
+   * El tema original los sobrescribe más abajo.
+   */
+
+  --header-text: #ffffff;
+  --header-text-muted: rgba(255, 255, 255, 0.85);
+
+  --header-button-bg: rgba(255, 255, 255, 0.15);
+  --header-button-hover: rgba(255, 255, 255, 0.25);
+
+  --header-profile-bg: transparent;
+  --header-profile-hover: rgba(255, 255, 255, 0.13);
+
+  --header-avatar-bg: rgba(255, 255, 255, 0.18);
+  --header-border: rgba(0, 0, 0, 0.12);
+}
+
+/* =====================================================
+   HEADER PRINCIPAL
+===================================================== */
 
 .header {
   display: flex;
   align-items: center;
+
   height: 60px;
   min-height: 60px;
+
   box-sizing: border-box;
+
   padding: 0 18px;
   gap: 10px;
+
   position: relative;
   z-index: 10;
-  background: var(--ws-surface);
-  color: var(--ws-text);
-  border-bottom: 1px solid var(--ws-border);
+
+  background: var(--ws-header-bg,
+      var(--ws-surface, #ffffff));
+
+  color: var(--header-text);
+
+  border-bottom: 1px solid var(--header-border);
 }
 
-.menu-button { flex: 0 0 auto; color: var(--ws-muted); width: 36px; height: 36px; }
+/* =====================================================
+   BOTÓN MENÚ
+===================================================== */
 
-.page-heading {
+.menu-button {
+  flex: 0 0 auto;
+
+  width: 36px;
+  height: 36px;
+
+  color: var(--header-text) !important;
+
+  mat-icon {
+    color: inherit;
+  }
+}
+
+/* =====================================================
+   IDENTIDAD WORKSTOCK
+===================================================== */
+
+.workstock-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+  min-width: 0;
+
+  color: var(--header-text);
+}
+
+.workstock-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  flex: 0 0 30px;
+
+  border-radius: 7px;
+
+  background: var(--header-button-bg);
+  color: var(--header-text);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+    line-height: 18px;
+
+    color: inherit;
+  }
+}
+
+.workstock-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  justify-content: center;
+
+  gap: 1px;
+
   min-width: 0;
   line-height: 1.15;
 
-  .page-eyebrow { font-size: 9px; font-weight: 600; letter-spacing: .9px; color: var(--ws-muted); }
-  strong { font-size: 13px; font-weight: 650; white-space: nowrap; }
+  strong {
+    display: block;
+
+    color: var(--header-text);
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 15px;
+
+    white-space: nowrap;
+  }
+
+  small {
+    display: block;
+
+    color: var(--header-text-muted);
+
+    font-size: 9px;
+    font-weight: 400;
+    line-height: 12px;
+
+    white-space: nowrap;
+  }
 }
 
-.spacer { flex: 1 1 auto; min-width: 8px; }
+/* =====================================================
+   ESPACIADOR
+===================================================== */
+
+.spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
+}
+
+/* =====================================================
+   SELECTOR DE PALETAS Y MODO OSCURO
+===================================================== */
+
+.palette-toggle,
+.theme-toggle {
+  flex: 0 0 36px;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 10px;
+
+  color: var(--header-text) !important;
+  background: var(--header-button-bg) !important;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--header-button-hover) !important;
+  }
+
+  mat-icon {
+    width: 19px;
+    height: 19px;
+
+    font-size: 19px;
+    line-height: 19px;
+
+    color: inherit;
+  }
+}
+
+/* =====================================================
+   BOTÓN DE USUARIO
+===================================================== */
 
 .user-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   flex: 0 0 auto;
+
   height: 40px;
+
   min-width: 0;
   max-width: 218px;
+
   padding: 0 8px !important;
+
   border-radius: 10px;
+
+  background: var(--header-profile-bg);
+  color: var(--header-text) !important;
+
   line-height: normal;
   text-align: left;
-  &:hover { background: var(--ws-hover); }
+
+  &:hover:not(:disabled) {
+    background: var(--header-profile-hover);
+  }
 }
 
-// Importante: Material MDC envuelve el contenido del botón en .mdc-button__label.
-// El flex debe estar DENTRO de esa envoltura, no depender del botón externo.
+/* =====================================================
+   CONTENIDO DEL PERFIL
+===================================================== */
+
 .profile-content {
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: nowrap;
   justify-content: flex-start;
+
   gap: 9px;
+
   width: 100%;
   min-width: 0;
   height: 40px;
+
   vertical-align: middle;
   text-transform: none;
 }
+
+/* =====================================================
+   AVATAR
+===================================================== */
 
 .avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   width: 30px;
   height: 30px;
-  flex: 0 0 30px;
-  border-radius: 50%;
-  background: var(--ws-brand-soft);
-  color: var(--ws-brand);
 
-  mat-icon { display: block; width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
+  flex: 0 0 30px;
+
+  border-radius: 50%;
+
+  background: var(--header-avatar-bg);
+  color: var(--header-text);
+
+  mat-icon {
+    display: block;
+
+    width: 18px;
+    height: 18px;
+
+    font-size: 18px;
+    line-height: 18px;
+
+    color: inherit;
+  }
 }
+
+/* =====================================================
+   INFORMACIÓN DEL USUARIO
+===================================================== */
 
 .user-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
+
   gap: 2px;
+
   flex: 0 1 auto;
+
   min-width: 0;
   max-width: 140px;
-  margin: 0;
-  padding: 0;
+
   text-align: left;
   line-height: normal;
 
   .name {
     display: block;
+
     overflow: hidden;
+
+    color: var(--header-text);
+
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 14px;
+
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 11px;
-    line-height: 14px;
-    font-weight: 650;
-    color: var(--ws-text-strong);
   }
+
   .role {
     display: block;
+
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+
+    color: var(--header-text-muted);
+
     font-size: 9px;
     line-height: 12px;
-    font-weight: 400;
-    color: var(--ws-muted);
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
     text-transform: capitalize;
   }
 }
 
-.arrow { display: block; width: 17px; height: 17px; font-size: 17px; line-height: 17px; color: var(--ws-muted); flex: 0 0 17px; margin: 0; }
+/* =====================================================
+   FLECHA DEL PERFIL
+===================================================== */
+
+.arrow {
+  display: block;
+
+  width: 17px;
+  height: 17px;
+
+  flex: 0 0 17px;
+
+  color: var(--header-text);
+
+  font-size: 17px;
+  line-height: 17px;
+}
+
+/* =====================================================
+   WORKSTOCK ORIGINAL
+   HEADER BLANCO - TEXTOS OSCUROS
+===================================================== */
+
+:host-context(.layout-container[data-workstock-palette='original']) {
+
+  /*
+   * Sustituye solamente los colores.
+   * No modifica estructura ni dimensiones.
+   */
+
+  --header-text: #172b4d;
+  --header-text-muted: #64748b;
+
+  --header-button-bg: #edf3fa;
+  --header-button-hover: #e2eaf5;
+
+  --header-profile-bg: #edf3fa;
+  --header-profile-hover: #e2eaf5;
+
+  --header-avatar-bg: #e8f1fc;
+  --header-border: #e2e8f0;
+
+  .header {
+    background: #ffffff;
+  }
+}
+
+/* =====================================================
+   MODO OSCURO + WORKSTOCK ORIGINAL
+
+   Esta regla solo se aplica cuando el layout utiliza
+   la clase .dark-theme o .dark.
+
+   Si el modo oscuro de tu aplicación utiliza otro
+   selector, se debe adaptar a ese selector real.
+===================================================== */
+
+:host-context(.layout-container.dark-theme [data-workstock-palette='original']) {
+  --header-text: #f1f5f9;
+  --header-text-muted: #cbd5e1;
+
+  --header-button-bg: rgba(255, 255, 255, 0.10);
+  --header-button-hover: rgba(255, 255, 255, 0.18);
+
+  --header-profile-bg: rgba(255, 255, 255, 0.08);
+  --header-profile-hover: rgba(255, 255, 255, 0.14);
+
+  --header-avatar-bg: rgba(255, 255, 255, 0.12);
+  --header-border: #334155;
+
+  .header {
+    background: #1e293b;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 
 @media (max-width: 520px) {
-  .header { padding: 0 10px; }
-  .page-eyebrow { display: none; }
-  .user-info, .arrow { display: none; }
-  .user-button { padding: 0 5px !important; }
-  .profile-content { gap: 0; }
+
+  .header {
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .workstock-text small {
+    display: none;
+  }
+
+  .user-info,
+  .arrow {
+    display: none;
+  }
+
+  .user-button {
+    padding: 0 5px !important;
+  }
+
+  .profile-content {
+    gap: 0;
+  }
 }
 
-.theme-button {
-  flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  color: var(--ws-muted);
-  border-radius: 10px;
-  transition: background-color 160ms ease, color 160ms ease;
-  &:hover { background: var(--ws-hover); color: var(--ws-brand); }
-  mat-icon { font-size: 19px; width: 19px; height: 19px; }
+
+/* =====================================================
+   HEADER - MODO OSCURO
+===================================================== */
+
+:host-context(
+  .layout-container.dark-theme
+) {
+  --header-text: #f1f5f9;
+  --header-text-muted: #cbd5e1;
+
+  --header-button-bg: rgba(255, 255, 255, 0.10);
+  --header-button-hover: rgba(255, 255, 255, 0.18);
+
+  --header-profile-bg: rgba(255, 255, 255, 0.08);
+  --header-profile-hover: rgba(255, 255, 255, 0.14);
+
+  --header-avatar-bg: rgba(255, 255, 255, 0.12);
+  --header-border: #334155;
 }
 
+/* Prioridad cuando la paleta seleccionada sea original */
+:host-context(
+  .layout-container.dark-theme[data-workstock-palette='original']
+) {
+  --header-text: #f1f5f9;
+  --header-text-muted: #cbd5e1;
 
-/* Botón de apariencia con presencia discreta y evidente */
-.theme-toggle {
-  flex: 0 0 36px;
-  width: 36px;
-  height: 36px;
-  color: var(--ws-brand) !important;
-  background: var(--ws-brand-soft) !important;
-  border-radius: 10px;
-  transition: background-color .18s ease, color .18s ease;
+  --header-button-bg: rgba(255, 255, 255, 0.10);
+  --header-button-hover: rgba(255, 255, 255, 0.18);
+
+  --header-profile-bg: rgba(255, 255, 255, 0.08);
+  --header-profile-hover: rgba(255, 255, 255, 0.14);
+
+  --header-avatar-bg: rgba(255, 255, 255, 0.12);
 }
-.theme-toggle:hover { background: var(--ws-active) !important; }
-.theme-toggle mat-icon { font-size: 19px; width: 19px; height: 19px; }

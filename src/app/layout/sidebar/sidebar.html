@@ -1,322 +1,582 @@
 <div class="sidebar-container">
 
-  <!-- LOGO -->
-  <div class="sidebar-logo">
-    <mat-icon>inventory_2</mat-icon>
+  <!-- ===========================================
+       IDENTIDAD DEL CONTEXTO
+  ============================================ -->
 
-    <div>
-      <strong>WorkStock</strong>
-      <small>{{ esSuperAdmin() ? 'Administración de plataforma' : 'Gestión comercial' }}</small>
+  @if (esSuperAdmin()) {
+
+  <div class="sidebar-company sidebar-company-platform">
+
+    <span class="sidebar-company-fallback">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </span>
+
+    <div class="sidebar-company-info">
+      <strong>Plataforma WorkStock</strong>
+      <small>Administración global</small>
     </div>
+
   </div>
+
+  } @else {
+
+  <div class="sidebar-company">
+
+    <div class="sidebar-company-logo-area">
+
+      @if (logoEmpresaUrl()) {
+
+      <img class="sidebar-company-logo" [src]="logoEmpresaUrl()"
+        [alt]="'Logo de ' + (empresaActual()?.nombre ?? 'la empresa')">
+
+      } @else {
+
+      <span class="sidebar-company-fallback">
+        <mat-icon>business</mat-icon>
+      </span>
+
+      }
+
+    </div>
+
+    <div class="sidebar-company-info">
+
+      <strong [title]="empresaActual()?.nombre ?? 'Empresa'">
+
+        @if (cargandoEmpresa()) {
+        Cargando...
+        } @else {
+        {{ empresaActual()?.nombre ?? 'Empresa' }}
+        }
+
+      </strong>
+
+    </div>
+
+  </div>
+
+  }
+
+  <!-- ===========================================
+       NAVEGACIÓN PRINCIPAL
+  ============================================ -->
 
   <mat-nav-list aria-label="Navegación principal">
 
+    <!-- =========================================
+         SUPERADMIN
+    ========================================== -->
+
     @if (esSuperAdmin()) {
-      <div class="menu-section">PLATAFORMA WORKSTOCK</div>
 
-      <a mat-list-item routerLink="/administracion" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }" (click)="onNavigate()">
-        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-        <span matListItemTitle>Empresas y usuarios</span>
-      </a>
+    <div class="menu-section">
+      PLATAFORMA WORKSTOCK
+    </div>
+
+    <a mat-list-item routerLink="/administracion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        admin_panel_settings
+      </mat-icon>
+
+      <span matListItemTitle>
+        Empresas y usuarios
+      </span>
+
+    </a>
+
     } @else {
-      <!-- INICIO -->
-      <a mat-list-item routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        (click)="onNavigate()">
 
-        <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Inicio</span>
-      </a>
+    <!-- =======================================
+           INICIO
+           ADMINISTRADOR Y VENDEDOR
+      ======================================== -->
+
+    <a mat-list-item routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        dashboard
+      </mat-icon>
+
+      <span matListItemTitle>
+        Inicio
+      </span>
+
+    </a>
 
 
-      <!-- ============================
+    <!-- =======================================
            VENTAS CELULARES
-      ============================ -->
-      <div class="menu-section">VENTAS CELULARES</div>
+           ADMINISTRADOR Y VENDEDOR
+      ======================================== -->
 
-      <!-- FACTURACIÓN -->
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'facturas'">
+    <div class="menu-section">
+      VENTAS CELULARES
+    </div>
 
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>receipt_long</mat-icon>
-            <span>Facturación</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
+    <!-- FACTURACIÓN -->
 
-        <a mat-list-item routerLink="/facturas/nueva" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'facturas'">
 
-          <mat-icon matListItemIcon>post_add</mat-icon>
-          <span matListItemTitle>Generar factura</span>
-        </a>
+      <mat-expansion-panel-header>
 
-        <a mat-list-item routerLink="/facturas/historial" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+        <mat-panel-title>
+          <mat-icon>receipt_long</mat-icon>
+          <span>Facturación</span>
+        </mat-panel-title>
 
-          <mat-icon matListItemIcon>history</mat-icon>
-          <span matListItemTitle>Historial de facturas</span>
-        </a>
+      </mat-expansion-panel-header>
 
-      </mat-expansion-panel>
-
-
-      <!-- NOTAS DE VENTA -->
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'notas'">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>description</mat-icon>
-            <span>Notas de venta</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <a mat-list-item routerLink="/notas-venta/nueva" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>note_add</mat-icon>
-          <span matListItemTitle>Nueva nota de venta</span>
-        </a>
-
-        <a mat-list-item routerLink="/notas-venta/historial" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>history</mat-icon>
-          <span matListItemTitle>Historial de notas de ventas</span>
-        </a>
-
-      </mat-expansion-panel>
-
-
-      <!-- ============================
-           VENTAS ACCESORIOS
-      ============================ -->
-      <div class="menu-section">VENTAS ACCESORIOS</div>
-
-      <!-- VENTA DE ACCESORIOS -->
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'accesorios'">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>description</mat-icon>
-            <span>Notas de venta</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <a mat-list-item routerLink="/accesorios/notas-venta/nueva" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>add_shopping_cart</mat-icon>
-          <span matListItemTitle>Nueva nota de venta</span>
-        </a>
-
-        <a mat-list-item routerLink="/accesorios/notas-venta/historial" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>history</mat-icon>
-          <span matListItemTitle>Historial de notas</span>
-        </a>
-
-      </mat-expansion-panel>
-
-
-      <!-- ============================
-           ADMINISTRADOR
-      ============================ -->
-      @if (esAdministrador()) {
-
-      <div class="menu-section">OPERACIONES</div>
-
-      <!-- SERVICIO TÉCNICO -->
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'tecnico'">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>build</mat-icon>
-            <span>Servicio técnico</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <a mat-list-item routerLink="/servicio-tecnico/nueva" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>post_add</mat-icon>
-          <span matListItemTitle>Nueva orden</span>
-        </a>
-
-        <a mat-list-item routerLink="/servicio-tecnico/pendientes" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>pending_actions</mat-icon>
-          <span matListItemTitle>Órdenes pendientes</span>
-        </a>
-
-        <a mat-list-item routerLink="/servicio-tecnico/historial" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>history</mat-icon>
-          <span matListItemTitle>Órdenes finalizadas</span>
-        </a>
-
-      </mat-expansion-panel>
-
-
-      <!-- ============================
-             GESTIÓN
-        ============================ -->
-      <div class="menu-section">CONTACTOS</div>
-
-      <!-- CLIENTES -->
-      <a mat-list-item routerLink="/clientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        (click)="onNavigate()">
-
-        <mat-icon matListItemIcon>groups</mat-icon>
-        <span matListItemTitle>Clientes</span>
-      </a>
-
-      <!-- PROVEEDORES -->
-      <a mat-list-item routerLink="/proveedores" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        (click)="onNavigate()">
-
-        <mat-icon matListItemIcon>local_shipping</mat-icon>
-        <span matListItemTitle>Proveedores</span>
-      </a>
-
-
-
-      <!-- ==========================================
-       REPORTERÍA
-  ========================================== -->
-
-      <div class="menu-section">
-        REPORTERÍA
-      </div>
-
-      <a mat-list-item routerLink="/reporteria/exportar-informacion" routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }" (click)="onNavigate()">
+      <a mat-list-item routerLink="/facturas/nueva" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
 
         <mat-icon matListItemIcon>
-          file_download
+          post_add
         </mat-icon>
 
         <span matListItemTitle>
-          Exportar información
+          Generar factura
+        </span>
+
+      </a>
+
+      <a mat-list-item routerLink="/facturas/historial" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          history
+        </mat-icon>
+
+        <span matListItemTitle>
+          Historial de facturas
+        </span>
+
+      </a>
+
+    </mat-expansion-panel>
+
+
+    <!-- NOTAS DE VENTA CELULARES -->
+
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'notas'">
+
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>
+          <mat-icon>description</mat-icon>
+          <span>Notas de venta</span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+      <a mat-list-item routerLink="/notas-venta/nueva" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          note_add
+        </mat-icon>
+
+        <span matListItemTitle>
+          Nueva nota de venta
+        </span>
+
+      </a>
+
+      <a mat-list-item routerLink="/notas-venta/historial" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          history
+        </mat-icon>
+
+        <span matListItemTitle>
+          Historial de notas de ventas
+        </span>
+
+      </a>
+
+    </mat-expansion-panel>
+
+
+    <!-- =======================================
+           VENTAS ACCESORIOS
+           ADMINISTRADOR Y VENDEDOR
+      ======================================== -->
+
+    <div class="menu-section">
+      VENTAS ACCESORIOS
+    </div>
+
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'accesorios'">
+
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>
+          <mat-icon>description</mat-icon>
+          <span>Notas de venta</span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+      <a mat-list-item routerLink="/accesorios/notas-venta/nueva" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          add_shopping_cart
+        </mat-icon>
+
+        <span matListItemTitle>
+          Nueva nota de venta
+        </span>
+
+      </a>
+
+      <a mat-list-item routerLink="/accesorios/notas-venta/historial" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          history
+        </mat-icon>
+
+        <span matListItemTitle>
+          Historial de notas
+        </span>
+
+      </a>
+
+    </mat-expansion-panel>
+
+
+    <!-- =======================================
+           INVENTARIO
+      ======================================== -->
+
+    <div class="menu-section">
+      INVENTARIO
+    </div>
+
+
+    <!-- =======================================
+           MARCAS
+           SOLO ADMINISTRADOR
+      ======================================== -->
+
+    @if (esAdministrador()) {
+
+    <a mat-list-item routerLink="/marcas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        sell
+      </mat-icon>
+
+      <span matListItemTitle>
+        Marcas de productos
+      </span>
+
+    </a>
+
+    }
+
+
+    <!-- =======================================
+           CELULARES
+           ADMINISTRADOR Y VENDEDOR
+      ======================================== -->
+
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'celulares'">
+
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>
+          <mat-icon>smartphone</mat-icon>
+          <span>Celulares</span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+
+      <!-- STOCK DE CELULARES -->
+
+      <a mat-list-item routerLink="/inventario/celulares" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          inventory_2
+        </mat-icon>
+
+        <span matListItemTitle>
+          Stock de celulares
         </span>
 
       </a>
 
 
-      <!-- ============================
-             INVENTARIO
-        ============================ -->
-      <div class="menu-section">INVENTARIO</div>
+      <!-- MODELOS: SOLO ADMINISTRADOR -->
 
-      <!-- MARCAS -->
-      <a mat-list-item routerLink="/marcas" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        (click)="onNavigate()">
+      @if (esAdministrador()) {
 
-        <mat-icon matListItemIcon>sell</mat-icon>
-        <span matListItemTitle>Marcas de productos</span>
+      <a mat-list-item routerLink="/modelos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          devices
+        </mat-icon>
+
+        <span matListItemTitle>
+          Modelos de dispositivos
+        </span>
+
       </a>
-
-
-      <!-- CELULARES -->
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'celulares'">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>smartphone</mat-icon>
-            <span>Celulares</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <a mat-list-item routerLink="/inventario/celulares" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>inventory_2</mat-icon>
-          <span matListItemTitle>Stock de celulares</span>
-        </a>
-
-        <a mat-list-item routerLink="/modelos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-          class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>devices</mat-icon>
-          <span matListItemTitle>Modelos de dispositivos</span>
-        </a>
-
-      </mat-expansion-panel>
-
-
-      <!-- ACCESORIOS -->
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'inventario-accesorios'">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>headphones</mat-icon>
-            <span>Accesorios</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <a mat-list-item routerLink="/accesorios/accesorios-stock" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>inventory_2</mat-icon>
-          <span matListItemTitle>Stock de accesorios</span>
-        </a>
-
-        <a mat-list-item routerLink="/accesorios/categorias" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>category</mat-icon>
-          <span matListItemTitle>Categorías de accesorios</span>
-        </a>
-
-      </mat-expansion-panel>
-
-
-      <!-- ============================
-             ADMINISTRACIÓN
-        ============================ -->
-      <div class="menu-section">ADMINISTRACIÓN</div>
-
-      <a mat-list-item routerLink="/administracion" routerLinkActive="active"
-         [routerLinkActiveOptions]="{ exact: true }" (click)="onNavigate()">
-        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-        <span matListItemTitle>Mis usuarios</span>
-      </a>
-
-      <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'configuracion'">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>settings</mat-icon>
-            <span>Configuración</span>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-
-
-        <!-- ==========================================
-       ACTUALIZACIÓN DEL IVA
-  ========================================== -->
-
-        <a mat-list-item routerLink="/configuracion/iva" routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-          <mat-icon matListItemIcon>percent</mat-icon>
-
-          <span matListItemTitle>
-            Actualización del IVA
-          </span>
-
-        </a>
-
-
-
-      </mat-expansion-panel>
 
       }
+
+    </mat-expansion-panel>
+
+
+    <!-- =======================================
+           ACCESORIOS
+           SOLO ADMINISTRADOR
+      ======================================== -->
+
+    @if (esAdministrador()) {
+
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'inventario-accesorios'">
+
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>
+          <mat-icon>headphones</mat-icon>
+          <span>Accesorios</span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+
+      <!-- STOCK DE ACCESORIOS -->
+
+      <a mat-list-item routerLink="/accesorios/accesorios-stock" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          inventory_2
+        </mat-icon>
+
+        <span matListItemTitle>
+          Stock de accesorios
+        </span>
+
+      </a>
+
+
+      <!-- CATEGORÍAS DE ACCESORIOS -->
+
+      <a mat-list-item routerLink="/accesorios/categorias" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          category
+        </mat-icon>
+
+        <span matListItemTitle>
+          Categorías de accesorios
+        </span>
+
+      </a>
+
+    </mat-expansion-panel>
+
+    }
+
+
+    <!-- =======================================
+           FUNCIONALIDADES ADMINISTRATIVAS
+      ======================================== -->
+
+    @if (esAdministrador()) {
+
+    <!-- =====================================
+             OPERACIONES
+        ====================================== -->
+
+    <div class="menu-section">
+      OPERACIONES
+    </div>
+
+
+    <!-- SERVICIO TÉCNICO -->
+
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'tecnico'">
+
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>
+          <mat-icon>build</mat-icon>
+          <span>Servicio técnico</span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+
+      <!-- NUEVA ORDEN -->
+
+      <a mat-list-item routerLink="/servicio-tecnico/nueva" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          post_add
+        </mat-icon>
+
+        <span matListItemTitle>
+          Nueva orden
+        </span>
+
+      </a>
+
+
+      <!-- ÓRDENES UNIFICADAS -->
+
+      <a mat-list-item routerLink="/servicio-tecnico/ordenes" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          assignment
+        </mat-icon>
+
+        <span matListItemTitle>
+          Órdenes de trabajo
+        </span>
+
+      </a>
+
+    </mat-expansion-panel>
+
+
+    <!-- =====================================
+             CONTACTOS
+        ====================================== -->
+
+    <div class="menu-section">
+      CONTACTOS
+    </div>
+
+
+    <!-- CLIENTES -->
+
+    <a mat-list-item routerLink="/clientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        groups
+      </mat-icon>
+
+      <span matListItemTitle>
+        Clientes
+      </span>
+
+    </a>
+
+
+    <!-- PROVEEDORES -->
+
+    <a mat-list-item routerLink="/proveedores" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        local_shipping
+      </mat-icon>
+
+      <span matListItemTitle>
+        Proveedores
+      </span>
+
+    </a>
+
+
+    <!-- =====================================
+             REPORTERÍA
+        ====================================== -->
+
+    <div class="menu-section">
+      REPORTERÍA
+    </div>
+
+    <a mat-list-item routerLink="/reporteria/exportar-informacion" routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }" (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        file_download
+      </mat-icon>
+
+      <span matListItemTitle>
+        Exportar información
+      </span>
+
+    </a>
+
+
+    <!-- =====================================
+             ADMINISTRACIÓN
+        ====================================== -->
+
+    <div class="menu-section">
+      ADMINISTRACIÓN
+    </div>
+
+
+    <!-- MIS USUARIOS -->
+
+    <a mat-list-item routerLink="/administracion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="onNavigate()">
+
+      <mat-icon matListItemIcon>
+        admin_panel_settings
+      </mat-icon>
+
+      <span matListItemTitle>
+        Mis usuarios
+      </span>
+
+    </a>
+
+
+    <!-- =====================================
+             CONFIGURACIÓN
+        ====================================== -->
+
+    <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'configuracion'">
+
+      <mat-expansion-panel-header>
+
+        <mat-panel-title>
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+
+      <!-- ACTUALIZACIÓN IVA -->
+
+      <a mat-list-item routerLink="/configuracion/iva" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          percent
+        </mat-icon>
+
+        <span matListItemTitle>
+          Actualización del IVA
+        </span>
+
+      </a>
+
+    </mat-expansion-panel>
+
+    }
 
     }
 

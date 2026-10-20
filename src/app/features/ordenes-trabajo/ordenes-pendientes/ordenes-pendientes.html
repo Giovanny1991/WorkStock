@@ -1,175 +1,472 @@
 <div class="page-header">
+
   <div>
-    <h1>Órdenes pendientes</h1>
-    <p>Gestión de órdenes de trabajo ingresadas</p>
+
+    <h1>
+      Órdenes pendientes
+    </h1>
+
+    <p>
+      Gestión de órdenes de trabajo ingresadas
+    </p>
+
   </div>
+
 
   <button mat-stroked-button type="button" [disabled]="cargando()" (click)="refrescar()">
-    <mat-icon>refresh</mat-icon>
+
+    <mat-icon>
+      refresh
+    </mat-icon>
+
     Actualizar
+
   </button>
+
 </div>
 
+
 <div class="card">
-  @if (cargando()) {
-  <mat-progress-bar mode="indeterminate" />
+
+  <!-- =================================================
+       CARGANDO
+  ================================================== -->
+
+  @if (
+  cargando()
+  ) {
+
+  <mat-progress-bar mode="indeterminate">
+  </mat-progress-bar>
+
   }
 
+
+  <!-- =================================================
+       TOOLBAR
+  ================================================== -->
+
   <div class="toolbar">
+
     <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <mat-label>Buscar</mat-label>
+
+      <mat-label>
+        Buscar
+      </mat-label>
+
+
       <input matInput [formControl]="buscarControl" placeholder="Orden, cliente, identificación, IMEI..."
         autocomplete="off">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-
-    <span class="records">{{ ordenesFiltradas().length }} registros</span>
-  </div>
-
-  <div class="table-wrapper">
-    <table mat-table [dataSource]="ordenesPaginadas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
-      [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
-
-      <!-- ORDEN -->
-      <ng-container matColumnDef="numeroOrden">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="numeroOrden">Orden</th>
-        <td mat-cell *matCellDef="let x">
-          <span class="invoice-number">#{{ x.numeroOrden }}</span>
-          <small>{{ x.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</small>
-        </td>
-      </ng-container>
-
-      <!-- CLIENTE -->
-      <ng-container matColumnDef="cliente">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">Cliente</th>
-        <td mat-cell *matCellDef="let x">
-          <div class="client-name">{{ x.nombreCliente }}</div>
-          <small>{{ x.identificacion }}</small>
-        </td>
-      </ng-container>
-
-      <!-- EQUIPO -->
-      <ng-container matColumnDef="equipo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="equipo">Equipo</th>
-        <td mat-cell *matCellDef="let x">
-          <div class="client-name">{{ x.modeloDispositivo }}</div>
-          <small>IMEI: {{ x.imei }}</small>
-        </td>
-      </ng-container>
-
-      <!-- VALOR -->
-      <ng-container matColumnDef="valor">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="valor">Valor</th>
-        <td mat-cell *matCellDef="let x">
-          @if (valorOrden(x) === null) {
-          <span class="status pending">POR CONFIRMAR</span>
-          } @else {
-          <span class="total-value">
-            {{ valorOrden(x) | currency:'USD':'symbol':'1.2-2' }}
-          </span>
-          }
-        </td>
-      </ng-container>
-
-      <!-- SALDO -->
-      <ng-container matColumnDef="saldo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="saldo">Saldo</th>
-        <td mat-cell *matCellDef="let x">
-          @if (saldoOrden(x) === null) {
-          -
-          } @else {
-          <span [class.balance-pending]="(saldoOrden(x) ?? 0) > 0">
-            {{ saldoOrden(x) | currency:'USD':'symbol':'1.2-2' }}
-          </span>
-          }
-        </td>
-      </ng-container>
 
 
-<!-- ==========================================
-     COLUMNA ACCIONES
-========================================== -->
+      @if (
+      buscarControl.value
+      ) {
 
-<ng-container matColumnDef="acciones">
+      <button mat-icon-button matSuffix type="button" matTooltip="Limpiar búsqueda" aria-label="Limpiar búsqueda"
+        (click)="limpiarBusqueda()">
 
-  <th mat-header-cell
-      *matHeaderCellDef
-      class="col-actions">
-    Acciones
-  </th>
-
-  <td mat-cell
-      *matCellDef="let x"
-      class="col-actions">
-
-    <div class="actions-container">
-
-      <!-- VISUALIZAR -->
-      <button
-        mat-icon-button
-        type="button"
-        class="action-btn action-view"
-        matTooltip="Visualizar orden"
-        matTooltipPosition="above"
-        aria-label="Visualizar orden"
-        (click)="visualizar(x)">
-
-        <mat-icon>visibility</mat-icon>
+        <mat-icon>
+          close
+        </mat-icon>
 
       </button>
 
-      <!-- GESTIONAR -->
-      <button
-        mat-icon-button
-        type="button"
-        class="action-btn action-edit"
-        matTooltip="Gestionar orden"
-        matTooltipPosition="above"
-        aria-label="Gestionar orden"
-        (click)="gestionar(x)">
+      } @else {
 
-        <mat-icon>edit_outlined</mat-icon>
-
-      </button>
-
-      <!-- ELIMINAR - SOLO ADMINISTRADOR -->
-      @if (esAdministrador()) {
-
-        <button
-          mat-icon-button
-          type="button"
-          class="action-btn action-delete"
-          matTooltip="Eliminar orden"
-          matTooltipPosition="above"
-          aria-label="Eliminar orden"
-          [disabled]="eliminandoId() !== null"
-          (click)="eliminar(x)">
-
-          <mat-icon>delete_outline</mat-icon>
-
-        </button>
+      <mat-icon matSuffix>
+        search
+      </mat-icon>
 
       }
 
-    </div>
-
-  </td>
-
-</ng-container>
+    </mat-form-field>
 
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <!-- ===============================================
+         CONTADOR REAL DEL SERVIDOR
+    ================================================ -->
 
-      <tr *matNoDataRow>
-        <td class="no-data" [attr.colspan]="displayedColumns.length">
-          <mat-icon>build</mat-icon>
-          No existen órdenes pendientes
-        </td>
-      </tr>
-    </table>
+    <span class="records">
+
+      @if (
+      totalRegistros() > 0
+      ) {
+
+      {{ registroDesde() }}
+      -
+      {{ registroHasta() }}
+      de
+      {{ totalRegistros() }}
+      registros
+
+      } @else {
+
+      0 registros
+
+      }
+
+    </span>
+
   </div>
 
-  <mat-paginator [length]="ordenesFiltradas().length" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
-    [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)" />
+
+  <!-- =================================================
+       TABLA
+  ================================================== -->
+
+  <div class="table-wrapper">
+
+    <table mat-table [dataSource]="ordenes()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
+
+      <!-- =============================================
+           ORDEN
+      ============================================== -->
+
+      <ng-container matColumnDef="numeroOrden">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="numeroOrden">
+
+          Orden
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          <span class="invoice-number">
+
+            #{{ x.numeroOrden }}
+
+          </span>
+
+
+          <small>
+
+            {{
+            x.fechaIngreso
+            | date:'dd/MM/yyyy HH:mm'
+            }}
+
+          </small>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =============================================
+           CLIENTE
+      ============================================== -->
+
+      <ng-container matColumnDef="cliente">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">
+
+          Cliente
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          <div class="client-name">
+
+            {{ x.nombreCliente }}
+
+          </div>
+
+
+          <small>
+
+            {{ x.identificacion }}
+
+          </small>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =============================================
+           EQUIPO
+      ============================================== -->
+
+      <ng-container matColumnDef="equipo">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="equipo">
+
+          Equipo
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          <div class="client-name">
+
+            {{ x.modeloDispositivo }}
+
+          </div>
+
+
+          <small>
+
+            IMEI:
+            {{ x.imei }}
+
+          </small>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =============================================
+           VALOR
+      ============================================== -->
+
+      <ng-container matColumnDef="valor">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="valor">
+
+          Valor
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          @if (
+          valorOrden(x) === null
+          ) {
+
+          <span class="status pending">
+
+            POR CONFIRMAR
+
+          </span>
+
+          } @else {
+
+          <span class="total-value">
+
+            {{
+            valorOrden(x)
+            | currency:'USD':'symbol':'1.2-2'
+            }}
+
+          </span>
+
+          }
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =============================================
+           SALDO
+      ============================================== -->
+
+      <ng-container matColumnDef="saldo">
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="saldo">
+
+          Saldo
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          @if (
+          saldoOrden(x) === null
+          ) {
+
+          -
+
+          } @else {
+
+          <span [class.balance-pending]="
+                (saldoOrden(x) ?? 0) > 0
+              " [class.balance-paid]="
+                (saldoOrden(x) ?? 0) === 0
+              ">
+
+            {{
+            saldoOrden(x)
+            | currency:'USD':'symbol':'1.2-2'
+            }}
+
+          </span>
+
+          }
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =============================================
+           ACCIONES
+      ============================================== -->
+
+      <ng-container matColumnDef="acciones">
+
+        <th mat-header-cell *matHeaderCellDef class="col-actions">
+
+          Acciones
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="col-actions">
+
+          <button mat-icon-button type="button" class="action-menu-trigger" [matMenuTriggerFor]="menuAcciones"
+            matTooltip="Acciones de la orden" aria-label="Acciones de la orden">
+
+            <mat-icon>
+              more_horiz
+            </mat-icon>
+
+          </button>
+
+
+          <mat-menu #menuAcciones="matMenu" class="workstock-actions-menu" [overlapTrigger]="false" xPosition="before"
+            yPosition="below">
+
+            <!-- =========================================
+                 VISUALIZAR
+            ========================================== -->
+
+            <button mat-menu-item type="button" class="ws-menu-item" (click)="visualizar(x)">
+
+              <mat-icon class="ws-icon-view">
+                visibility
+              </mat-icon>
+
+              <span>
+                Visualizar orden
+              </span>
+
+            </button>
+
+
+            <!-- =========================================
+                 GESTIONAR
+            ========================================== -->
+
+            <button mat-menu-item type="button" class="ws-menu-item" (click)="gestionar(x)">
+
+              <mat-icon class="ws-icon-edit">
+                edit_outlined
+              </mat-icon>
+
+              <span>
+                Gestionar orden
+              </span>
+
+            </button>
+
+
+            <!-- =========================================
+                 ELIMINAR
+
+                 Únicamente ADMINISTRADOR.
+            ========================================== -->
+
+            @if (
+            esAdministrador()
+            ) {
+
+            <mat-divider>
+            </mat-divider>
+
+
+            <button mat-menu-item type="button" class="ws-menu-item ws-menu-danger" [disabled]="
+                  eliminandoId() !== null
+                " (click)="eliminar(x)">
+
+              <mat-icon>
+                delete_outline
+              </mat-icon>
+
+              <span>
+                Eliminar orden
+              </span>
+
+            </button>
+
+            }
+
+          </mat-menu>
+
+        </td>
+
+      </ng-container>
+
+
+      <!-- =============================================
+           FILAS
+      ============================================== -->
+
+      <tr mat-header-row *matHeaderRowDef="
+          displayedColumns
+        ">
+      </tr>
+
+
+      <tr mat-row *matRowDef="
+          let row;
+          columns: displayedColumns
+        ">
+      </tr>
+
+
+      <!-- =============================================
+           SIN DATOS
+      ============================================== -->
+
+      <tr *matNoDataRow>
+
+        <td class="no-data" [attr.colspan]="
+            displayedColumns.length
+          ">
+
+          <mat-icon>
+            build
+          </mat-icon>
+
+
+          @if (
+          busqueda()
+          ) {
+
+          No existen órdenes pendientes que coincidan con la búsqueda
+
+          } @else {
+
+          No existen órdenes pendientes
+
+          }
+
+        </td>
+
+      </tr>
+
+    </table>
+
+  </div>
+
+
+  <!-- =================================================
+       PAGINADOR REMOTO
+  ================================================== -->
+
+  <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
+    [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)">
+  </mat-paginator>
+
 </div>

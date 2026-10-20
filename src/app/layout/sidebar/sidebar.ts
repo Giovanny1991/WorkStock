@@ -1,12 +1,12 @@
-
 import {
   Component,
-  computed,
+  DestroyRef,
   EventEmitter,
   inject,
-  Output,
+  OnDestroy,
   OnInit,
-  DestroyRef
+  Output,
+  signal
 } from '@angular/core';
 
 import {
@@ -16,127 +16,561 @@ import {
   NavigationEnd
 } from '@angular/router';
 
-import { filter } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  filter
+} from 'rxjs';
 
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatExpansionModule } from '@angular/material/expansion';
+import {
+  takeUntilDestroyed
+} from '@angular/core/rxjs-interop';
 
-import { AuthService } from '../../core/auth/auth.service';
+import {
+  MatIconModule
+} from '@angular/material/icon';
+
+import {
+  MatListModule
+} from '@angular/material/list';
+
+import {
+  MatExpansionModule
+} from '@angular/material/expansion';
+
+import {
+  AuthService
+} from '../../core/auth/auth.service';
+
+import {
+  AdministracionService
+} from '../../features/administracion/administracion.service';
+
+import {
+  EmpresaActual
+} from '../../features/administracion/administracion.model';
+
 
 @Component({
-  selector: 'app-sidebar',
-  standalone: true,
+
+  selector:
+    'app-sidebar',
+
+  standalone:
+    true,
+
   imports: [
+
     RouterLink,
+
     RouterLinkActive,
+
     MatIconModule,
+
     MatListModule,
+
     MatExpansionModule
+
   ],
-  templateUrl: './sidebar.html',
-  styleUrl: './sidebar.scss'
+
+  templateUrl:
+    './sidebar.html',
+
+  styleUrl:
+    './sidebar.scss'
+
 })
-export class Sidebar implements OnInit {
+export class Sidebar
+  implements OnInit, OnDestroy {
+
+
+  // =====================================================
+  // EVENTOS
+  // =====================================================
 
   @Output()
-  navegar = new EventEmitter<void>();
+  navegar =
+    new EventEmitter<void>();
 
-  readonly authService = inject(AuthService);
 
-  private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
+  // =====================================================
+  // SERVICIOS
+  // =====================================================
 
-  readonly esSuperAdmin = this.authService.esSuperAdmin;
-  readonly esAdministrador = this.authService.esAdministradorEmpresa;
+  readonly authService =
+    inject(
+      AuthService
+    );
 
-  grupoActivo = '';
 
-  ngOnInit(): void {
+  private readonly administracionService =
+    inject(
+      AdministracionService
+    );
 
-    this.actualizarGrupo(this.router.url);
 
-    this.router.events
+  private readonly router =
+    inject(
+      Router
+    );
+
+
+  private readonly destroyRef =
+    inject(
+      DestroyRef
+    );
+
+
+  // =====================================================
+  // PERMISOS
+  // =====================================================
+
+  readonly esSuperAdmin =
+    this.authService.esSuperAdmin;
+
+
+  readonly esAdministrador =
+    this.authService.esAdministradorEmpresa;
+
+
+  // =====================================================
+  // EMPRESA
+  // =====================================================
+
+  readonly empresaActual =
+    signal<EmpresaActual | null>(
+      null
+    );
+
+
+  readonly cargandoEmpresa =
+    signal(
+      false
+    );
+
+
+  // =====================================================
+  // LOGO EMPRESA
+  // =====================================================
+
+  readonly logoEmpresaUrl =
+    signal<string | null>(
+      null
+    );
+
+
+  private logoObjectUrl:
+    string
+    |
+    null =
+    null;
+
+
+  // =====================================================
+  // GRUPO ACTIVO
+  // =====================================================
+
+  grupoActivo =
+    '';
+
+
+  // =====================================================
+  // INICIO
+  // =====================================================
+
+  ngOnInit():
+    void {
+
+    this.actualizarGrupo(
+      this.router.url
+    );
+
+
+    this.router
+      .events
+
       .pipe(
+
         filter(
-          (event): event is NavigationEnd =>
-            event instanceof NavigationEnd
+          (
+            event
+          ):
+            event is NavigationEnd =>
+              event instanceof NavigationEnd
         ),
-        takeUntilDestroyed(this.destroyRef)
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
       )
-      .subscribe(event => {
-        this.actualizarGrupo(event.urlAfterRedirects);
+
+      .subscribe(
+        event => {
+
+          this.actualizarGrupo(
+            event.urlAfterRedirects
+          );
+
+        }
+      );
+
+
+    // ===================================================
+    // SOLO USUARIO EMPRESARIAL
+    // ===================================================
+
+    if (
+      !this.esSuperAdmin()
+    ) {
+
+      this.cargarEmpresaActual();
+
+    }
+
+  }
+
+
+  // =====================================================
+  // EMPRESA ACTUAL
+  // =====================================================
+
+  private cargarEmpresaActual():
+    void {
+
+    this.cargandoEmpresa.set(
+      true
+    );
+
+
+    this.administracionService
+      .empresaActual()
+
+      .pipe(
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+      )
+
+      .subscribe({
+
+        next:
+          response => {
+
+            this.cargandoEmpresa.set(
+              false
+            );
+
+
+            const empresa =
+              response
+                ?.data
+              ??
+              null;
+
+
+            this.empresaActual.set(
+              empresa
+            );
+
+
+            if (
+              empresa
+              &&
+              empresa.id != null
+            ) {
+
+              this.cargarLogoEmpresa();
+
+            }
+
+          },
+
+
+        error:
+          () => {
+
+            this.cargandoEmpresa.set(
+              false
+            );
+
+
+            this.empresaActual.set(
+              null
+            );
+
+
+            this.limpiarLogo();
+
+          }
+
       });
 
   }
 
-  // Mantiene el evento para navegación móvil
-  onNavigate(): void {
+
+  // =====================================================
+  // LOGO EMPRESA
+  // =====================================================
+
+  private cargarLogoEmpresa():
+    void {
+
+    this.administracionService
+      .obtenerLogoEmpresaActual()
+
+      .pipe(
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+      )
+
+      .subscribe({
+
+        next:
+          blob => {
+
+            if (
+              !blob
+              ||
+              blob.size === 0
+              ||
+              !blob.type.startsWith(
+                'image/'
+              )
+            ) {
+
+              this.limpiarLogo();
+
+              return;
+
+            }
+
+
+            this.limpiarLogo();
+
+
+            this.logoObjectUrl =
+              URL.createObjectURL(
+                blob
+              );
+
+
+            this.logoEmpresaUrl.set(
+              this.logoObjectUrl
+            );
+
+          },
+
+
+        error:
+          () => {
+
+            this.limpiarLogo();
+
+          }
+
+      });
+
+  }
+
+
+  // =====================================================
+  // LIMPIAR LOGO
+  // =====================================================
+
+  private limpiarLogo():
+    void {
+
+    if (
+      this.logoObjectUrl
+    ) {
+
+      URL.revokeObjectURL(
+        this.logoObjectUrl
+      );
+
+
+      this.logoObjectUrl =
+        null;
+
+    }
+
+
+    this.logoEmpresaUrl.set(
+      null
+    );
+
+  }
+
+
+  // =====================================================
+  // NAVEGACIÓN MÓVIL
+  // =====================================================
+
+  onNavigate():
+    void {
+
     this.navegar.emit();
+
   }
 
-  // Control exclusivo de los desplegables
-  abrirGrupo(grupo: string): void {
-    this.grupoActivo = grupo;
+
+  // =====================================================
+  // GRUPOS
+  // =====================================================
+
+  abrirGrupo(
+    grupo:
+      string
+  ):
+    void {
+
+    this.grupoActivo =
+      grupo;
+
   }
 
-  cerrarGrupo(grupo: string): void {
-    if (this.grupoActivo === grupo) {
-      this.grupoActivo = '';
-    }
-  }
 
-  // Sincroniza los desplegables con la ruta actual
-  private actualizarGrupo(url: string): void {
+  cerrarGrupo(
+    grupo:
+      string
+  ):
+    void {
 
-    const ruta = url.split(/[?#]/)[0];
-
-    // FACTURACIÓN DE DISPOSITIVOS
-    if (ruta.startsWith('/facturas/')) {
-      this.grupoActivo = 'facturas';
-    }
-
-    // NOTAS DE VENTA DE CELULARES
-    else if (ruta.startsWith('/notas-venta/')) {
-      this.grupoActivo = 'notas';
-    }
-
-    // VENTA DE ACCESORIOS
-    else if (ruta.startsWith('/accesorios/notas-venta/')) {
-      this.grupoActivo = 'accesorios';
-    }
-
-    // SERVICIO TÉCNICO
-    else if (ruta.startsWith('/servicio-tecnico/')) {
-      this.grupoActivo = 'tecnico';
-    }
-
-    // INVENTARIO DE CELULARES
-    else if (
-      ruta === '/inventario/celulares' ||
-      ruta === '/modelos'
+    if (
+      this.grupoActivo ===
+      grupo
     ) {
-      this.grupoActivo = 'celulares';
+
+      this.grupoActivo =
+        '';
+
     }
 
-    // INVENTARIO DE ACCESORIOS
-    else if (
-      ruta === '/accesorios/accesorios-stock' ||
-      ruta === '/accesorios/categorias'
+  }
+
+
+  // =====================================================
+  // SINCRONIZAR RUTA
+  // =====================================================
+
+  private actualizarGrupo(
+    url:
+      string
+  ):
+    void {
+
+    const ruta =
+      url.split(
+        /[?#]/
+      )[0];
+
+
+    if (
+      ruta.startsWith(
+        '/facturas/'
+      )
     ) {
-      this.grupoActivo = 'inventario-accesorios';
+
+      this.grupoActivo =
+        'facturas';
+
     }
 
-    // CONFIGURACIÓN
-    else if (ruta.startsWith('/configuracion/')) {
-      this.grupoActivo = 'configuracion';
+
+    else if (
+      ruta.startsWith(
+        '/notas-venta/'
+      )
+    ) {
+
+      this.grupoActivo =
+        'notas';
+
     }
 
-    // RUTAS SIN DESPLEGABLE
+
+    else if (
+      ruta.startsWith(
+        '/accesorios/notas-venta/'
+      )
+    ) {
+
+      this.grupoActivo =
+        'accesorios';
+
+    }
+
+
+    else if (
+      ruta.startsWith(
+        '/servicio-tecnico/'
+      )
+    ) {
+
+      this.grupoActivo =
+        'tecnico';
+
+    }
+
+
+    else if (
+      ruta ===
+        '/inventario/celulares'
+      ||
+      ruta ===
+        '/modelos'
+    ) {
+
+      this.grupoActivo =
+        'celulares';
+
+    }
+
+
+    else if (
+      ruta ===
+        '/accesorios/accesorios-stock'
+      ||
+      ruta ===
+        '/accesorios/categorias'
+    ) {
+
+      this.grupoActivo =
+        'inventario-accesorios';
+
+    }
+
+
+    else if (
+      ruta.startsWith(
+        '/configuracion/'
+      )
+    ) {
+
+      this.grupoActivo =
+        'configuracion';
+
+    }
+
+
     else {
-      this.grupoActivo = '';
+
+      this.grupoActivo =
+        '';
+
     }
+
+  }
+
+
+  // =====================================================
+  // DESTROY
+  // =====================================================
+
+  ngOnDestroy():
+    void {
+
+    this.limpiarLogo();
 
   }
 

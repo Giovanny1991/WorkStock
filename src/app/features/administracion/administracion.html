@@ -1,424 +1,165 @@
 <div class="ws-admin-page">
+
+
+  <!-- =================================================
+       ENCABEZADO GENERAL
+  ================================================== -->
+
   <header class="page-header">
+
     <div>
-      <h1>{{ esSuperAdmin() ? 'Empresas y usuarios' : 'Mis usuarios' }}</h1>
-      <p>{{ esSuperAdmin() ? 'Administración global de WorkStock' : 'Cuentas y permisos de tu empresa' }}</p>
+
+      <h1>
+        Administración
+      </h1>
+
+
+      <p>
+
+        @if (
+          esSuperAdmin()
+        ) {
+
+          Gestión global de empresas y usuarios de WorkStock
+
+        } @else {
+
+          Gestión de usuarios y accesos de tu empresa
+
+        }
+
+      </p>
+
     </div>
-    <button mat-stroked-button type="button" (click)="actualizarTodo()"
-      [disabled]="cargando() || guardando()" matTooltip="Actualizar registros">
-      <mat-icon>refresh</mat-icon> Actualizar
+
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="actualizar()"
+    >
+
+      <mat-icon>
+        refresh
+      </mat-icon>
+
+      Actualizar
+
     </button>
+
   </header>
 
-  @if (cargando() || cargandoUsuarios()) {
-    <mat-progress-bar class="loading-bar" mode="indeterminate" />
-  }
 
-  <div class="summary-strip">
-    @if (esSuperAdmin()) {
-      <span><mat-icon>business</mat-icon><strong>{{ empresas().length }}</strong> empresas</span>
-      <span><mat-icon>check_circle_outline</mat-icon><strong>{{ empresasOperativas() }}</strong> operativas</span>
-      <span><mat-icon>schedule</mat-icon><strong>{{ empresasPendientes() }}</strong> pendientes</span>
-    } @else {
-      <span><mat-icon>people</mat-icon><strong>{{ usuarios().length }}</strong> usuarios</span>
-      <span><mat-icon>check_circle_outline</mat-icon><strong>{{ usuariosActivos() }}</strong> activos</span>
-      <span><mat-icon>shield</mat-icon><strong>{{ administradoresActivos() }}</strong> administradores</span>
-    }
-  </div>
+  <!-- =================================================
+       NAVEGACIÓN
+  ================================================== -->
 
-  <div class="tabs">
-    @if (esSuperAdmin()) {
-      <button type="button" [class.active]="pestana() === 'empresas'"
-        (click)="mostrarPestana('empresas')">
-        <mat-icon>business</mat-icon> Empresas
+  <nav
+    class="tabs"
+    aria-label="Secciones de administración"
+  >
+
+
+    <!-- ===============================================
+         EMPRESAS
+    ================================================= -->
+
+    @if (
+      esSuperAdmin()
+    ) {
+
+      <button
+        type="button"
+        [class.active]="
+          pestana() === 'empresas'
+        "
+        (click)="
+          mostrarPestana('empresas')
+        "
+      >
+
+        <mat-icon>
+          business
+        </mat-icon>
+
+        Empresas
+
       </button>
+
     }
-    <button type="button" [class.active]="pestana() === 'usuarios'"
-      (click)="mostrarPestana('usuarios')">
-      <mat-icon>group</mat-icon> Usuarios
+
+
+    <!-- ===============================================
+         USUARIOS
+    ================================================= -->
+
+    <button
+      type="button"
+      [class.active]="
+        pestana() === 'usuarios'
+      "
+      (click)="
+        mostrarPestana('usuarios')
+      "
+    >
+
+      <mat-icon>
+        group
+      </mat-icon>
+
+      Usuarios
+
     </button>
-  </div>
 
-  @if (pestana() === 'empresas' && esSuperAdmin()) {
-    <section class="card">
-      <div class="card-title">
-        <div>
-          <h2>Empresas registradas</h2>
-          <p>Consulta, edita y administra los usuarios de cada empresa.</p>
-        </div>
-        <button mat-flat-button class="primary-btn" type="button"
-          (click)="nuevaEmpresa()" [disabled]="guardando()">
-          <mat-icon>add</mat-icon> Nueva empresa
-        </button>
-      </div>
+  </nav>
 
-      <div class="toolbar">
-        <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput placeholder="Buscar empresa, código o RUC..."
-            [value]="busquedaEmpresa()" (input)="actualizarBusquedaEmpresa($event)"
-            autocomplete="off" aria-label="Buscar empresas">
-        </mat-form-field>
-        <span class="records">{{ tablaEmpresas.filteredData.length }} registros</span>
-      </div>
 
-      <div class="table-wrapper">
-        <table mat-table [dataSource]="tablaEmpresas" matSort #ordenEmpresas="matSort" class="compact-table">
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-id">ID</th>
-            <td mat-cell *matCellDef="let e" class="col-id">{{ e.id }}</td>
-          </ng-container>
-          <ng-container matColumnDef="codigo">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
-            <td mat-cell *matCellDef="let e"><span class="code-tag">{{ e.codigo }}</span></td>
-          </ng-container>
-          <ng-container matColumnDef="empresa">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Empresa</th>
-            <td mat-cell *matCellDef="let e" class="name-cell" [title]="e.nombreEmpresa">
-              {{ e.nombreEmpresa }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="ruc">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>RUC</th>
-            <td mat-cell *matCellDef="let e">{{ e.ruc || '—' }}</td>
-          </ng-container>
-          <ng-container matColumnDef="usuarios">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuarios</th>
-            <td mat-cell *matCellDef="let e">{{ e.totalUsuarios ?? 0 }}</td>
-          </ng-container>
-          <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-            <td mat-cell *matCellDef="let e">
-              <span class="status" [class.active]="e.estado === 'ACTIVA'">
-                {{ e.estado === 'ACTIVA' ? 'ACTIVA' : 'INACTIVA' }}
-              </span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="operacion">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Operación</th>
-            <td mat-cell *matCellDef="let e">
-              <span class="status" [class.active]="e.operativaHabilitada"
-                [matTooltip]="e.operativaHabilitada ? 'Acceso operativo habilitado' : 'Módulos comerciales pendientes de migración'">
-                {{ e.operativaHabilitada ? 'HABILITADA' : 'PENDIENTE' }}
-              </span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef class="col-actions">Acciones</th>
-            <td mat-cell *matCellDef="let e" class="col-actions">
-              <button mat-icon-button class="action edit" type="button" matTooltip="Editar empresa"
-                aria-label="Editar empresa" [disabled]="guardando()" (click)="editarEmpresa(e)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button class="action users" type="button" matTooltip="Administrar usuarios"
-                aria-label="Administrar usuarios" [disabled]="guardando()" (click)="administrarUsuariosEmpresa(e)">
-                <mat-icon>manage_accounts</mat-icon>
-              </button>
-            </td>
-          </ng-container>
+  <!-- =================================================
+       CONTENIDO
+  ================================================== -->
 
-          <tr mat-header-row *matHeaderRowDef="columnasEmpresa"></tr>
-          <tr mat-row *matRowDef="let fila; columns: columnasEmpresa"></tr>
-          <tr *matNoDataRow>
-            <td class="no-data" [attr.colspan]="columnasEmpresa.length">
-              <mat-icon>search_off</mat-icon> No existen empresas para mostrar
-            </td>
-          </tr>
-        </table>
-      </div>
-      <mat-paginator #paginadorEmpresas [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]"
-        showFirstLastButtons aria-label="Paginación de empresas" />
-      <p class="footnote"><mat-icon>info_outline</mat-icon>
-        Las empresas nuevas permanecen con operación pendiente hasta completar el aislamiento de datos.
-      </p>
-    </section>
-  } @else {
-    <section class="card">
-      <div class="card-title">
-        <div>
-          <h2>Usuarios por empresa</h2>
-          <p>Gestiona los accesos y roles de <strong>{{ nombreEmpresaSeleccionada() }}</strong>.</p>
-        </div>
-        <button mat-flat-button class="primary-btn" type="button"
-          (click)="nuevoUsuario()" [disabled]="!idEmpresa() || guardando()">
-          <mat-icon>person_add</mat-icon> Nuevo usuario
-        </button>
-      </div>
+  <main class="admin-content">
 
-      <div class="toolbar user-toolbar">
-        @if (esSuperAdmin()) {
-          <mat-form-field appearance="outline" class="company-select" subscriptSizing="dynamic">
-            <mat-label>Empresa</mat-label>
-            <mat-select [value]="idEmpresa()" (selectionChange)="cambiarEmpresa($event.value)">
-              @for (e of empresas(); track e.id) {
-                <mat-option [value]="e.id">{{ e.nombreEmpresa }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        }
-        <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput placeholder="Buscar nombre, usuario o estado..."
-            [value]="busquedaUsuario()" (input)="actualizarBusquedaUsuario($event)"
-            autocomplete="off" aria-label="Buscar usuarios">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="role-select" subscriptSizing="dynamic">
-          <mat-label>Rol</mat-label>
-          <mat-select [value]="filtroRol()" (selectionChange)="cambiarFiltroRol($event.value)">
-            <mat-option value="TODOS">Todos</mat-option>
-            <mat-option value="ADMINISTRADOR">Administradores</mat-option>
-            <mat-option value="VENDEDOR">Vendedores</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <span class="records">{{ tablaUsuarios.filteredData.length }} registros</span>
-      </div>
 
-      <div class="table-wrapper">
-        <table mat-table [dataSource]="tablaUsuarios" matSort #ordenUsuarios="matSort" class="compact-table">
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-id">ID</th>
-            <td mat-cell *matCellDef="let u" class="col-id">{{ u.id }}</td>
-          </ng-container>
-          <ng-container matColumnDef="nombre">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-            <td mat-cell *matCellDef="let u" class="name-cell">{{ u.nombreUsuario }}</td>
-          </ng-container>
-          <ng-container matColumnDef="login">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
-            <td mat-cell *matCellDef="let u">{{ u.login }}</td>
-          </ng-container>
-          <ng-container matColumnDef="rol">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
-            <td mat-cell *matCellDef="let u">
-              {{ u.esSuperAdmin ? 'Superadministrador' : u.rol === 'ADMINISTRADOR' ? 'Administrador' : 'Vendedor' }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-            <td mat-cell *matCellDef="let u">
-              <span class="status" [class.active]="u.estado === 'ACTIVO'">{{ u.estado }}</span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef class="col-actions">Acciones</th>
-            <td mat-cell *matCellDef="let u" class="col-actions">
-              <button mat-icon-button class="action edit" type="button" matTooltip="Editar usuario"
-                aria-label="Editar usuario" [disabled]="u.esSuperAdmin || guardando()"
-                (click)="editarUsuario(u)"><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button class="action users" type="button" matTooltip="Restablecer contraseña"
-                aria-label="Restablecer contraseña" [disabled]="u.esSuperAdmin || u.id === idUsuarioActual() || guardando()"
-                (click)="abrirCambioClave(u)"><mat-icon>key</mat-icon></button>
-            </td>
-          </ng-container>
+    <!-- ===============================================
+         EMPRESAS
+    ================================================= -->
 
-          <tr mat-header-row *matHeaderRowDef="columnasUsuario"></tr>
-          <tr mat-row *matRowDef="let fila; columns: columnasUsuario"></tr>
-          <tr *matNoDataRow>
-            <td class="no-data" [attr.colspan]="columnasUsuario.length">
-              <mat-icon>search_off</mat-icon> No existen usuarios para mostrar
-            </td>
-          </tr>
-        </table>
-      </div>
-      <mat-paginator #paginadorUsuarios [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]"
-        showFirstLastButtons aria-label="Paginación de usuarios" />
-    </section>
-  }
+    @if (
+      pestana() === 'empresas'
+      &&
+      esSuperAdmin()
+    ) {
+
+      <app-empresas-admin
+
+        (administrarUsuarios)="
+          abrirUsuariosEmpresa($event)
+        "
+
+      />
+
+    }
+
+
+    <!-- ===============================================
+         USUARIOS
+    ================================================= -->
+
+    @if (
+      pestana() === 'usuarios'
+    ) {
+
+      <app-usuarios-admin
+
+        [idEmpresa]="
+          empresaSeleccionadaId()
+        "
+
+      />
+
+    }
+
+  </main>
+
 </div>
-
-<!-- Los formularios están fuera de la lista: Angular Material abre diálogos accesibles. -->
-<ng-template #editorEmpresa>
-  <form class="ws-admin-dialog" [formGroup]="empresaForm" (ngSubmit)="guardarEmpresa()">
-    <header class="dialog-heading">
-      <span class="dialog-icon"><mat-icon>apartment</mat-icon></span>
-      <div>
-        <h2>{{ editandoEmpresaId() ? 'Editar empresa' : 'Registrar nueva empresa' }}</h2>
-        <p>{{ editandoEmpresaId() ? 'Actualiza los datos de identificación.' : 'Completa los datos generales para crear la empresa.' }}</p>
-      </div>
-      <button mat-icon-button type="button" aria-label="Cerrar formulario"
-        [disabled]="guardando()" (click)="cerrarEditor()"><mat-icon>close</mat-icon></button>
-    </header>
-    <mat-dialog-content class="dialog-content">
-      @if (!editandoEmpresaId()) {
-        <div class="notice-block"><mat-icon>info_outline</mat-icon>
-          <span>La empresa se creará con su operación comercial <strong>pendiente de habilitación</strong> hasta completar la separación de información.</span>
-        </div>
-      }
-      <div class="form-section-label">INFORMACIÓN DE LA EMPRESA</div>
-      <div class="dialog-fields">
-        <mat-form-field appearance="outline" class="full-field">
-          <mat-label>Nombre o razón social</mat-label>
-          <input matInput formControlName="nombreEmpresa" maxlength="150" autocomplete="organization"
-            placeholder="Ej. Comercial ABC S.A.S.">
-          @if (empresaForm.controls.nombreEmpresa.hasError('required')) {
-            <mat-error>Ingresa el nombre de la empresa.</mat-error>
-          } @else if (empresaForm.controls.nombreEmpresa.invalid) {
-            <mat-error>Debe tener entre 3 y 150 caracteres.</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Código interno</mat-label>
-          <input matInput formControlName="codigo" maxlength="30" autocomplete="off"
-            placeholder="Ej. EMPRESA-002">
-          <mat-hint>Único, de 3 a 30 caracteres.</mat-hint>
-          @if (empresaForm.controls.codigo.invalid) {
-            <mat-error>Utiliza letras, números y guiones (3–30).</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>RUC (opcional)</mat-label>
-          <input matInput formControlName="ruc" maxlength="13" inputmode="numeric"
-            autocomplete="off" placeholder="13 dígitos">
-          <mat-hint>Se valida el formato de 13 dígitos.</mat-hint>
-          @if (empresaForm.controls.ruc.invalid) {
-            <mat-error>El RUC debe contener 13 números.</mat-error>
-          }
-        </mat-form-field>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end" class="dialog-actions">
-      <button mat-stroked-button type="button" [disabled]="guardando()" (click)="cerrarEditor()">Cancelar</button>
-      <button mat-flat-button type="submit" [disabled]="guardando() || empresaForm.invalid">
-        <mat-icon>{{ editandoEmpresaId() ? 'save' : 'add_business' }}</mat-icon>
-        {{ guardando() ? 'Guardando...' : editandoEmpresaId() ? 'Guardar cambios' : 'Crear empresa' }}
-      </button>
-    </mat-dialog-actions>
-  </form>
-</ng-template>
-
-<ng-template #editorUsuario>
-  <form class="ws-admin-dialog" [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
-    <header class="dialog-heading">
-      <span class="dialog-icon"><mat-icon>person_add_alt</mat-icon></span>
-      <div>
-        <h2>{{ editandoUsuarioId() ? 'Editar usuario' : 'Registrar nuevo usuario' }}</h2>
-        <p>Empresa: <strong>{{ nombreEmpresaSeleccionada() }}</strong></p>
-      </div>
-      <button mat-icon-button type="button" aria-label="Cerrar formulario"
-        [disabled]="guardando()" (click)="cerrarEditor()"><mat-icon>close</mat-icon></button>
-    </header>
-    <mat-dialog-content class="dialog-content">
-      <div class="form-section-label">DATOS DE ACCESO</div>
-      <div class="dialog-fields">
-        <mat-form-field appearance="outline" class="full-field">
-          <mat-label>Nombre completo</mat-label>
-          <input matInput formControlName="nombreUsuario" maxlength="50" autocomplete="name"
-            placeholder="Ej. María Pérez">
-          @if (usuarioForm.controls.nombreUsuario.invalid) {
-            <mat-error>Ingresa un nombre de 3 a 50 caracteres.</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-field">
-          <mat-label>Usuario para iniciar sesión</mat-label>
-          <mat-icon matPrefix>alternate_email</mat-icon>
-          <input matInput formControlName="login" maxlength="40" autocomplete="off"
-            placeholder="Ej. maria.perez">
-          @if (editandoUsuarioId()) {
-            <mat-hint>El nombre de acceso no se puede cambiar.</mat-hint>
-          } @else {
-            <mat-hint>4–40 caracteres; sin espacios ni tildes.</mat-hint>
-          }
-          @if (usuarioForm.controls.login.invalid) {
-            <mat-error>Ingresa un usuario válido.</mat-error>
-          }
-        </mat-form-field>
-        @if (!editandoUsuarioId()) {
-          <div class="password-label">
-            <span>Contraseña inicial</span>
-            <button type="button" class="text-action" (click)="generarPassword()">
-              <mat-icon>auto_awesome</mat-icon> Generar contraseña
-            </button>
-          </div>
-          <mat-form-field appearance="outline" class="full-field">
-            <mat-label>Contraseña temporal</mat-label>
-            <input matInput formControlName="password"
-              [type]="mostrarPassword() ? 'text' : 'password'" autocomplete="new-password">
-            <button mat-icon-button matSuffix type="button"
-              [attr.aria-label]="mostrarPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-              (click)="cambiarVisibilidadPassword()">
-              <mat-icon>{{ mostrarPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            <mat-hint>Mínimo 12 caracteres. Compártela por un canal seguro.</mat-hint>
-            @if (usuarioForm.controls.password.invalid) {
-              <mat-error>La contraseña debe contener entre 12 y 128 caracteres.</mat-error>
-            }
-          </mat-form-field>
-        }
-      </div>
-      <div class="form-section-label section-gap">PERMISOS Y ESTADO</div>
-      <div class="dialog-fields">
-        <mat-form-field appearance="outline">
-          <mat-label>Rol del usuario</mat-label>
-          <mat-select formControlName="rol">
-            <mat-option value="ADMINISTRADOR">Administrador</mat-option>
-            <mat-option value="VENDEDOR">Vendedor</mat-option>
-          </mat-select>
-        </mat-form-field>
-        @if (editandoUsuarioId()) {
-          <mat-form-field appearance="outline">
-            <mat-label>Estado</mat-label>
-            <mat-select formControlName="estado">
-              <mat-option value="ACTIVO">Activo</mat-option>
-              <mat-option value="INACTIVO">Inactivo</mat-option>
-            </mat-select>
-          </mat-form-field>
-        }
-      </div>
-      <div class="notice-block subtle"><mat-icon>shield</mat-icon>
-        <span>Un <strong>Administrador</strong> gestiona usuarios de su empresa. Un <strong>Vendedor</strong> tiene acceso según los permisos actuales de WorkStock.</span>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end" class="dialog-actions">
-      <button mat-stroked-button type="button" [disabled]="guardando()" (click)="cerrarEditor()">Cancelar</button>
-      <button mat-flat-button type="submit" [disabled]="guardando() || usuarioForm.invalid">
-        <mat-icon>{{ editandoUsuarioId() ? 'save' : 'person_add' }}</mat-icon>
-        {{ guardando() ? 'Guardando...' : editandoUsuarioId() ? 'Guardar cambios' : 'Crear usuario' }}
-      </button>
-    </mat-dialog-actions>
-  </form>
-</ng-template>
-
-<ng-template #editorClave>
-  <form class="ws-admin-dialog" [formGroup]="claveForm" (ngSubmit)="cambiarClave()">
-    <header class="dialog-heading">
-      <span class="dialog-icon"><mat-icon>key</mat-icon></span>
-      <div>
-        <h2>Restablecer contraseña</h2>
-        <p>{{ usuarioClave()?.nombreUsuario }}</p>
-      </div>
-      <button mat-icon-button type="button" aria-label="Cerrar formulario"
-        [disabled]="guardando()" (click)="cerrarEditor()"><mat-icon>close</mat-icon></button>
-    </header>
-    <mat-dialog-content class="dialog-content">
-      <div class="notice-block warning"><mat-icon>warning_amber</mat-icon>
-        <span>Esta funcionalidad debe utilizarse solo en pruebas hasta implementar la revocación de las sesiones anteriores en el backend.</span>
-      </div>
-      <div class="password-label">
-        <span>Nueva contraseña</span>
-        <button type="button" class="text-action" (click)="generarPassword()">
-          <mat-icon>auto_awesome</mat-icon> Generar contraseña
-        </button>
-      </div>
-      <mat-form-field appearance="outline" class="full-field">
-        <mat-label>Contraseña temporal</mat-label>
-        <input matInput formControlName="password"
-          [type]="mostrarPassword() ? 'text' : 'password'" autocomplete="new-password">
-        <button mat-icon-button matSuffix type="button" (click)="cambiarVisibilidadPassword()"
-          [attr.aria-label]="mostrarPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
-          <mat-icon>{{ mostrarPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-        <mat-hint>Mínimo 12 caracteres.</mat-hint>
-        @if (claveForm.controls.password.invalid) {
-          <mat-error>Ingresa una contraseña de 12 a 128 caracteres.</mat-error>
-        }
-      </mat-form-field>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end" class="dialog-actions">
-      <button mat-stroked-button type="button" [disabled]="guardando()" (click)="cerrarEditor()">Cancelar</button>
-      <button mat-flat-button type="submit" [disabled]="guardando() || claveForm.invalid">
-        <mat-icon>lock_reset</mat-icon>
-        {{ guardando() ? 'Actualizando...' : 'Restablecer contraseña' }}
-      </button>
-    </mat-dialog-actions>
-  </form>
-</ng-template>

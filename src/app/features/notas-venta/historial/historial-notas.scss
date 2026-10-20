@@ -1,13 +1,33 @@
+
 /* =====================================================
-   WORKSTOCK | HISTORIAL DE NOTAS DE VENTA
-   Estilos depurados, tema claro/oscuro y filas anuladas
+   WORKSTOCK | HISTORIAL NOTAS DE VENTA
+
+   - Filtros remotos
+   - Búsqueda remota
+   - Paginación remota
+   - Ordenamiento remoto
+   - Ticket histórico
+   - Columnas centradas
+   - Claro / oscuro
 ===================================================== */
 
 :host {
   display: block;
+  color: var(--app-text);
 }
 
-/* ENCABEZADO */
+/* =====================================================
+   PÁGINA
+===================================================== */
+
+.page {
+  min-width: 0;
+}
+
+/* =====================================================
+   ENCABEZADO
+===================================================== */
+
 .page-header {
   display: flex;
   align-items: center;
@@ -29,31 +49,56 @@
   }
 }
 
-/* TARJETA Y CARGA */
+/* =====================================================
+   TARJETA
+===================================================== */
+
 .card {
   position: relative;
+  min-width: 0;
   overflow: hidden;
+
   background: var(--app-card);
+
   border: 1px solid var(--app-border);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+
+  box-shadow:
+    0 1px 3px rgba(16, 24, 40, .05);
+
   color: var(--app-text);
 }
 
-/* BARRA SUPERIOR */
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+
   gap: 12px;
   padding: 12px 14px;
+
   background: var(--app-card);
-  border-bottom: 1px solid var(--app-border);
+
+  border-bottom:
+    1px solid var(--app-border);
 }
 
+/* =====================================================
+   BUSCADOR
+===================================================== */
+
 .search-field {
-  width: 300px;
+  flex: 0 1 340px;
+
+  width: 340px;
+  min-width: 240px;
   max-width: 100%;
+
   font-size: 13px;
   color: var(--app-text);
 
@@ -63,25 +108,40 @@
 
     &::placeholder {
       color: var(--app-text-muted);
-      opacity: 0.85;
+      opacity: .8;
     }
   }
 }
 
-.records {
+.clear-search {
+  width: 32px;
+  height: 32px;
+
   color: var(--app-text-muted);
-  font-size: 12px;
-  white-space: nowrap;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
 }
 
+/* =====================================================
+   MATERIAL BUSCADOR
+===================================================== */
+
 :host ::ng-deep .search-field {
+
   .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }
 
   .mat-mdc-text-field-wrapper {
     height: 40px;
-    background: var(--app-input-bg, var(--app-card));
+
+    background:
+      var(--app-input-bg, var(--app-card));
   }
 
   .mat-mdc-form-field-flex {
@@ -90,27 +150,132 @@
   }
 
   .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+
+    height: 40px;
     min-height: 40px;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
-  .mat-mdc-form-field-icon-suffix,
-  .mat-mdc-form-field-icon-prefix {
+  input.mat-mdc-input-element {
+    height: 100%;
+    margin: 0;
+    line-height: normal;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    display: flex;
+    align-items: center;
     color: var(--app-text-muted);
   }
 }
 
-/* TABLA */
-.table-container,
-.table-wrapper {
-  overflow-x: auto;
-  scrollbar-color: var(--app-border) var(--app-card);
+/* =====================================================
+   TOOLBAR DERECHA
+===================================================== */
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  gap: 12px;
+  min-width: 0;
 }
 
-table,
+/* =====================================================
+   FILTROS
+===================================================== */
+
+.document-filters {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+  min-height: 34px;
+  padding: 6px 11px;
+
+  border: 1px solid var(--app-border);
+  border-radius: 7px;
+
+  background: var(--app-card);
+  color: var(--app-text-muted);
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.1;
+
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition:
+    background .15s,
+    border-color .15s,
+    color .15s;
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+    line-height: 15px;
+  }
+
+  &:hover {
+    background: var(--app-hover);
+    color: var(--app-text);
+  }
+
+  &.selected {
+    background: var(--app-primary-soft);
+    border-color: var(--app-primary);
+    color: var(--app-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--app-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* =====================================================
+   CONTADOR
+===================================================== */
+
+.records {
+  color: var(--app-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   TABLA
+===================================================== */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  scrollbar-color:
+    var(--app-border) var(--app-card);
+}
+
 table.mat-mdc-table {
   width: 100%;
+  min-width: 900px;
+
   background: var(--app-card);
   color: var(--app-text);
 }
@@ -123,74 +288,184 @@ table.mat-mdc-table {
 .mat-mdc-header-cell {
   vertical-align: middle;
   padding: 0 16px;
-  border-bottom: 1px solid var(--app-border);
-  color: var(--app-text-muted);
+
+  border-bottom:
+    1px solid var(--app-border);
+
   background: transparent;
+
+  color: var(--app-text-muted);
+
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: .02em;
+
   white-space: nowrap;
 }
 
 .mat-mdc-row {
   height: 48px;
   background: var(--app-card);
-  transition: background-color 150ms ease;
+
+  transition:
+    background-color 150ms ease;
 
   &:hover {
-    background: var(--app-hover, var(--app-card-secondary));
+    background:
+      var(--app-hover, var(--app-card-secondary));
   }
 }
 
 .mat-mdc-cell {
   vertical-align: middle;
   padding: 10px 16px;
-  border-bottom: 1px solid var(--app-border-soft, var(--app-border));
+
+  border-bottom:
+    1px solid var(
+      --app-border-soft,
+      var(--app-border)
+    );
+
+  background: transparent;
+
   color: var(--app-text);
   font-size: 13px;
   line-height: 18px;
-  background: transparent;
 }
 
 /* =====================================================
-   FILAS ANULADAS: aplicar a la fila y a cada celda.
-   Esto evita que estilos MDC o del tema tapen el rojo.
+   CENTRADO DE COLUMNAS
+   WORKSTOCK
 ===================================================== */
+
+/*
+   Centra únicamente las columnas numéricas,
+   monetarias, fechas, estados y acciones.
+
+   Los datos del cliente y descripciones
+   mantienen su alineación a la izquierda.
+*/
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+
+  &.mat-column-cantidad,
+  &.mat-column-stock,
+  &.mat-column-costo,
+  &.mat-column-precio,
+  &.mat-column-precioVenta,
+  &.mat-column-valor,
+  &.mat-column-subtotal,
+  &.mat-column-iva,
+  &.mat-column-descuento,
+  &.mat-column-total,
+  &.mat-column-abono,
+  &.mat-column-saldo,
+  &.mat-column-fecha,
+  &.mat-column-fechaEmision,
+  &.mat-column-fechaVenta,
+  &.mat-column-estado,
+  &.mat-column-acciones {
+
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+/* =====================================================
+   CENTRADO DE ENCABEZADOS ORDENABLES
+===================================================== */
+
+:host ::ng-deep {
+
+  .mat-column-cantidad .mat-sort-header-container,
+  .mat-column-stock .mat-sort-header-container,
+  .mat-column-costo .mat-sort-header-container,
+  .mat-column-precio .mat-sort-header-container,
+  .mat-column-precioVenta .mat-sort-header-container,
+  .mat-column-valor .mat-sort-header-container,
+  .mat-column-subtotal .mat-sort-header-container,
+  .mat-column-iva .mat-sort-header-container,
+  .mat-column-descuento .mat-sort-header-container,
+  .mat-column-total .mat-sort-header-container,
+  .mat-column-abono .mat-sort-header-container,
+  .mat-column-saldo .mat-sort-header-container,
+  .mat-column-fecha .mat-sort-header-container,
+  .mat-column-fechaEmision .mat-sort-header-container,
+  .mat-column-fechaVenta .mat-sort-header-container,
+  .mat-column-estado .mat-sort-header-container,
+  .mat-column-acciones .mat-sort-header-container,
+  .money-column .mat-sort-header-container,
+  .status-column .mat-sort-header-container,
+  .actions-header .mat-sort-header-container {
+
+    justify-content: center;
+  }
+}
+
+/* =====================================================
+   FILA ANULADA
+===================================================== */
+
 :host .mat-mdc-row.row-cancelled,
 :host .mat-mdc-row.row-cancelled:hover {
-  background-color: var(--app-danger-bg, rgba(220, 38, 38, 0.10)) !important;
+
+  background-color:
+    var(
+      --app-danger-bg,
+      rgba(220, 38, 38, .10)
+    ) !important;
 }
 
-:host .mat-mdc-row.row-cancelled > .mat-mdc-cell,
-:host .mat-mdc-row.row-cancelled:hover > .mat-mdc-cell {
-  background-color: var(--app-danger-bg, rgba(220, 38, 38, 0.10)) !important;
+:host
+.mat-mdc-row.row-cancelled
+.mat-mdc-cell {
+
+  background-color: transparent !important;
 }
 
-:host .mat-mdc-row.row-cancelled > .mat-mdc-cell:first-child {
-  box-shadow: inset 3px 0 0 var(--app-danger, #dc2626);
+:host
+.mat-mdc-row.row-cancelled
+.mat-column-numero {
+
+  box-shadow:
+    inset 3px 0 0
+    var(--app-danger, #dc2626);
 }
 
-:host .mat-mdc-row.row-cancelled .invoice-number,
-:host .mat-mdc-row.row-cancelled .client-name,
-:host .mat-mdc-row.row-cancelled .total-value {
+:host
+.mat-mdc-row.row-cancelled
+.invoice-number,
+
+:host
+.mat-mdc-row.row-cancelled
+.client-name,
+
+:host
+.mat-mdc-row.row-cancelled
+.total-value {
+
   color: var(--app-text-muted);
 }
 
-:host .mat-mdc-row.row-cancelled .status.cancelled {
-  color: var(--app-danger, #dc2626);
-  background: var(--app-danger-bg, rgba(220, 38, 38, 0.10));
-}
+/* =====================================================
+   NÚMERO DE NOTA
+===================================================== */
 
-/* DATOS DE LA NOTA */
 .invoice-number {
   color: var(--app-primary);
   font-weight: 700;
   white-space: nowrap;
 }
 
+/* =====================================================
+   CLIENTE
+===================================================== */
+
 .client-name {
   display: block;
+
   color: var(--app-text);
   font-weight: 600;
 }
@@ -198,13 +473,21 @@ table.mat-mdc-table {
 td small {
   display: block;
   margin-top: 2px;
+
   color: var(--app-text-muted);
   font-size: 11px;
 }
 
+/* =====================================================
+   TOTAL / VALORES MONETARIOS
+===================================================== */
+
 .money-column {
   width: 110px;
-  text-align: right;
+
+  /* Antes estaba alineado a la derecha */
+  text-align: center;
+
   white-space: nowrap;
 }
 
@@ -214,7 +497,10 @@ td small {
   white-space: nowrap;
 }
 
-/* ESTADOS */
+/* =====================================================
+   ESTADO
+===================================================== */
+
 .status-column {
   width: 110px;
   text-align: center;
@@ -225,104 +511,160 @@ td small {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-width: 76px;
   padding: 3px 9px;
+
   border-radius: 20px;
+
   background: var(--app-card-secondary);
   color: var(--app-text-muted);
+
   font-size: 11px;
   font-weight: 700;
 }
 
 .status.active {
-  background: var(--app-success-bg);
-  color: var(--app-success);
+  background:
+    var(
+      --app-success-bg,
+      rgba(22, 163, 74, .10)
+    );
+
+  color:
+    var(
+      --app-success,
+      #16a34a
+    );
 }
 
 .status.cancelled {
-  background: var(--app-danger-bg, rgba(220, 38, 38, 0.10));
-  color: var(--app-danger, #dc2626);
+  background:
+    var(
+      --app-danger-bg,
+      rgba(220, 38, 38, .10)
+    );
+
+  color:
+    var(
+      --app-danger,
+      #dc2626
+    );
 }
 
-/* ACCIONES */
+/* =====================================================
+   ACCIONES
+===================================================== */
+
 .actions-header,
-.actions-cell,
-.col-actions {
+.actions-cell {
   width: 120px;
   min-width: 120px;
+
   text-align: center;
   white-space: nowrap;
 }
 
-.actions-cell,
-.col-actions {
+.actions-cell {
   vertical-align: middle;
 }
 
-.actions-cell button,
-.col-actions button {
+.actions-cell button {
   width: 32px;
   height: 32px;
   min-width: 32px;
+
   padding: 0;
   margin: 0 2px;
+
   border-radius: 50%;
-  transition: background-color 150ms ease, color 150ms ease, opacity 150ms ease;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
 
   mat-icon {
     width: 18px;
     height: 18px;
+
     font-size: 18px;
     line-height: 18px;
   }
 
   &:disabled {
-    opacity: 0.4;
+    opacity: .4;
     cursor: not-allowed;
   }
 }
+
+/* =====================================================
+   VISUALIZAR
+===================================================== */
 
 .view-btn {
   color: var(--app-primary) !important;
 
   &:hover:not(:disabled) {
-    background: var(--app-primary-soft, rgba(37, 99, 235, 0.08)) !important;
+
+    background:
+      var(
+        --app-primary-soft,
+        rgba(37, 99, 235, .08)
+      ) !important;
   }
 }
+
+/* =====================================================
+   ANULAR
+===================================================== */
 
 .delete-btn {
-  color: var(--app-danger, #dc2626) !important;
+  color:
+    var(
+      --app-danger,
+      #dc2626
+    ) !important;
 
   &:hover:not(:disabled) {
-    background: var(--app-danger-bg, rgba(220, 38, 38, 0.08)) !important;
+
+    background:
+      var(
+        --app-danger-bg,
+        rgba(220, 38, 38, .08)
+      ) !important;
   }
 }
 
-/* SIN DATOS */
-.no-data-row,
-tr:has(> .no-data) {
-  height: 120px;
-}
+/* =====================================================
+   SIN DATOS
+===================================================== */
 
-.no-data,
-.no-data-row td {
+.no-data {
+  height: 120px;
+
   text-align: center;
+
   color: var(--app-text-muted);
   font-size: 13px;
+
+  mat-icon {
+    display: block;
+    margin: 0 auto 5px;
+    color: var(--app-text-muted);
+  }
 }
 
-.no-data mat-icon,
-.no-data-row mat-icon {
-  display: block;
-  margin: 0 auto 5px;
-  color: var(--app-text-muted);
-}
+/* =====================================================
+   PAGINADOR
+===================================================== */
 
-/* PAGINADOR */
 mat-paginator {
   background: var(--app-card);
-  border-top: 1px solid var(--app-border);
   color: var(--app-text-muted);
+
+  border-top:
+    1px solid var(--app-border);
 }
 
 :host ::ng-deep .mat-mdc-paginator-container {
@@ -330,8 +672,28 @@ mat-paginator {
   font-size: 12px;
 }
 
-/* RESPONSIVE */
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .search-field {
+    flex: 1 1 280px;
+  }
+
+  .toolbar-right {
+    flex: 1 1 auto;
+    justify-content: space-between;
+  }
+}
+
 @media (max-width: 700px) {
+
   .page {
     padding: 0;
   }
@@ -342,10 +704,39 @@ mat-paginator {
   }
 
   .toolbar {
+    flex-direction: column;
+    align-items: stretch;
     padding: 10px 12px;
   }
 
   .search-field {
+    flex: none;
     width: 100%;
+    min-width: 0;
+  }
+
+  .toolbar-right {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .document-filters {
+    width: 100%;
+  }
+
+  .filter-chip {
+    flex: 1 1 auto;
+  }
+
+  .records {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .filter-chip {
+    padding: 6px 7px;
+    font-size: 10px;
   }
 }

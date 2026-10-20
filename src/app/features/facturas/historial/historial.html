@@ -34,29 +34,137 @@
 
   <div class="toolbar">
 
-    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+    <!-- =================================================
+         BÚSQUEDA REMOTA
+    ================================================== -->
+
+    <mat-form-field appearance="outline" class="search-field ws-search" subscriptSizing="dynamic">
+
+      <input matInput type="text" placeholder="Factura, cliente, identificación, vendedor..."
+        aria-label="Buscar factura, cliente, identificación o vendedor" autocomplete="off"
+        [formControl]="buscarControl">
 
 
+      @if (buscarControl.value) {
 
-      <input matInput placeholder="Factura, cliente, identificación..." (input)="aplicarFiltro($event)">
+      <button mat-icon-button matSuffix type="button" class="clear-search" matTooltip="Limpiar búsqueda"
+        aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()">
 
+        <mat-icon>
+          close
+        </mat-icon>
+
+      </button>
+
+      } @else {
 
       <mat-icon matSuffix>
         search
       </mat-icon>
 
+      }
+
     </mat-form-field>
 
 
-    <span class="records">
+    <!-- =================================================
+         FILTROS
+    ================================================== -->
 
-      {{
-      dataSource.filteredData.length
-      }}
+    <div class="toolbar-right">
 
-      registros
+      <div class="document-filters" role="group" aria-label="Filtrar historial de facturas">
 
-    </span>
+        <!-- TODOS -->
+
+        <button type="button" class="filter-chip" [class.selected]="
+            filtroEstado() === 'TODOS'
+          " [attr.aria-pressed]="
+            filtroEstado() === 'TODOS'
+          " (click)="
+            cambiarFiltroEstado('TODOS')
+          ">
+
+          Todos
+
+        </button>
+
+
+        <!-- FACTURADOS -->
+
+        <button type="button" class="filter-chip" [class.selected]="
+            filtroEstado() === 'FACTURADO'
+          " [attr.aria-pressed]="
+            filtroEstado() === 'FACTURADO'
+          " (click)="
+            cambiarFiltroEstado('FACTURADO')
+          ">
+
+          <mat-icon>
+            task_alt
+          </mat-icon>
+
+          Facturados
+
+        </button>
+
+
+        <!-- ANULADOS -->
+
+        <button type="button" class="filter-chip" [class.selected]="
+            filtroEstado() === 'ANULADA'
+          " [attr.aria-pressed]="
+            filtroEstado() === 'ANULADA'
+          " (click)="
+            cambiarFiltroEstado('ANULADA')
+          ">
+
+          <mat-icon>
+            cancel
+          </mat-icon>
+
+          Anulados
+
+        </button>
+
+      </div>
+
+
+      <!-- =================================================
+           TOTAL REAL EN SQL SERVER
+      ================================================== -->
+
+      <span class="records">
+
+        @if (totalRegistros() > 0) {
+
+        {{
+        registroDesde()
+        }}
+
+        -
+
+        {{
+        registroHasta()
+        }}
+
+        de
+
+        {{
+        totalRegistros()
+        }}
+
+        registros
+
+        } @else {
+
+        0 registros
+
+        }
+
+      </span>
+
+    </div>
 
   </div>
 
@@ -67,7 +175,7 @@
 
   <div class="table-wrapper">
 
-    <table mat-table [dataSource]="dataSource" matSort>
+    <table mat-table [dataSource]="facturas()" matSort matSortDisableClear (matSortChange)="cambiarOrden($event)">
 
       <!-- =================================================
            NÚMERO FACTURA
@@ -75,42 +183,30 @@
 
       <ng-container matColumnDef="numeroFactura">
 
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          Factura
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="numeroFactura">
+
+          N.º Factura
+
         </th>
 
 
         <td mat-cell *matCellDef="let x">
 
           <span class="invoice-number">
+
             #{{ x.numeroFactura }}
+
           </span>
-          <small> {{
+
+
+          <small>
+
+            {{
             x.fechaFactura
             | date:'dd/MM/yyyy HH:mm'
-            }}</small>
-        </td>
+            }}
 
-      </ng-container>
-
-
-      <!-- =================================================
-           FECHA
-      ================================================== -->
-
-      <ng-container matColumnDef="fechaFactura">
-
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          Fecha
-        </th>
-
-
-        <td mat-cell *matCellDef="let x">
-
-          {{
-          x.fechaFactura
-          | date:'dd/MM/yyyy HH:mm'
-          }}
+          </small>
 
         </td>
 
@@ -123,20 +219,26 @@
 
       <ng-container matColumnDef="cliente">
 
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">
+
           Cliente
+
         </th>
 
 
         <td mat-cell *matCellDef="let x">
 
           <span class="client-name">
+
             {{ x.nombreCliente }}
+
           </span>
 
 
           <small>
+
             {{ x.identificacion }}
+
           </small>
 
         </td>
@@ -150,8 +252,10 @@
 
       <ng-container matColumnDef="subtotal">
 
-        <th mat-header-cell *matHeaderCellDef class="money-column">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="subtotal" class="money-column">
+
           Subtotal
+
         </th>
 
 
@@ -173,8 +277,10 @@
 
       <ng-container matColumnDef="iva">
 
-        <th mat-header-cell *matHeaderCellDef class="money-column">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="iva" class="money-column">
+
           IVA
+
         </th>
 
 
@@ -196,8 +302,10 @@
 
       <ng-container matColumnDef="total">
 
-        <th mat-header-cell *matHeaderCellDef class="money-column">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="total" class="money-column">
+
           Total
+
         </th>
 
 
@@ -205,10 +313,7 @@
 
           <span class="total-value">
 
-            {{
-            x.totalVenta
-            | currency:'USD':'symbol':'1.2-2'
-            }}
+            {{x.totalVenta| currency:'USD':'symbol':'1.2-2' }}
 
           </span>
 
@@ -223,8 +328,10 @@
 
       <ng-container matColumnDef="estado">
 
-        <th mat-header-cell *matHeaderCellDef class="status-column">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
+
           Estado
+
         </th>
 
 
@@ -251,13 +358,17 @@
 
       <ng-container matColumnDef="vendedor">
 
-        <th mat-header-cell *matHeaderCellDef>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="vendedor">
+
           Vendedor
+
         </th>
 
 
         <td mat-cell *matCellDef="let x">
+
           {{ x.vendedor }}
+
         </td>
 
       </ng-container>
@@ -270,13 +381,20 @@
       <ng-container matColumnDef="acciones">
 
         <th mat-header-cell *matHeaderCellDef class="col-actions">
+
           Acciones
+
         </th>
 
 
         <td mat-cell *matCellDef="let x" class="col-actions">
 
-          <!-- VISUALIZAR -->
+          <!-- =============================================
+               VISUALIZAR TICKET
+
+               Siempre disponible:
+               FACTURADO / ANULADA
+          ============================================== -->
 
           <button mat-icon-button type="button" class="action view" matTooltip="Visualizar factura"
             (click)="visualizar(x)">
@@ -288,9 +406,18 @@
           </button>
 
 
-          <!-- ANULAR -->
+          <!-- =============================================
+               ANULAR
 
-          @if (x.estado !== 'ANULADA') {
+               Solo:
+               ADMINISTRADOR + FACTURADO
+          ============================================== -->
+
+          @if (
+          esAdministrador()
+          &&
+          x.estado === 'FACTURADO'
+          ) {
 
           <button mat-icon-button type="button" class="action cancel" matTooltip="Anular factura" [disabled]="
                 anulando() === x.id
@@ -319,15 +446,19 @@
            FILAS
       ================================================== -->
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-
-
-      <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="
-    (row.estado ?? '').trim().toUpperCase() === 'ANULADA'
-  ">
+      <tr mat-header-row *matHeaderRowDef="
+          displayedColumns
+        ">
       </tr>
 
+
+      <tr mat-row *matRowDef="
+          let row;
+          columns: displayedColumns
+        " [class.row-cancelled]="
+          row.estado === 'ANULADA'
+        ">
+      </tr>
 
 
       <!-- =================================================
@@ -344,7 +475,20 @@
             receipt_long
           </mat-icon>
 
+
+          @if (
+          busqueda()
+          ||
+          filtroEstado() !== 'TODOS'
+          ) {
+
+          No existen facturas que coincidan con los filtros aplicados
+
+          } @else {
+
           No existen facturas para mostrar
+
+          }
 
         </td>
 
@@ -356,14 +500,10 @@
 
 
   <!-- =====================================================
-       PAGINADOR
+       PAGINADOR REMOTO
   ====================================================== -->
 
-  <mat-paginator [pageSize]="10" [pageSizeOptions]="[
-      10,
-      25,
-      50,
-      100
-    ]" showFirstLastButtons />
+  <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
+    [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)" />
 
 </div>

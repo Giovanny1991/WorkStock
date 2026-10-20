@@ -1,101 +1,399 @@
 <div class="page-header">
+
   <div>
-    <h1>Modelos de dispositivos</h1>
-    <p>Administración de modelos y configuraciones</p>
+
+    <h1>
+      Modelos de dispositivos
+    </h1>
+
+    <p>
+      Administración de modelos y configuraciones
+    </p>
+
   </div>
 
-  <button mat-flat-button class="primary-btn" type="button" (click)="nuevo()">
-    <mat-icon>add</mat-icon>
+
+  <button mat-flat-button class="primary-btn" type="button" [disabled]="cargando()" (click)="nuevo()">
+
+    <mat-icon>
+      add
+    </mat-icon>
+
     Nuevo modelo
+
   </button>
+
 </div>
 
+
 <div class="card">
-  @if (cargando()) {
-    <mat-progress-bar mode="indeterminate" />
+
+
+  <!-- =================================================
+       CARGANDO
+  ================================================== -->
+
+  @if (
+  cargando()
+  ) {
+
+  <mat-progress-bar mode="indeterminate" />
+
   }
 
+
+  <!-- =================================================
+       BUSCADOR
+  ================================================== -->
+
   <div class="toolbar">
+
     <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <mat-icon matPrefix>search</mat-icon>
-      <input
-        matInput
-        placeholder="Buscar marca, modelo, RAM, almacenamiento..."
-        autocomplete="off"
-        (input)="filtrar($event)">
+
+      <mat-label>
+        Buscar
+      </mat-label>
+
+
+      <input matInput [formControl]="buscarControl" placeholder="Marca, modelo, RAM, almacenamiento, color..."
+        autocomplete="off">
+
+
+      @if (
+      buscarControl.value
+      ) {
+
+      <button mat-icon-button matSuffix type="button" matTooltip="Limpiar búsqueda" aria-label="Limpiar búsqueda"
+        (click)="limpiarBusqueda()">
+
+        <mat-icon>
+          close
+        </mat-icon>
+
+      </button>
+
+      } @else {
+
+      <mat-icon matSuffix>
+        search
+      </mat-icon>
+
+      }
+
     </mat-form-field>
 
-    <span class="records">{{ dataSource.filteredData.length }} registros</span>
+
+    <!-- ===============================================
+         CONTADOR REAL DEL SERVIDOR
+    ================================================= -->
+
+    <span class="records">
+
+      @if (
+      totalRegistros() > 0
+      ) {
+
+      {{ registroDesde() }}
+      -
+      {{ registroHasta() }}
+      de
+      {{ totalRegistros() }}
+      registros
+
+      } @else {
+
+      0 registros
+
+      }
+
+    </span>
+
   </div>
+
+
+  <!-- =================================================
+       TABLA
+  ================================================== -->
 
   <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" matSort>
+
+    <table mat-table [dataSource]="modelos()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
+
+
+      <!-- =============================================
+           ID
+      ============================================== -->
 
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="id" class="col-id">ID</th>
-        <td mat-cell *matCellDef="let x" class="col-id">{{ x.id }}</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="id" class="col-id">
+
+          ID
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="col-id">
+
+          {{ x.id }}
+
+        </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           MARCA
+      ============================================== -->
 
       <ng-container matColumnDef="marca">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="marca">Marca</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="marca">
+
+          Marca
+
+        </th>
+
+
         <td mat-cell *matCellDef="let x">
-          <span class="brand">{{ x.nombreMarca }}</span>
+
+          <span class="brand">
+
+            {{ x.nombreMarca }}
+
+          </span>
+
         </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           MODELO
+      ============================================== -->
 
       <ng-container matColumnDef="modelo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="modelo">Modelo</th>
-        <td mat-cell *matCellDef="let x" class="model-name">{{ x.nombreModelo }}</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="modelo">
+
+          Modelo
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x" class="model-name">
+
+          {{ x.nombreModelo }}
+
+        </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           RAM
+      ============================================== -->
 
       <ng-container matColumnDef="ram">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="ram">RAM</th>
-        <td mat-cell *matCellDef="let x">{{ x.ram }} GB</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="ram">
+
+          RAM
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          {{ x.ram }} GB
+
+        </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           ALMACENAMIENTO
+      ============================================== -->
 
       <ng-container matColumnDef="almacenamiento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="almacenamiento">Almacenamiento</th>
-        <td mat-cell *matCellDef="let x">{{ x.almacenamiento }} GB</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="almacenamiento">
+
+          Almacenamiento
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          {{ x.almacenamiento }} GB
+
+        </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           COLOR
+      ============================================== -->
 
       <ng-container matColumnDef="color">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="color">Color</th>
-        <td mat-cell *matCellDef="let x">{{ x.color }}</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="color">
+
+          Color
+
+        </th>
+
+
+        <td mat-cell *matCellDef="let x">
+
+          {{ x.color }}
+
+        </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           ESTADO
+      ============================================== -->
 
       <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado">Estado</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado">
+
+          Estado
+
+        </th>
+
+
         <td mat-cell *matCellDef="let x">
-          <span class="status" [class.active]="x.estado === 'ACTIVO'">{{ x.estado }}</span>
+
+          <span class="status" [class.active]="
+              x.estado === 'ACTIVO'
+            ">
+
+            {{ x.estado }}
+
+          </span>
+
         </td>
+
       </ng-container>
+
+
+      <!-- =============================================
+           ACCIONES
+      ============================================== -->
 
       <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef class="col-actions">Acciones</th>
+
+        <th mat-header-cell *matHeaderCellDef class="col-actions">
+
+          Acciones
+
+        </th>
+
+
         <td mat-cell *matCellDef="let x" class="col-actions">
-          <button mat-icon-button type="button" class="action edit" matTooltip="Editar" (click)="editar(x)">
-            <mat-icon>edit</mat-icon>
+
+          <button mat-icon-button type="button" class="action edit" matTooltip="Editar" [disabled]="
+              eliminandoId() !== null
+            " (click)="editar(x)">
+
+            <mat-icon>
+              edit
+            </mat-icon>
+
           </button>
-          <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar" (click)="eliminar(x)">
-            <mat-icon>delete_outline</mat-icon>
+
+
+          <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar" [disabled]="
+              eliminandoId() !== null
+            " (click)="eliminar(x)">
+
+            <mat-icon>
+              delete_outline
+            </mat-icon>
+
           </button>
+
         </td>
+
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <!-- =============================================
+           FILAS
+      ============================================== -->
+
+      <tr mat-header-row *matHeaderRowDef="
+          displayedColumns
+        ">
+      </tr>
+
+
+      <tr mat-row *matRowDef="
+          let row;
+          columns: displayedColumns
+        ">
+      </tr>
+
+
+      <!-- =============================================
+           SIN DATOS
+      ============================================== -->
 
       <tr *matNoDataRow>
-        <td class="no-data" [attr.colspan]="displayedColumns.length">
-          <mat-icon>search_off</mat-icon>
+
+        <td class="no-data" [attr.colspan]="
+            displayedColumns.length
+          ">
+
+          <mat-icon>
+            search_off
+          </mat-icon>
+
+
+          @if (
+          busqueda()
+          ) {
+
+          No existen modelos que coincidan con la búsqueda
+
+          } @else {
+
           No existen modelos para mostrar
+
+          }
+
         </td>
+
       </tr>
+
     </table>
+
   </div>
 
-  <mat-paginator
-    [pageSize]="10"
-    [pageSizeOptions]="[5, 10, 25, 50]"
-    showFirstLastButtons />
+
+  <!-- =================================================
+       PAGINADOR REMOTO
+  ================================================== -->
+
+  <mat-paginator [length]="
+      totalRegistros()
+    " [pageIndex]="
+      paginaActual()
+    " [pageSize]="
+      tamanioPagina()
+    " [pageSizeOptions]="
+      opcionesPagina
+    " showFirstLastButtons (page)="
+      cambiarPagina($event)
+    ">
+  </mat-paginator>
+
 </div>

@@ -1,6 +1,12 @@
 /* =====================================================
    WORKSTOCK | HISTORIAL DE FACTURAS
-   Estilos depurados - claro / oscuro
+
+   - Búsqueda remota
+   - Filtros remotos
+   - Ordenamiento remoto
+   - Paginación remota
+   - Claro / oscuro
+   - Columnas numéricas centradas
 ===================================================== */
 
 :host {
@@ -8,7 +14,10 @@
   color: var(--app-text);
 }
 
-/* Encabezado */
+/* =====================================================
+   ENCABEZADO
+===================================================== */
+
 .page-header {
   display: flex;
   align-items: center;
@@ -30,31 +39,53 @@
   }
 }
 
-/* Contenedor principal */
+/* =====================================================
+   CONTENEDOR
+===================================================== */
+
 .card {
   position: relative;
+  min-width: 0;
   overflow: hidden;
+
   background: var(--app-card);
   color: var(--app-text);
+
   border: 1px solid var(--app-border);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
+
+  box-shadow:
+    0 1px 3px rgba(16, 24, 40, .05);
 }
 
-/* Búsqueda y contador */
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   padding: 12px 14px;
+
   background: var(--app-card);
-  border-bottom: 1px solid var(--app-border);
+
+  border-bottom:
+    1px solid var(--app-border);
 }
 
+/* =====================================================
+   BÚSQUEDA
+===================================================== */
+
 .search-field {
-  width: 300px;
+  flex: 0 1 340px;
+  width: 340px;
+  min-width: 240px;
   max-width: 100%;
+
   font-size: 13px;
   color: var(--app-text);
 
@@ -69,20 +100,35 @@
   }
 }
 
-.records {
+.clear-search {
+  width: 32px;
+  height: 32px;
+
   color: var(--app-text-muted);
-  font-size: 12px;
-  white-space: nowrap;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
 }
 
+/* =====================================================
+   AJUSTES MATERIAL BUSCADOR
+===================================================== */
+
 :host ::ng-deep .search-field {
+
   .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }
 
   .mat-mdc-text-field-wrapper {
     height: 40px;
-    background-color: var(--app-input-bg, var(--app-card));
+
+    background-color:
+      var(--app-input-bg, var(--app-card));
   }
 
   .mat-mdc-form-field-flex {
@@ -91,24 +137,131 @@
   }
 
   .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+
+    height: 40px;
     min-height: 40px;
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  input.mat-mdc-input-element {
+    height: 100%;
+    margin: 0;
+    line-height: normal;
   }
 
   .mat-mdc-form-field-icon-suffix {
+    display: flex;
+    align-items: center;
     color: var(--app-text-muted);
   }
 }
 
-/* Tabla */
+/* =====================================================
+   LADO DERECHO TOOLBAR
+===================================================== */
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* =====================================================
+   FILTROS
+===================================================== */
+
+.document-filters {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  min-height: 34px;
+  padding: 6px 11px;
+
+  border: 1px solid var(--app-border);
+  border-radius: 7px;
+
+  background: var(--app-card);
+  color: var(--app-text-muted);
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.1;
+
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition:
+    background .15s,
+    border-color .15s,
+    color .15s;
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+    line-height: 15px;
+  }
+
+  &:hover {
+    background: var(--app-hover);
+    color: var(--app-text);
+  }
+
+  &.selected {
+    background: var(--app-primary-soft);
+    border-color: var(--app-primary);
+    color: var(--app-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--app-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* =====================================================
+   CONTADOR
+===================================================== */
+
+.records {
+  color: var(--app-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   TABLA
+===================================================== */
+
 .table-wrapper {
+  width: 100%;
   overflow-x: auto;
-  scrollbar-color: var(--app-border) var(--app-card);
+
+  scrollbar-color:
+    var(--app-border) var(--app-card);
 }
 
 table.mat-mdc-table {
   width: 100%;
+  min-width: 920px;
+
   background: var(--app-card);
   color: var(--app-text);
 }
@@ -121,11 +274,16 @@ table.mat-mdc-table {
 .mat-mdc-header-cell {
   vertical-align: middle;
   padding: 0 16px;
+
   background: transparent;
-  border-bottom: 1px solid var(--app-border);
+
+  border-bottom:
+    1px solid var(--app-border);
+
   color: var(--app-text-muted);
   font-size: 12px;
   font-weight: 700;
+
   text-transform: uppercase;
   letter-spacing: .02em;
   white-space: nowrap;
@@ -134,31 +292,107 @@ table.mat-mdc-table {
 .mat-mdc-row {
   height: 48px;
   background: var(--app-card);
-  transition: background-color 150ms ease;
+
+  transition:
+    background-color 150ms ease;
 
   &:hover {
-    background: var(--app-hover, var(--app-card-secondary));
+    background:
+      var(--app-hover, var(--app-card-secondary));
   }
 }
 
 .mat-mdc-cell {
   vertical-align: middle;
   padding: 10px 16px;
+
   background: transparent;
-  border-bottom: 1px solid var(--app-border-soft, var(--app-border));
+
+  border-bottom:
+    1px solid var(--app-border-soft,
+      var(--app-border));
+
   color: var(--app-text);
   font-size: 13px;
   line-height: 18px;
 }
 
 /* =====================================================
-   FACTURAS ANULADAS
-   Aplicar fondo a toda la fila, incluso al pasar el cursor.
-   Selector CORRECTO: .mat-mdc-row.row-cancelled
+   CENTRADO DE COLUMNAS
+   ENCABEZADOS Y VALORES
 ===================================================== */
+
+/*
+  Estas clases se generan automáticamente
+  desde los nombres utilizados en matColumnDef.
+
+  No centramos cliente ni descripciones,
+  para conservar su lectura a la izquierda.
+*/
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+
+  &.mat-column-cantidad,
+  &.mat-column-stock,
+  &.mat-column-costo,
+  &.mat-column-precio,
+  &.mat-column-precioVenta,
+  &.mat-column-valor,
+  &.mat-column-subtotal,
+  &.mat-column-iva,
+  &.mat-column-descuento,
+  &.mat-column-total,
+  &.mat-column-abono,
+  &.mat-column-saldo,
+  &.mat-column-estado,
+  &.mat-column-fecha,
+  &.mat-column-fechaEmision,
+  &.mat-column-fechaFactura,
+  &.mat-column-acciones {
+
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+/* ============================================
+   ENCABEZADOS CON MAT-SORT-HEADER
+============================================ */
+
+:host ::ng-deep {
+
+  .mat-column-cantidad .mat-sort-header-container,
+  .mat-column-stock .mat-sort-header-container,
+  .mat-column-costo .mat-sort-header-container,
+  .mat-column-precio .mat-sort-header-container,
+  .mat-column-precioVenta .mat-sort-header-container,
+  .mat-column-valor .mat-sort-header-container,
+  .mat-column-subtotal .mat-sort-header-container,
+  .mat-column-iva .mat-sort-header-container,
+  .mat-column-descuento .mat-sort-header-container,
+  .mat-column-total .mat-sort-header-container,
+  .mat-column-abono .mat-sort-header-container,
+  .mat-column-saldo .mat-sort-header-container,
+  .mat-column-estado .mat-sort-header-container,
+  .mat-column-fecha .mat-sort-header-container,
+  .mat-column-fechaEmision .mat-sort-header-container,
+  .mat-column-fechaFactura .mat-sort-header-container,
+  .mat-column-acciones .mat-sort-header-container {
+
+    justify-content: center;
+  }
+}
+
+/* =====================================================
+   FACTURAS ANULADAS
+===================================================== */
+
 :host .mat-mdc-row.row-cancelled,
 :host .mat-mdc-row.row-cancelled:hover {
-  background-color: var(--app-danger-bg, rgba(220, 38, 38, .10)) !important;
+  background-color:
+    var(--app-danger-bg,
+      rgba(220, 38, 38, .10)) !important;
 }
 
 :host .mat-mdc-row.row-cancelled .mat-mdc-cell {
@@ -166,21 +400,31 @@ table.mat-mdc-table {
 }
 
 :host .mat-mdc-row.row-cancelled .mat-column-numeroFactura {
-  box-shadow: inset 3px 0 0 var(--app-danger, #dc2626);
+  box-shadow:
+    inset 3px 0 0 var(--app-danger, #dc2626);
 }
 
 :host .mat-mdc-row.row-cancelled .invoice-number,
+
 :host .mat-mdc-row.row-cancelled .client-name,
+
 :host .mat-mdc-row.row-cancelled .total-value {
   color: var(--app-text-muted);
 }
 
-/* Información de factura y cliente */
+/* =====================================================
+   FACTURA
+===================================================== */
+
 .invoice-number {
   color: var(--app-primary);
   font-weight: 700;
   white-space: nowrap;
 }
+
+/* =====================================================
+   CLIENTE
+===================================================== */
 
 .client-name {
   display: block;
@@ -191,24 +435,49 @@ table.mat-mdc-table {
 td small {
   display: block;
   margin-top: 2px;
+
   color: var(--app-text-muted);
   font-size: 11px;
 }
 
-/* Montos */
+/* =====================================================
+   MONTOS
+===================================================== */
+
 .money-column {
   width: 110px;
-  text-align: right;
+
+  /* CAMBIO: antes estaba a la derecha */
+  text-align: center;
+
   white-space: nowrap;
 }
 
 .total-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 32px;
+  padding: 3px 8px;
+  border-radius: 20px;
+
+  background: var(--app-success-bg);
   color: var(--app-success);
+
+  font-size: 11px;
   font-weight: 700;
-  white-space: nowrap;
+
+  &.no-stock {
+    background: var(--app-danger-bg);
+    color: var(--app-danger);
+  }
 }
 
-/* Estado */
+/* =====================================================
+   ESTADO
+===================================================== */
+
 .status-column {
   width: 110px;
   text-align: center;
@@ -219,30 +488,47 @@ td small {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-width: 76px;
   padding: 3px 9px;
   border-radius: 20px;
+
   background: var(--app-card-secondary);
   color: var(--app-text-muted);
+
   font-size: 11px;
   font-weight: 700;
 }
 
 .status.active {
-  background: var(--app-success-bg, rgba(22, 163, 74, .10));
-  color: var(--app-success, #16a34a);
+  background:
+    var(--app-success-bg,
+      rgba(22, 163, 74, .10));
+
+  color:
+    var(--app-success,
+      #16a34a);
 }
 
 .status.cancelled,
 :host .mat-mdc-row.row-cancelled .status.cancelled {
-  background: var(--app-danger-bg, rgba(220, 38, 38, .10));
-  color: var(--app-danger, #dc2626);
+  background:
+    var(--app-danger-bg,
+      rgba(220, 38, 38, .10));
+
+  color:
+    var(--app-danger,
+      #dc2626);
 }
 
-/* Acciones */
+/* =====================================================
+   ACCIONES
+===================================================== */
+
 .col-actions {
   width: 120px;
   min-width: 120px;
+
   text-align: center;
   white-space: nowrap;
 }
@@ -251,10 +537,15 @@ td small {
   width: 32px;
   height: 32px;
   min-width: 32px;
+
   margin: 0 2px;
   padding: 0;
   border-radius: 50%;
-  transition: background-color 150ms ease, color 150ms ease, opacity 150ms ease;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
 
   mat-icon {
     width: 18px;
@@ -273,7 +564,9 @@ td small {
   color: var(--app-primary);
 
   &:hover:not(:disabled) {
-    background: var(--app-primary-soft, rgba(37, 99, 235, .08));
+    background:
+      var(--app-primary-soft,
+        rgba(37, 99, 235, .08));
   }
 }
 
@@ -281,11 +574,16 @@ td small {
   color: var(--app-danger, #dc2626);
 
   &:hover:not(:disabled) {
-    background: var(--app-danger-bg, rgba(220, 38, 38, .08));
+    background:
+      var(--app-danger-bg,
+        rgba(220, 38, 38, .08));
   }
 }
 
-/* Sin registros */
+/* =====================================================
+   SIN REGISTROS
+===================================================== */
+
 .no-data {
   height: 120px;
   color: var(--app-text-muted);
@@ -299,11 +597,16 @@ td small {
   }
 }
 
-/* Paginación */
+/* =====================================================
+   PAGINADOR
+===================================================== */
+
 mat-paginator {
   background: var(--app-card);
   color: var(--app-text-muted);
-  border-top: 1px solid var(--app-border);
+
+  border-top:
+    1px solid var(--app-border);
 }
 
 :host ::ng-deep .mat-mdc-paginator-container {
@@ -311,22 +614,67 @@ mat-paginator {
   font-size: 12px;
 }
 
-/* Responsive */
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .search-field {
+    flex: 1 1 280px;
+  }
+
+  .toolbar-right {
+    flex: 1 1 auto;
+    justify-content: space-between;
+  }
+}
+
 @media (max-width: 700px) {
+
   .page-header {
     align-items: stretch;
     flex-direction: column;
   }
 
   .toolbar {
+    flex-direction: column;
+    align-items: stretch;
     padding: 10px 12px;
   }
 
   .search-field {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .toolbar-right {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .document-filters {
     width: 100%;
   }
 
+  .filter-chip {
+    flex: 1 1 auto;
+  }
+
   .records {
-    display: none;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .filter-chip {
+    padding: 6px 7px;
+    font-size: 10px;
   }
 }

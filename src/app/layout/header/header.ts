@@ -1,22 +1,41 @@
+
 import {
   Component,
   EventEmitter,
   inject,
-  Output,
-  Input
+  Input,
+  Output
 } from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+  Router
+} from '@angular/router';
 
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import {
+  MatToolbarModule
+} from '@angular/material/toolbar';
 
-import { AuthService } from '../../core/auth/auth.service';
+import {
+  MatButtonModule
+} from '@angular/material/button';
+
+import {
+  MatIconModule
+} from '@angular/material/icon';
+
+import {
+  MatMenuModule
+} from '@angular/material/menu';
+
+import {
+  AuthService
+} from '../../core/auth/auth.service';
+
 
 @Component({
+
   selector: 'app-header',
+
   standalone: true,
 
   imports: [
@@ -27,25 +46,97 @@ import { AuthService } from '../../core/auth/auth.service';
   ],
 
   templateUrl: './header.html',
+
   styleUrl: './header.scss'
+
 })
 export class Header {
 
-  @Input() tema: 'light' | 'dark' = 'light';
-  @Output() cambiarTema = new EventEmitter<void>();
+  // =====================================================
+  // TEMA
+  // =====================================================
+
+  @Input()
+  tema: 'light' | 'dark' = 'light';
 
   @Output()
-  menuClick =
-    new EventEmitter<void>();
+  cambiarTema = new EventEmitter<void>();
 
 
-  readonly authService =
-    inject(AuthService);
+  // =====================================================
+  // PALETAS DE NAVEGACIÓN
+  // =====================================================
+
+  @Input()
+  paleta: string = 'mc';
+
+  @Output()
+  cambiarPaleta = new EventEmitter<string>();
+
+  readonly paletas = [
+    {
+      id: 'original',
+      nombre: 'WorkStock original',
+      color: '#e2e4e7'
+    },
+    {
+      id: 'mc',
+      nombre: 'Rojo',
+      color: '#dd4b39'
+    },
+    {
+      id: 'azul',
+      nombre: 'Azul',
+      color: '#075db0'
+    },
+    {
+      id: 'verde',
+      nombre: 'Verde',
+      color: '#198754'
+    },
+    {
+      id: 'morado',
+      nombre: 'Morado',
+      color: '#6941c6'
+    },
+    {
+      id: 'grafito',
+      nombre: 'Grafito',
+      color: '#343a40'
+    }
+  ];
 
 
-  private readonly router =
-    inject(Router);
+  // =====================================================
+  // MENÚ
+  // =====================================================
 
+  @Output()
+  menuClick = new EventEmitter<void>();
+
+
+  // =====================================================
+  // SERVICIOS
+  // =====================================================
+
+  readonly authService = inject(AuthService);
+
+  readonly esSuperAdmin =
+    this.authService.esSuperAdmin;
+
+  private readonly router = inject(Router);
+
+
+  // =====================================================
+  // CONTROL DE CIERRE DE SESIÓN
+  // =====================================================
+
+  private cerrandoSesion = false;
+
+
+  // =====================================================
+  // ABRIR / CERRAR MENÚ
+  // =====================================================
 
   toggleMenu(): void {
 
@@ -54,31 +145,68 @@ export class Header {
   }
 
 
+  // =====================================================
+  // CERRAR SESIÓN
+  // =====================================================
+
   cerrarSesion(): void {
 
-    this.authService
-      .logout()
-      .subscribe({
+    // Evitar solicitudes duplicadas.
 
-        next: () => {
+    if (this.cerrandoSesion) {
+      return;
+    }
 
-          this.router.navigate([
-            '/login'
-          ]);
+    this.cerrandoSesion = true;
 
-        },
+    // IMPORTANTE:
+    // Obtener la URL antes de limpiar el usuario,
+    // para conservar la identidad del negocio.
 
-        error: () => {
+    const rutaLogin =
+      this.authService.obtenerRutaLogin();
 
-          this.authService.limpiarSesion();
+    // Ejecutar logout del servidor.
 
-          this.router.navigate([
-            '/login'
-          ]);
+    this.authService.logout().subscribe({
 
-        }
+      next: () => {
 
-      });
+        this.cerrandoSesion = false;
+
+        // El AuthService ya limpia el usuario
+        // cuando el logout finaliza correctamente.
+
+        void this.router.navigateByUrl(
+          rutaLogin,
+          {
+            replaceUrl: true
+          }
+        );
+
+      },
+
+      error: () => {
+
+        this.cerrandoSesion = false;
+
+        // Limpiar el estado local de Angular
+        // si ocurre un error al cerrar sesión.
+
+        this.authService.limpiarSesion();
+
+        // Conservar la URL personalizada.
+
+        void this.router.navigateByUrl(
+          rutaLogin,
+          {
+            replaceUrl: true
+          }
+        );
+
+      }
+
+    });
 
   }
 

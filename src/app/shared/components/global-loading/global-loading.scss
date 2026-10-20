@@ -1,0 +1,206 @@
+/* =====================================================
+   WORKSTOCK
+   INDICADOR GLOBAL DE CARGA
+===================================================== */
+
+:host {
+    display: block;
+}
+
+/* =====================================================
+   FONDO DE CARGA
+===================================================== */
+
+.global-loading-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100dvh;
+
+    padding: 16px;
+
+    box-sizing: border-box;
+
+    background: rgba(15, 23, 42, 0.30);
+
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+
+    animation: overlay-appear 0.18s ease-out;
+
+}
+
+/* =====================================================
+   TARJETA
+===================================================== */
+
+.loading-card {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 20px;
+
+    width: 100%;
+    max-width: 290px;
+
+    padding: 30px 26px;
+
+    box-sizing: border-box;
+
+    background: var(--app-card, #ffffff);
+
+    color: var(--app-text, #1e293b);
+
+    border: 1px solid var(--app-border, #e2e8f0);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.16);
+
+    animation: card-appear 0.2s ease-out;
+
+}
+
+/* =====================================================
+   SPINNER
+===================================================== */
+
+mat-spinner {
+
+    --mdc-circular-progress-active-indicator-color:
+        var(--app-primary, #075db0);
+
+    flex-shrink: 0;
+
+}
+
+/* =====================================================
+   TEXTO
+===================================================== */
+
+.loading-message {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 7px;
+
+    text-align: center;
+
+    strong {
+
+        color: var(--app-text, #1e293b);
+
+        font-size: 15px;
+        font-weight: 700;
+
+        line-height: 1.4;
+
+    }
+
+    span {
+
+        color: var(--app-text-muted, #64748b);
+
+        font-size: 12px;
+
+        line-height: 1.5;
+
+    }
+
+}
+
+/* =====================================================
+   ANIMACIONES
+===================================================== */
+
+@keyframes overlay-appear {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+@keyframes card-appear {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(8px) scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+    }
+
+}
+
+/* =====================================================
+   PANTALLAS MÓVILES
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .global-loading-overlay {
+        padding: 20px;
+    }
+
+    .loading-card {
+
+        max-width: 270px;
+
+        padding: 26px 20px;
+
+        border-radius: 14px;
+
+    }
+
+    .loading-message strong {
+        font-size: 14px;
+    }
+
+    .loading-message span {
+        font-size: 12px;
+    }
+
+}
+
+/* =====================================================
+   ACCESIBILIDAD
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .global-loading-overlay,
+    .loading-card {
+
+        animation: none;
+
+    }
+
+}

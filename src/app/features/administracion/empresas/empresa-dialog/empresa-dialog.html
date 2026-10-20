@@ -1,0 +1,899 @@
+<!-- =====================================================
+     WORKSTOCK - CREAR / EDITAR EMPRESA
+===================================================== -->
+
+<div class="dialog-header">
+
+  <div class="header-identity">
+
+    <span class="header-icon">
+      <mat-icon>
+        {{ esEdicion ? 'edit_note' : 'add_business' }}
+      </mat-icon>
+    </span>
+
+    <div class="header-text">
+
+      <h2>
+        {{ esEdicion ? 'Editar empresa' : 'Nueva empresa' }}
+      </h2>
+
+      <p>
+        Configura la identificación, contacto, información
+        tributaria y personalización de la empresa.
+      </p>
+
+    </div>
+
+  </div>
+
+  <button mat-icon-button type="button" class="close-button" aria-label="Cerrar formulario" (click)="cancelar()">
+    <mat-icon>close</mat-icon>
+  </button>
+
+</div>
+
+<!-- =====================================================
+     CONTENIDO
+===================================================== -->
+
+<mat-dialog-content class="dialog-content">
+
+  @if (cargandoEmpresa()) {
+
+  <mat-progress-bar mode="indeterminate" />
+
+  <div class="info-note">
+    <mat-icon>sync</mat-icon>
+    <span>Cargando información completa de la empresa...</span>
+  </div>
+
+  }
+
+  @if (errorEmpresa(); as error) {
+
+  <div class="logo-error">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  }
+
+  @if (!esEdicion) {
+
+  <div class="info-note">
+
+    <mat-icon>info_outline</mat-icon>
+
+    <span>
+      La empresa se registrará inicialmente como
+      <strong>ACTIVA</strong>,
+      con operación <strong>PENDIENTE</strong>.
+      El IVA inicial se asignará automáticamente.
+    </span>
+
+  </div>
+
+  }
+
+  <!-- ===================================================
+       LOGO
+  ==================================================== -->
+
+  <section class="logo-section">
+
+    <div class="section-heading">
+
+      <div>
+
+        <span class="section-eyebrow">
+          IDENTIDAD VISUAL
+        </span>
+
+        <h3>Logo de la empresa</h3>
+
+        <p>
+          Se utilizará para identificar visualmente
+          a la empresa y, posteriormente, en los tickets.
+        </p>
+
+      </div>
+
+      <mat-icon class="section-heading-icon">
+        image
+      </mat-icon>
+
+    </div>
+
+    @if (cargandoLogo()) {
+    <mat-progress-bar mode="indeterminate" />
+    }
+
+    <div class="logo-card">
+
+      <div class="logo-preview">
+
+        @if (logoVistaUrl()) {
+
+        <img [src]="logoVistaUrl()" alt="Logo de la empresa">
+
+        } @else {
+
+        <div class="logo-empty">
+
+          <span class="logo-empty-icon">
+            <mat-icon>business</mat-icon>
+          </span>
+
+          <div>
+            <strong>Sin logo</strong>
+            <span>Selecciona una imagen horizontal</span>
+          </div>
+
+        </div>
+
+        }
+
+      </div>
+
+      <div class="logo-controls">
+
+        <div class="logo-description">
+
+          <strong>Logo horizontal</strong>
+
+          <span>JPG, PNG o WEBP · máximo 500 KB</span>
+
+          <span>Recomendado: 400 × 120 px.</span>
+
+          @if (logoArchivo()) {
+
+          <span class="selected-file">
+
+            <mat-icon>check_circle</mat-icon>
+
+            {{ logoArchivo()?.name }}
+
+          </span>
+
+          }
+
+        </div>
+
+        <div class="logo-actions">
+
+          <label class="logo-select-btn" [class.disabled]="cargandoLogo() || cargandoEmpresa()">
+
+            <input type="file" accept="image/jpeg,image/png,image/webp" [disabled]="cargandoLogo() || cargandoEmpresa()"
+              (change)="seleccionarLogo($event)">
+
+            <mat-icon>upload</mat-icon>
+
+            <span>
+              {{ tieneLogo() ? 'Cambiar logo' : 'Seleccionar logo' }}
+            </span>
+
+          </label>
+
+          @if (tieneLogo()) {
+
+          <button mat-button type="button" class="remove-logo-btn" (click)="quitarLogo()">
+            <mat-icon>delete_outline</mat-icon>
+            Quitar
+          </button>
+
+          }
+
+          @if (eliminarLogoSolicitado()) {
+
+          <button mat-button type="button" class="restore-logo-btn" (click)="restaurarLogo()">
+            <mat-icon>undo</mat-icon>
+            Restaurar
+          </button>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+    @if (logoError()) {
+
+    <div class="logo-error">
+
+      <mat-icon>error_outline</mat-icon>
+
+      {{ logoError() }}
+
+    </div>
+
+    }
+
+    @if (eliminarLogoSolicitado()) {
+
+    <div class="logo-remove-note">
+
+      <mat-icon>info_outline</mat-icon>
+
+      El logo actual será eliminado al guardar.
+
+    </div>
+
+    }
+
+  </section>
+
+  <!-- ===================================================
+       FORMULARIO
+  ==================================================== -->
+
+  <form [formGroup]="form" class="company-form" (ngSubmit)="guardar()">
+
+    <fieldset class="company-fieldset" [disabled]="cargandoEmpresa() || !empresaCargada()">
+
+      <!-- ===============================================
+           IDENTIFICACIÓN
+      ================================================ -->
+
+      <section class="company-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-eyebrow">
+              DATOS GENERALES
+            </span>
+
+            <h3>Identificación de la empresa</h3>
+
+            <p>
+              Información que identifica a la empresa
+              dentro de WorkStock.
+            </p>
+
+          </div>
+
+          <mat-icon class="section-heading-icon">
+            apartment
+          </mat-icon>
+
+        </div>
+
+        <div class="form-grid">
+
+          <!-- CÓDIGO -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Código interno *
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <input matInput formControlName="codigo" maxlength="30" placeholder="EMPRESA-001" autocomplete="off">
+
+              @if (form.controls.codigo.invalid) {
+              <mat-error>
+                Código de 3 a 30 letras, números o guiones.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+            @if (esEdicion) {
+            <span class="field-help">
+              El código no puede modificarse.
+            </span>
+            }
+
+          </div>
+
+          <!-- NOMBRE -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Nombre de empresa *
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <input matInput formControlName="nombreEmpresa" maxlength="150" placeholder="Nombre comercial">
+
+              @if (form.controls.nombreEmpresa.invalid) {
+              <mat-error>
+                Ingresa entre 3 y 150 caracteres.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+          </div>
+
+          <!-- RAZÓN SOCIAL -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Razón social
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="razonSocial" maxlength="150" placeholder="Razón social legal">
+            </mat-form-field>
+
+          </div>
+
+          <!-- RUC -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              RUC
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <input matInput formControlName="ruc" maxlength="13" inputmode="numeric" placeholder="13 dígitos">
+
+              @if (form.controls.ruc.invalid) {
+              <mat-error>
+                El RUC debe contener exactamente 13 números.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+          </div>
+
+          <!-- NOMBRE LOCAL -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Nombre del local
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="nombreLocal" maxlength="100" placeholder="Nombre del establecimiento">
+            </mat-form-field>
+
+          </div>
+
+          <!-- ACTIVIDAD -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Actividad comercial
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="actividadComercial" maxlength="200" placeholder="Actividad principal">
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===============================================
+           DIRECCIÓN
+      ================================================ -->
+
+      <section class="company-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-eyebrow">
+              UBICACIÓN
+            </span>
+
+            <h3>Dirección comercial</h3>
+
+            <p>
+              Datos que podrán mostrarse en los documentos.
+            </p>
+
+          </div>
+
+          <mat-icon class="section-heading-icon">
+            location_on
+          </mat-icon>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field-group full">
+
+            <label class="field-label">
+              Dirección
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="direccion" maxlength="250"
+                placeholder="Calle principal, secundaria y numeración">
+            </mat-form-field>
+
+          </div>
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Ciudad
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="ciudad" maxlength="100" placeholder="Quito">
+            </mat-form-field>
+
+          </div>
+
+          <div class="field-group">
+
+            <label class="field-label">
+              País
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="pais" maxlength="100" placeholder="Ecuador">
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===============================================
+           CONTACTO
+      ================================================ -->
+
+      <section class="company-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-eyebrow">
+              COMUNICACIÓN
+            </span>
+
+            <h3>Información de contacto</h3>
+
+            <p>
+              Teléfonos y canales de atención comercial.
+            </p>
+
+          </div>
+
+          <mat-icon class="section-heading-icon">
+            contact_phone
+          </mat-icon>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Teléfono
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="telefono" maxlength="30" placeholder="Número telefónico">
+            </mat-form-field>
+
+          </div>
+
+          <div class="field-group">
+
+            <label class="field-label">
+              WhatsApp
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="whatsApp" maxlength="30" placeholder="Número de WhatsApp">
+            </mat-form-field>
+
+          </div>
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Correo electrónico
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <input matInput type="email" formControlName="correoElectronico" maxlength="150"
+                placeholder="contacto@empresa.com">
+
+              @if (form.controls.correoElectronico.invalid) {
+              <mat-error>
+                Ingresa un correo electrónico válido.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+          </div>
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Sitio web
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="sitioWeb" maxlength="200" placeholder="https://www.empresa.com">
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===============================================
+           TRIBUTARIO
+      ================================================ -->
+
+      <section class="company-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-eyebrow">
+              INFORMACIÓN FISCAL
+            </span>
+
+            <h3>Configuración tributaria</h3>
+
+            <p>
+              Datos informativos utilizados según el tipo
+              de comprobante y régimen correspondiente.
+            </p>
+
+          </div>
+
+          <mat-icon class="section-heading-icon">
+            receipt_long
+          </mat-icon>
+
+        </div>
+
+        <div class="form-grid">
+
+          <!-- RÉGIMEN -->
+
+          <div class="field-group full">
+
+            <label class="field-label">
+              Régimen tributario
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="regimenTributario" maxlength="150"
+                placeholder="Régimen tributario aplicable">
+            </mat-form-field>
+
+          </div>
+
+          <!-- ESTABLECIMIENTO -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Establecimiento
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <input matInput formControlName="establecimiento" maxlength="3" inputmode="numeric" placeholder="001">
+
+              @if (form.controls.establecimiento.invalid) {
+              <mat-error>
+                Debe contener 3 dígitos.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+          </div>
+
+          <!-- PUNTO EMISIÓN -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Punto de emisión
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <input matInput formControlName="puntoEmision" maxlength="3" inputmode="numeric" placeholder="001">
+
+              @if (form.controls.puntoEmision.invalid) {
+              <mat-error>
+                Debe contener 3 dígitos.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+          </div>
+
+          <!-- AUTORIZACIÓN -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Autorización SRI
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput formControlName="autorizacionSri" maxlength="50"
+                placeholder="Número de autorización, si aplica">
+            </mat-form-field>
+
+          </div>
+
+          <!-- FECHA AUTORIZACIÓN -->
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Fecha de autorización SRI
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+              <input matInput type="date" formControlName="fechaAutorizacionSri">
+            </mat-form-field>
+
+          </div>
+
+          <!-- CONTABILIDAD -->
+
+          <div class="field-group full">
+
+            <label class="field-label">
+              Obligado a llevar contabilidad
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <mat-select formControlName="obligadoLlevarContabilidad">
+
+                <mat-option value="">
+                  No especificado
+                </mat-option>
+
+                <mat-option value="SI">
+                  Sí
+                </mat-option>
+
+                <mat-option value="NO">
+                  No
+                </mat-option>
+
+              </mat-select>
+
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===============================================
+           TICKETS
+      ================================================ -->
+
+      <section class="company-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-eyebrow">
+              PERSONALIZACIÓN
+            </span>
+
+            <h3>Mensaje para los tickets</h3>
+
+            <p>
+              Texto que podrá mostrarse al pie de los
+              documentos impresos.
+            </p>
+
+          </div>
+
+          <mat-icon class="section-heading-icon">
+            print
+          </mat-icon>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field-group full">
+
+            <label class="field-label">
+              Leyenda del ticket
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <textarea matInput formControlName="leyendaTicket" maxlength="500" rows="3"
+                placeholder="Gracias por su compra. ¡Vuelva pronto!"></textarea>
+
+            </mat-form-field>
+
+            <span class="field-help">
+              Máximo 500 caracteres.
+              Cada empresa podrá utilizar su propio mensaje.
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ===============================================
+           ESTADO Y OPERACIÓN
+      ================================================ -->
+
+      @if (esEdicion) {
+
+      <section class="company-section">
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-eyebrow">
+              ADMINISTRACIÓN
+            </span>
+
+            <h3>Estado y operación</h3>
+
+            <p>
+              Control de disponibilidad operativa de la empresa.
+            </p>
+
+          </div>
+
+          <mat-icon class="section-heading-icon">
+            admin_panel_settings
+          </mat-icon>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Estado
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <mat-select formControlName="estado">
+
+                <mat-option value="ACTIVA">
+                  Activa
+                </mat-option>
+
+                <mat-option value="INACTIVA">
+                  Inactiva
+                </mat-option>
+
+              </mat-select>
+
+            </mat-form-field>
+
+          </div>
+
+          <div class="field-group">
+
+            <label class="field-label">
+              Operación comercial
+            </label>
+
+            <mat-form-field appearance="outline" class="compact-field">
+
+              <mat-select formControlName="operativaHabilitada">
+
+                <mat-option [value]="false">
+                  Pendiente
+                </mat-option>
+
+                <mat-option [value]="true">
+                  Habilitada
+                </mat-option>
+
+              </mat-select>
+
+            </mat-form-field>
+
+            @if (operacionDeshabilitada()) {
+
+            <span class="field-help">
+              Una empresa inactiva mantiene
+              su operación pendiente.
+            </span>
+
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+      }
+
+    </fieldset>
+
+  </form>
+
+  <!-- ===================================================
+       SEGURIDAD MULTIEMPRESA
+  ==================================================== -->
+
+  <div class="security-note">
+
+    <mat-icon>shield</mat-icon>
+
+    <span>
+      Los datos comerciales y tributarios serán
+      independientes para cada empresa.
+      La habilitación operativa debe respetar
+      la auditoría multiempresa de WorkStock.
+    </span>
+
+  </div>
+
+</mat-dialog-content>
+
+<!-- =====================================================
+     ACCIONES
+===================================================== -->
+
+<mat-dialog-actions class="dialog-actions" align="end">
+
+  <button mat-stroked-button type="button" class="cancel-btn" (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button mat-flat-button type="button" class="save-btn" [disabled]="
+      form.invalid ||
+      cargandoEmpresa() ||
+      !empresaCargada()
+    " (click)="guardar()">
+
+    <mat-icon>
+      {{ esEdicion ? 'save' : 'add_business' }}
+    </mat-icon>
+
+    <span>
+      {{ esEdicion ? 'Actualizar empresa' : 'Guardar empresa' }}
+    </span>
+
+  </button>
+
+</mat-dialog-actions>

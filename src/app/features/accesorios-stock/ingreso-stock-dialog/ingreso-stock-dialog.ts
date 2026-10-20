@@ -388,10 +388,38 @@ export class IngresoStockDialog {
   private validar():
     string | null {
 
-    if (
+    const cantidad =
       Number(
         this.cantidad.value
-      ) <= 0
+      );
+
+
+    const precioTotal =
+      Number(
+        this.precioTotal.value
+      );
+
+
+    const pvp1 =
+      Number(
+        this.pvp1.value
+      );
+
+
+    const pvp2 =
+      Number(
+        this.pvp2.value
+      );
+
+
+    const referencia =
+      Number(
+        this.referencia()
+      );
+
+
+    if (
+      cantidad <= 0
     ) {
 
       return 'Ingrese una cantidad válida';
@@ -400,9 +428,7 @@ export class IngresoStockDialog {
 
 
     if (
-      Number(
-        this.precioTotal.value
-      ) <= 0
+      precioTotal <= 0
     ) {
 
       return 'Ingrese el precio total';
@@ -411,12 +437,8 @@ export class IngresoStockDialog {
 
 
     if (
-      Number(
-        this.pvp1.value
-      ) <= 0 ||
-      Number(
-        this.pvp2.value
-      ) <= 0
+      pvp1 <= 0 ||
+      pvp2 <= 0
     ) {
 
       return 'Ingrese los precios de venta';
@@ -424,13 +446,14 @@ export class IngresoStockDialog {
     }
 
 
+    /*
+     * PVP1 puede ser igual a PVP2.
+     *
+     * Solamente se bloquea cuando PVP1
+     * supera al PVP2.
+     */
     if (
-      Number(
-        this.pvp1.value
-      ) >
-      Number(
-        this.pvp2.value
-      )
+      pvp1 > pvp2
     ) {
 
       return 'El precio local no puede ser mayor al precio público';
@@ -438,26 +461,27 @@ export class IngresoStockDialog {
     }
 
 
+    /*
+     * Ambos precios de venta deben ser
+     * ESTRICTAMENTE MAYORES al costo
+     * promedio de referencia.
+     *
+     * La igualdad también se rechaza.
+     */
     if (
-      Number(
-        this.pvp1.value
-      ) <
-      this.referencia()
+      pvp1 <= referencia
     ) {
 
-      return 'El precio local no puede ser menor al precio de referencia';
+      return 'El precio local debe ser mayor al costo de referencia';
 
     }
 
 
     if (
-      Number(
-        this.pvp2.value
-      ) <
-      this.referencia()
+      pvp2 <= referencia
     ) {
 
-      return 'El precio público no puede ser menor al precio de referencia';
+      return 'El precio público debe ser mayor al costo de referencia';
 
     }
 

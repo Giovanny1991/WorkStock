@@ -1,193 +1,1159 @@
-import { AfterViewInit, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { finalize } from 'rxjs';
+import {
 
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+  Component,
 
-import { Modelo } from './modelo.model';
-import { ModelosService } from './modelos.service';
-import { ModeloDialog } from './modelo-dialog/modelo-dialog';
-import { ConfirmDialog } from '../../shared/dialogs/confirm-dialog/confirm-dialog';
-import { NotificationService } from '../../core/services/notification';
+  computed,
+
+  DestroyRef,
+
+  inject,
+
+  OnInit,
+
+  signal
+
+} from '@angular/core';
+
+
+import {
+
+  FormControl,
+
+  ReactiveFormsModule
+
+} from '@angular/forms';
+
+
+import {
+
+  catchError,
+
+  debounceTime,
+
+  distinctUntilChanged,
+
+  finalize,
+
+  map,
+
+  of,
+
+  startWith,
+
+  Subject,
+
+  switchMap
+
+} from 'rxjs';
+
+
+import {
+
+  takeUntilDestroyed
+
+} from '@angular/core/rxjs-interop';
+
+
+import {
+
+  MatTableModule
+
+} from '@angular/material/table';
+
+
+import {
+
+  MatPaginatorModule,
+
+  PageEvent
+
+} from '@angular/material/paginator';
+
+
+import {
+
+  MatSortModule,
+
+  Sort
+
+} from '@angular/material/sort';
+
+
+import {
+
+  MatDialog,
+
+  MatDialogModule
+
+} from '@angular/material/dialog';
+
+
+import {
+
+  MatButtonModule
+
+} from '@angular/material/button';
+
+
+import {
+
+  MatIconModule
+
+} from '@angular/material/icon';
+
+
+import {
+
+  MatFormFieldModule
+
+} from '@angular/material/form-field';
+
+
+import {
+
+  MatInputModule
+
+} from '@angular/material/input';
+
+
+import {
+
+  MatTooltipModule
+
+} from '@angular/material/tooltip';
+
+
+import {
+
+  MatProgressBarModule
+
+} from '@angular/material/progress-bar';
+
+
+import {
+
+  Modelo
+
+} from './modelo.model';
+
+
+import {
+
+  DireccionModelo,
+
+  ModeloOrden,
+
+  ModelosService
+
+} from './modelos.service';
+
+
+import {
+
+  ModeloDialog
+
+} from './modelo-dialog/modelo-dialog';
+
+
+import {
+
+  ConfirmDialog
+
+} from '../../shared/dialogs/confirm-dialog/confirm-dialog';
+
+
+import {
+
+  NotificationService
+
+} from '../../core/services/notification';
+
+
+// =====================================================
+// COMPONENTE
+// =====================================================
 
 @Component({
-  selector: 'app-modelos',
-  standalone: true,
-  imports: [
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTooltipModule,
-    MatProgressBarModule
-  ],
-  templateUrl: './modelos.html',
-  styleUrl: './modelos.scss'
-})
-export class Modelos implements OnInit, AfterViewInit {
-  private readonly service = inject(ModelosService);
-  private readonly dialog = inject(MatDialog);
-  private readonly notify = inject(NotificationService);
 
-  readonly cargando = signal(false);
+  selector:
+    'app-modelos',
+
+  standalone:
+    true,
+
+  imports: [
+
+    ReactiveFormsModule,
+
+    MatTableModule,
+
+    MatPaginatorModule,
+
+    MatSortModule,
+
+    MatDialogModule,
+
+    MatButtonModule,
+
+    MatIconModule,
+
+    MatFormFieldModule,
+
+    MatInputModule,
+
+    MatTooltipModule,
+
+    MatProgressBarModule
+
+  ],
+
+  templateUrl:
+    './modelos.html',
+
+  styleUrl:
+    './modelos.scss'
+
+})
+export class Modelos
+  implements OnInit {
+
+
+  // =====================================================
+  // SERVICIOS
+  // =====================================================
+
+  private readonly service =
+    inject(
+      ModelosService
+    );
+
+
+  private readonly dialog =
+    inject(
+      MatDialog
+    );
+
+
+  private readonly notify =
+    inject(
+      NotificationService
+    );
+
+
+  private readonly destroyRef =
+    inject(
+      DestroyRef
+    );
+
+
+  // =====================================================
+  // RECARGA
+  // =====================================================
+
+  private readonly recargar$ =
+    new Subject<void>();
+
+
+  // =====================================================
+  // ESTADO
+  // =====================================================
+
+  readonly cargando =
+    signal(
+      false
+    );
+
+
+  readonly eliminandoId =
+    signal<number | null>(
+      null
+    );
+
+
+  readonly modelos =
+    signal<Modelo[]>(
+      []
+    );
+
+
+  readonly busqueda =
+    signal(
+      ''
+    );
+
+
+  // =====================================================
+  // BUSCADOR
+  // =====================================================
+
+  readonly buscarControl =
+    new FormControl(
+      '',
+      {
+        nonNullable: true
+      }
+    );
+
+
+  // =====================================================
+  // COLUMNAS
+  // =====================================================
 
   readonly displayedColumns = [
-    'id', 'marca', 'modelo', 'ram',
-    'almacenamiento', 'color', 'estado', 'acciones'
+
+    'id',
+
+    'marca',
+
+    'modelo',
+
+    'ram',
+
+    'almacenamiento',
+
+    'color',
+
+    'estado',
+
+    'acciones'
+
   ];
 
-  readonly dataSource = new MatTableDataSource<Modelo>([]);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  // =====================================================
+  // PAGINACIÓN
+  // =====================================================
 
-  ngOnInit(): void {
-    this.cargar();
-  }
+  readonly paginaActual =
+    signal(
+      0
+    );
 
-  ngAfterViewInit(): void {
-    this.configurarTabla();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
 
-  private configurarTabla(): void {
-    // matColumnDef no siempre coincide con la propiedad del modelo.
-    this.dataSource.sortingDataAccessor = (modelo: Modelo, columna: string): string | number => {
-      switch (columna) {
-        case 'id':
-          return Number(modelo.id) || 0;
-        case 'marca':
-          return String(modelo.nombreMarca ?? '').trim().toLocaleLowerCase('es');
-        case 'modelo':
-          return String(modelo.nombreModelo ?? '').trim().toLocaleLowerCase('es');
-        case 'ram':
-          return this.numeroCapacidad(modelo.ram);
-        case 'almacenamiento':
-          return this.numeroCapacidad(modelo.almacenamiento);
-        case 'color':
-          return String(modelo.color ?? '').trim().toLocaleLowerCase('es');
-        case 'estado':
-          return String(modelo.estado ?? '').trim().toLocaleLowerCase('es');
-        default:
-          return '';
-      }
-    };
+  readonly tamanioPagina =
+    signal(
+      10
+    );
 
-    // Ordena correctamente palabras, números y acentos sin alterar los datos.
-    this.dataSource.sortData = (datos: Modelo[], sort: MatSort): Modelo[] => {
-      const { active, direction } = sort;
-      if (!active || !direction) return datos;
 
-      const factor = direction === 'asc' ? 1 : -1;
-      return [...datos].sort((a, b) => {
-        const valorA = this.dataSource.sortingDataAccessor(a, active);
-        const valorB = this.dataSource.sortingDataAccessor(b, active);
+  readonly opcionesPagina = [
 
-        if (typeof valorA === 'number' && typeof valorB === 'number') {
-          return (valorA - valorB) * factor;
+    10,
+
+    25,
+
+    50,
+
+    100
+
+  ];
+
+
+  readonly totalRegistros =
+    signal(
+      0
+    );
+
+
+  readonly totalPaginas =
+    signal(
+      0
+    );
+
+
+  // =====================================================
+  // CONTADOR DESDE
+  // =====================================================
+
+  readonly registroDesde =
+    computed(
+      () => {
+
+        if (
+          this.totalRegistros() === 0
+        ) {
+
+          return 0;
+
         }
 
-        return String(valorA).localeCompare(String(valorB), 'es', {
-          numeric: true,
-          sensitivity: 'base'
-        }) * factor;
-      });
-    };
 
-    this.dataSource.filterPredicate = (modelo: Modelo, filtro: string): boolean => {
-      const contenido = [
-        modelo.id,
-        modelo.nombreMarca,
-        modelo.nombreModelo,
-        modelo.ram,
-        modelo.almacenamiento,
-        modelo.color,
-        modelo.estado
-      ].map(valor => String(valor ?? '')).join(' ').toLocaleLowerCase('es');
+        return (
 
-      return contenido.includes(filtro);
-    };
-  }
+          this.paginaActual()
 
-  private numeroCapacidad(valor: unknown): number {
-    const numero = Number.parseFloat(String(valor ?? '').replace(',', '.'));
-    return Number.isFinite(numero) ? numero : 0;
-  }
+          *
 
-  cargar(): void {
-    this.cargando.set(true);
-    this.service.listar()
-      .pipe(finalize(() => this.cargando.set(false)))
-      .subscribe({
-        next: r => {
-          this.dataSource.data = r.data ?? [];
-        },
-        error: e => this.notify.error(
-          e?.error?.message ?? 'No fue posible cargar los modelos'
-        )
-      });
-  }
+          this.tamanioPagina()
 
-  filtrar(event: Event): void {
-    this.dataSource.filter =
-      (event.target as HTMLInputElement).value.trim().toLocaleLowerCase('es');
-    this.dataSource.paginator?.firstPage();
-  }
+        ) + 1;
 
-  nuevo(): void {
-    this.abrirFormulario();
-  }
-
-  editar(modelo: Modelo): void {
-    this.abrirFormulario(modelo);
-  }
-
-  private abrirFormulario(modelo?: Modelo): void {
-    this.dialog.open(ModeloDialog, {
-      width: '560px',
-      maxWidth: '94vw',
-      disableClose: true,
-      data: { modelo }
-    }).afterClosed().subscribe(guardado => {
-      if (guardado) this.cargar();
-    });
-  }
-
-  eliminar(modelo: Modelo): void {
-    this.dialog.open(ConfirmDialog, {
-      width: '420px',
-      maxWidth: '92vw',
-      disableClose: true,
-      data: {
-        title: 'Eliminar modelo',
-        message: `¿Está seguro de eliminar "${modelo.nombreMarca} ${modelo.nombreModelo}"? Esta acción no se puede deshacer.`,
-        confirmText: 'Eliminar'
       }
-    }).afterClosed().subscribe(confirmado => {
-      if (!confirmado) return;
+    );
 
-      this.service.eliminar(modelo.id).subscribe({
-        next: r => {
-          this.notify.success(r.message);
-          this.cargar();
-        },
-        error: e => this.notify.error(
-          e?.error?.message ?? 'No fue posible eliminar el modelo'
+
+  // =====================================================
+  // CONTADOR HASTA
+  // =====================================================
+
+  readonly registroHasta =
+    computed(
+      () =>
+
+        Math.min(
+
+          (
+
+            this.paginaActual()
+
+            + 1
+
+          )
+
+          *
+
+          this.tamanioPagina(),
+
+          this.totalRegistros()
+
         )
-      });
-    });
+    );
+
+
+  // =====================================================
+  // ORDENAMIENTO
+  // =====================================================
+
+  readonly columnaOrden =
+    signal<ModeloOrden>(
+      'id'
+    );
+
+
+  readonly direccionOrden =
+    signal<DireccionModelo>(
+      'desc'
+    );
+
+
+  // =====================================================
+  // INICIO
+  // =====================================================
+
+  ngOnInit():
+    void {
+
+    this.configurarBusqueda();
+
+    this.configurarCarga();
+
   }
+
+
+  // =====================================================
+  // BÚSQUEDA REMOTA
+  // =====================================================
+
+  private configurarBusqueda():
+    void {
+
+    this.buscarControl
+      .valueChanges
+
+      .pipe(
+
+        debounceTime(
+          350
+        ),
+
+        map(
+          value =>
+            value.trim()
+        ),
+
+        distinctUntilChanged(),
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+
+      .subscribe(
+        value => {
+
+          this.busqueda.set(
+            value
+          );
+
+
+          this.paginaActual.set(
+            0
+          );
+
+
+          this.cargar();
+
+        }
+      );
+
+  }
+
+
+  // =====================================================
+  // CONFIGURAR CARGA
+  // =====================================================
+
+  private configurarCarga():
+    void {
+
+    this.recargar$
+
+      .pipe(
+
+        // ===============================================
+        // PRIMERA CARGA
+        // ===============================================
+
+        startWith(
+          undefined
+        ),
+
+
+        // ===============================================
+        // CONSULTA REMOTA
+        // ===============================================
+
+        switchMap(
+          () => {
+
+            this.cargando.set(
+              true
+            );
+
+
+            return this.service
+              .listar({
+
+                page:
+                  this.paginaActual()
+                  + 1,
+
+                pageSize:
+                  this.tamanioPagina(),
+
+                busqueda:
+                  this.busqueda(),
+
+                sortBy:
+                  this.columnaOrden(),
+
+                sortDir:
+                  this.direccionOrden()
+
+              })
+
+              .pipe(
+
+                catchError(
+                  error => {
+
+                    this.notify.error(
+
+                      error
+                        ?.error
+                        ?.message
+
+                      ??
+
+                      'No fue posible cargar los modelos'
+
+                    );
+
+
+                    return of(
+                      null
+                    );
+
+                  }
+                )
+
+              );
+
+          }
+        ),
+
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+
+      .subscribe(
+        response => {
+
+          this.cargando.set(
+            false
+          );
+
+
+          if (!response) {
+
+            return;
+
+          }
+
+
+          const total =
+            Number(
+
+              response
+                .pagination
+                ?.total
+
+              ??
+
+              0
+
+            );
+
+
+          const totalPages =
+            Number(
+
+              response
+                .pagination
+                ?.totalPages
+
+              ??
+
+              0
+
+            );
+
+
+          const paginaServidor =
+            Number(
+
+              response
+                .pagination
+                ?.page
+
+              ??
+
+              1
+
+            );
+
+
+          // =============================================
+          // PÁGINA FUERA DE RANGO
+          //
+          // Puede suceder después de eliminar el único
+          // registro existente en la última página.
+          // =============================================
+
+          if (
+
+            totalPages > 0
+
+            &&
+
+            paginaServidor >
+            totalPages
+
+          ) {
+
+            this.paginaActual.set(
+              totalPages - 1
+            );
+
+
+            this.cargar();
+
+            return;
+
+          }
+
+
+          // =============================================
+          // SIN RESULTADOS
+          // =============================================
+
+          if (
+
+            total === 0
+
+            &&
+
+            this.paginaActual() !== 0
+
+          ) {
+
+            this.paginaActual.set(
+              0
+            );
+
+          }
+
+
+          // =============================================
+          // ACTUALIZAR TABLA
+          // =============================================
+
+          this.modelos.set(
+
+            response.data
+
+            ??
+
+            []
+
+          );
+
+
+          this.totalRegistros.set(
+            total
+          );
+
+
+          this.totalPaginas.set(
+            totalPages
+          );
+
+        }
+      );
+
+  }
+
+
+  // =====================================================
+  // CARGAR
+  // =====================================================
+
+  cargar():
+    void {
+
+    this.recargar$
+      .next();
+
+  }
+
+
+  // =====================================================
+  // LIMPIAR BÚSQUEDA
+  // =====================================================
+
+  limpiarBusqueda():
+    void {
+
+    if (
+      !this.buscarControl.value
+    ) {
+
+      return;
+
+    }
+
+
+    this.buscarControl
+      .setValue(
+        ''
+      );
+
+  }
+
+
+  // =====================================================
+  // CAMBIAR PÁGINA
+  // =====================================================
+
+  cambiarPagina(
+    event: PageEvent
+  ):
+    void {
+
+    const cambioTamanio =
+
+      event.pageSize
+
+      !==
+
+      this.tamanioPagina();
+
+
+    this.tamanioPagina.set(
+      event.pageSize
+    );
+
+
+    if (
+      cambioTamanio
+    ) {
+
+      this.paginaActual.set(
+        0
+      );
+
+    } else {
+
+      this.paginaActual.set(
+        event.pageIndex
+      );
+
+    }
+
+
+    this.cargar();
+
+  }
+
+
+  // =====================================================
+  // CAMBIAR ORDEN
+  // =====================================================
+
+  cambiarOrden(
+    event: Sort
+  ):
+    void {
+
+    if (
+
+      event.direction !== 'asc'
+
+      &&
+
+      event.direction !== 'desc'
+
+    ) {
+
+      return;
+
+    }
+
+
+    const columnasPermitidas:
+      ModeloOrden[] = [
+
+        'id',
+
+        'marca',
+
+        'modelo',
+
+        'ram',
+
+        'almacenamiento',
+
+        'color',
+
+        'estado'
+
+      ];
+
+
+    const columna =
+      columnasPermitidas
+        .find(
+          item =>
+            item ===
+            event.active
+        );
+
+
+    if (!columna) {
+
+      return;
+
+    }
+
+
+    this.columnaOrden.set(
+      columna
+    );
+
+
+    this.direccionOrden.set(
+      event.direction
+    );
+
+
+    this.paginaActual.set(
+      0
+    );
+
+
+    this.cargar();
+
+  }
+
+
+  // =====================================================
+  // NUEVO
+  // =====================================================
+
+  nuevo():
+    void {
+
+    this.abrirFormulario();
+
+  }
+
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
+
+  editar(
+    modelo: Modelo
+  ):
+    void {
+
+    this.abrirFormulario(
+      modelo
+    );
+
+  }
+
+
+  // =====================================================
+  // FORMULARIO
+  // =====================================================
+
+  private abrirFormulario(
+    modelo?: Modelo
+  ):
+    void {
+
+    this.dialog
+      .open(
+        ModeloDialog,
+        {
+
+          width:
+            '560px',
+
+          maxWidth:
+            '94vw',
+
+          disableClose:
+            true,
+
+          data: {
+            modelo
+          }
+
+        }
+      )
+
+      .afterClosed()
+
+      .pipe(
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+
+      .subscribe(
+        guardado => {
+
+          if (!guardado) {
+
+            return;
+
+          }
+
+
+          // =============================================
+          // NUEVO MODELO
+          // =============================================
+
+          if (!modelo) {
+
+            this.paginaActual.set(
+              0
+            );
+
+          }
+
+
+          this.cargar();
+
+        }
+      );
+
+  }
+
+
+  // =====================================================
+  // ELIMINAR
+  // =====================================================
+
+  eliminar(
+    modelo: Modelo
+  ):
+    void {
+
+    if (
+      this.eliminandoId() !== null
+    ) {
+
+      return;
+
+    }
+
+
+    this.dialog
+      .open(
+        ConfirmDialog,
+        {
+
+          width:
+            '420px',
+
+          maxWidth:
+            '92vw',
+
+          disableClose:
+            true,
+
+          data: {
+
+            title:
+              'Eliminar modelo',
+
+            message:
+              `¿Está seguro de eliminar "${modelo.nombreMarca} ${modelo.nombreModelo}"? ` +
+              'Esta acción no se puede deshacer.',
+
+            confirmText:
+              'Eliminar'
+
+          }
+
+        }
+      )
+
+      .afterClosed()
+
+      .pipe(
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+
+      .subscribe(
+        confirmado => {
+
+          if (!confirmado) {
+
+            return;
+
+          }
+
+
+          this.ejecutarEliminacion(
+            modelo
+          );
+
+        }
+      );
+
+  }
+
+
+  // =====================================================
+  // EJECUTAR ELIMINACIÓN
+  // =====================================================
+
+  private ejecutarEliminacion(
+    modelo: Modelo
+  ):
+    void {
+
+    if (
+      this.eliminandoId() !== null
+    ) {
+
+      return;
+
+    }
+
+
+    this.eliminandoId.set(
+      modelo.id
+    );
+
+
+    this.service
+      .eliminar(
+        modelo.id
+      )
+
+      .pipe(
+
+        finalize(
+          () => {
+
+            this.eliminandoId.set(
+              null
+            );
+
+          }
+        ),
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+
+      .subscribe({
+
+        next:
+          response => {
+
+            this.notify.success(
+
+              response?.message
+
+              ??
+
+              'Modelo eliminado correctamente'
+
+            );
+
+
+            this.cargar();
+
+          },
+
+
+        error:
+          error => {
+
+            this.notify.error(
+
+              error
+                ?.error
+                ?.message
+
+              ??
+
+              'No fue posible eliminar el modelo'
+
+            );
+
+          }
+
+      });
+
+  }
+
 }

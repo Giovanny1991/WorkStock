@@ -1,0 +1,641 @@
+<section class="usuarios-admin">
+
+
+  <!-- =================================================
+       ENCABEZADO
+  ================================================== -->
+
+  <div class="section-header">
+
+    <div>
+
+      <h2>
+        Usuarios
+      </h2>
+
+      <p>
+
+        Gestión de accesos de
+
+        <strong>
+          {{ nombreEmpresaSeleccionada() }}
+        </strong>
+
+      </p>
+
+    </div>
+
+
+    <button
+      mat-flat-button
+      type="button"
+      class="primary-btn"
+      [disabled]="
+        !empresaSeleccionadaId()
+        ||
+        guardando()
+        ||
+        eliminandoId() !== null
+      "
+      (click)="nuevo()"
+    >
+
+      <mat-icon>
+        person_add
+      </mat-icon>
+
+      Nuevo usuario
+
+    </button>
+
+  </div>
+
+
+  <!-- =================================================
+       RESUMEN
+  ================================================== -->
+
+  <div class="summary-strip">
+
+    <span>
+
+      <mat-icon>
+        people
+      </mat-icon>
+
+      <strong>
+        {{ totalUsuarios() }}
+      </strong>
+
+      usuarios
+
+    </span>
+
+
+    <span>
+
+      <mat-icon>
+        check_circle_outline
+      </mat-icon>
+
+      <strong>
+        {{ usuariosActivos() }}
+      </strong>
+
+      activos
+
+    </span>
+
+
+    <span>
+
+      <mat-icon>
+        shield
+      </mat-icon>
+
+      <strong>
+        {{ administradoresActivos() }}
+      </strong>
+
+      administradores activos
+
+    </span>
+
+  </div>
+
+
+  <!-- =================================================
+       CARD
+  ================================================== -->
+
+  <div class="card">
+
+
+    @if (
+      inicializando()
+      ||
+      cargando()
+    ) {
+
+      <mat-progress-bar
+        mode="indeterminate"
+      />
+
+    }
+
+
+    <!-- ===============================================
+         FILTROS
+    ================================================= -->
+
+    <div class="toolbar">
+
+
+      <!-- EMPRESA SUPERADMIN -->
+
+      @if (
+        esSuperAdmin()
+      ) {
+
+        <mat-form-field
+          appearance="outline"
+          class="company-select"
+          subscriptSizing="dynamic"
+        >
+
+          <mat-label>
+            Empresa
+          </mat-label>
+
+
+          <mat-select
+            [value]="empresaSeleccionadaId()"
+            (selectionChange)="
+              cambiarEmpresa($event.value)
+            "
+          >
+
+            @for (
+              empresa of empresasCatalogo();
+              track empresa.id
+            ) {
+
+              <mat-option
+                [value]="empresa.id"
+              >
+
+                {{ empresa.nombreEmpresa }}
+
+              </mat-option>
+
+            }
+
+          </mat-select>
+
+        </mat-form-field>
+
+      }
+
+
+      <!-- BUSCADOR -->
+
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+
+        <mat-label>
+          Buscar
+        </mat-label>
+
+
+        <input
+          matInput
+          [formControl]="buscarControl"
+          placeholder="Buscar nombre, usuario o estado..."
+          autocomplete="off"
+          aria-label="Buscar usuarios"
+        >
+
+
+        @if (
+          buscarControl.value
+        ) {
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            matTooltip="Limpiar búsqueda"
+            aria-label="Limpiar búsqueda"
+            (click)="limpiarBusqueda()"
+          >
+
+            <mat-icon>
+              close
+            </mat-icon>
+
+          </button>
+
+        } @else {
+
+          <mat-icon matSuffix>
+            search
+          </mat-icon>
+
+        }
+
+      </mat-form-field>
+
+
+      <!-- ROL -->
+
+      <mat-form-field
+        appearance="outline"
+        class="role-select"
+        subscriptSizing="dynamic"
+      >
+
+        <mat-label>
+          Rol
+        </mat-label>
+
+
+        <mat-select
+          [value]="filtroRol()"
+          (selectionChange)="
+            cambiarFiltroRol($event.value)
+          "
+        >
+
+          <mat-option value="TODOS">
+            Todos
+          </mat-option>
+
+          <mat-option value="ADMINISTRADOR">
+            Administradores
+          </mat-option>
+
+          <mat-option value="VENDEDOR">
+            Vendedores
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+
+      <!-- REGISTROS -->
+
+      <span class="records">
+
+        @if (
+          totalRegistros() > 0
+        ) {
+
+          {{ registroDesde() }}
+          -
+          {{ registroHasta() }}
+          de
+          {{ totalRegistros() }}
+          registros
+
+        } @else {
+
+          0 registros
+
+        }
+
+      </span>
+
+    </div>
+
+
+    <!-- ===============================================
+         TABLA
+    ================================================= -->
+
+    <div class="table-wrapper">
+
+      <table
+        mat-table
+        [dataSource]="usuarios()"
+        matSort
+        matSortDisableClear
+        [matSortActive]="columnaOrden()"
+        [matSortDirection]="direccionOrden()"
+        (matSortChange)="cambiarOrden($event)"
+        class="compact-table"
+      >
+
+
+        <!-- ID -->
+
+        <ng-container matColumnDef="id">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="id"
+            class="col-id"
+          >
+            ID
+          </th>
+
+
+          <td
+            mat-cell
+            *matCellDef="let usuario"
+            class="col-id"
+          >
+            {{ usuario.id }}
+          </td>
+
+        </ng-container>
+
+
+        <!-- NOMBRE -->
+
+        <ng-container matColumnDef="nombre">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="nombre"
+          >
+            Nombre
+          </th>
+
+
+          <td
+            mat-cell
+            *matCellDef="let usuario"
+            class="name-cell"
+          >
+
+            {{ usuario.nombreUsuario }}
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- LOGIN -->
+
+        <ng-container matColumnDef="login">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="login"
+          >
+            Usuario
+          </th>
+
+
+          <td
+            mat-cell
+            *matCellDef="let usuario"
+          >
+
+            <span class="login-tag">
+              {{ usuario.login }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- ROL -->
+
+        <ng-container matColumnDef="rol">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="rol"
+          >
+            Rol
+          </th>
+
+
+          <td
+            mat-cell
+            *matCellDef="let usuario"
+          >
+
+            {{
+              usuario.esSuperAdmin
+                ? 'Superadministrador'
+                : usuario.rol === 'ADMINISTRADOR'
+                  ? 'Administrador'
+                  : 'Vendedor'
+            }}
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- ESTADO -->
+
+        <ng-container matColumnDef="estado">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="estado"
+          >
+            Estado
+          </th>
+
+
+          <td
+            mat-cell
+            *matCellDef="let usuario"
+          >
+
+            <span
+              class="status"
+              [class.active]="
+                usuario.estado === 'ACTIVO'
+              "
+            >
+
+              {{ usuario.estado }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- ACCIONES -->
+
+        <ng-container matColumnDef="acciones">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="col-actions"
+          >
+            Acciones
+          </th>
+
+
+          <td
+            mat-cell
+            *matCellDef="let usuario"
+            class="col-actions"
+          >
+
+            <div class="actions-group">
+
+
+              <!-- EDITAR -->
+
+              <button
+                mat-icon-button
+                type="button"
+                class="action edit"
+                matTooltip="Editar usuario"
+                [disabled]="
+                  usuario.esSuperAdmin
+                  ||
+                  guardando()
+                  ||
+                  eliminandoId() !== null
+                "
+                (click)="editar(usuario)"
+              >
+
+                <mat-icon>
+                  edit
+                </mat-icon>
+
+              </button>
+
+
+              <!-- CLAVE -->
+
+              <button
+                mat-icon-button
+                type="button"
+                class="action key"
+                matTooltip="Restablecer contraseña"
+                [disabled]="
+                  usuario.esSuperAdmin
+                  ||
+                  usuario.id === idUsuarioActual()
+                  ||
+                  guardando()
+                  ||
+                  eliminandoId() !== null
+                "
+                (click)="abrirCambioClave(usuario)"
+              >
+
+                <mat-icon>
+                  key
+                </mat-icon>
+
+              </button>
+
+
+              <!-- ELIMINAR -->
+
+              <button
+                mat-icon-button
+                type="button"
+                class="action delete"
+                matTooltip="Eliminar usuario"
+                [disabled]="
+                  usuario.esSuperAdmin
+                  ||
+                  usuario.id === idUsuarioActual()
+                  ||
+                  guardando()
+                  ||
+                  eliminandoId() !== null
+                "
+                (click)="eliminar(usuario)"
+              >
+
+                <mat-icon>
+                  delete_outline
+                </mat-icon>
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- FILAS -->
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="
+            displayedColumns
+          "
+        >
+        </tr>
+
+
+        <tr
+          mat-row
+          *matRowDef="
+            let row;
+            columns: displayedColumns
+          "
+        >
+        </tr>
+
+
+        <!-- SIN DATOS -->
+
+        <tr *matNoDataRow>
+
+          <td
+            class="no-data"
+            [attr.colspan]="
+              displayedColumns.length
+            "
+          >
+
+            <mat-icon>
+              search_off
+            </mat-icon>
+
+
+            @if (
+              busqueda()
+              ||
+              filtroRol() !== 'TODOS'
+            ) {
+
+              <span>
+                No existen usuarios que coincidan con los filtros
+              </span>
+
+            } @else {
+
+              <span>
+                No existen usuarios para mostrar
+              </span>
+
+            }
+
+          </td>
+
+        </tr>
+
+      </table>
+
+    </div>
+
+
+    <!-- ===============================================
+         PAGINADOR
+    ================================================= -->
+
+    <mat-paginator
+      [length]="totalRegistros()"
+      [pageIndex]="paginaActual()"
+      [pageSize]="tamanioPagina()"
+      [pageSizeOptions]="opcionesPagina"
+      showFirstLastButtons
+      aria-label="Paginación de usuarios"
+      (page)="cambiarPagina($event)"
+    >
+    </mat-paginator>
+
+  </div>
+
+</section>

@@ -1,0 +1,387 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+
+.usuarios-admin {
+  display: block;
+  min-width: 0;
+  color: var(--app-text);
+}
+
+
+/* =====================================================
+   ENCABEZADO
+===================================================== */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: var(--app-text-muted);
+  }
+
+  strong {
+    color: var(--app-text);
+  }
+}
+
+
+.primary-btn {
+  height: 36px;
+  border-radius: 7px !important;
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   RESUMEN
+===================================================== */
+
+.summary-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 30px;
+    padding: 4px 10px;
+    border: 1px solid var(--app-border);
+    border-radius: 6px;
+    background: var(--app-card);
+    color: var(--app-text-muted);
+    font-size: 11px;
+  }
+
+  strong {
+    font-size: 13px;
+    color: var(--app-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+    color: var(--app-primary);
+  }
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
+}
+
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+
+.company-select {
+  width: 250px;
+  max-width: 100%;
+}
+
+
+.search-field {
+  width: 300px;
+  max-width: 100%;
+}
+
+
+.role-select {
+  width: 170px;
+  max-width: 100%;
+}
+
+
+.records {
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+
+:host ::ng-deep
+.toolbar
+.mat-mdc-text-field-wrapper {
+  height: 40px;
+}
+
+
+:host ::ng-deep
+.toolbar
+.mat-mdc-form-field-infix {
+  min-height: 40px;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+
+/* =====================================================
+   TABLA
+===================================================== */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+
+table.compact-table {
+  width: 100%;
+  min-width: 760px;
+  background: var(--app-card);
+}
+
+
+.mat-mdc-header-row {
+  height: 42px;
+  background: var(--app-card-secondary);
+}
+
+
+.mat-mdc-row {
+  height: 46px;
+  transition: background .15s ease;
+}
+
+
+.mat-mdc-row:hover {
+  background: var(--app-card-secondary);
+}
+
+
+.mat-mdc-header-cell {
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--app-border);
+}
+
+
+.mat-mdc-cell {
+  color: var(--app-text);
+  font-size: 12px;
+  border-bottom: 1px solid var(
+    --app-border-soft,
+    var(--app-border)
+  );
+}
+
+
+/* =====================================================
+   COLUMNAS
+===================================================== */
+
+.col-id {
+  width: 60px;
+  padding-left: 18px !important;
+}
+
+
+.name-cell {
+  min-width: 170px;
+  font-weight: 600;
+}
+
+
+.login-tag {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: var(
+    --app-primary-soft,
+    rgba(7, 93, 176, .08)
+  );
+  color: var(--app-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   ESTADO
+===================================================== */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--app-card-secondary);
+  color: var(--app-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+
+.status.active {
+  background: var(--app-success-bg);
+  color: var(--app-success);
+}
+
+
+/* =====================================================
+   ACCIONES
+===================================================== */
+
+.col-actions {
+  width: 150px;
+  min-width: 150px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+.actions-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+
+.action {
+  width: 32px;
+  height: 32px;
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+
+.action.edit,
+.action.key {
+  color: var(--app-primary);
+}
+
+
+.action.delete {
+  color: var(--app-danger);
+}
+
+
+.action.edit:hover:not(:disabled),
+.action.key:hover:not(:disabled) {
+  background: var(
+    --app-primary-soft,
+    rgba(7, 93, 176, .08)
+  );
+}
+
+
+.action.delete:hover:not(:disabled) {
+  background: var(
+    --app-danger-bg,
+    rgba(220, 38, 38, .08)
+  );
+}
+
+
+.action:disabled {
+  opacity: .35;
+}
+
+
+/* =====================================================
+   SIN DATOS
+===================================================== */
+
+.no-data {
+  height: 110px;
+  text-align: center;
+  color: var(--app-text-muted);
+  font-size: 12px;
+
+  mat-icon {
+    display: block;
+    margin: 0 auto 5px;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+
+/* =====================================================
+   PAGINADOR
+===================================================== */
+
+mat-paginator {
+  border-top: 1px solid var(--app-border);
+  background: var(--app-card);
+  color: var(--app-text);
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 700px) {
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .company-select,
+  .search-field,
+  .role-select {
+    width: 100%;
+  }
+
+
+  .records {
+    margin-left: 0;
+  }
+
+}

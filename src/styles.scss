@@ -691,3 +691,61 @@ table.mat-mdc-table {
 .ws-visor-backdrop {
   background: rgba(15, 23, 42, .35) !important;
 }
+
+
+/* =========================================
+   WORKSTOCK - PALETA DE NAVEGACIÓN
+   ========================================= */
+
+:root,
+html[data-color-theme="mc"] {
+  --ws-header: #dd4b39;
+  --ws-sidebar: #222d32;
+  --ws-sidebar-active: #1a2226;
+  --ws-sidebar-expanded: #2c3b41;
+  --ws-sidebar-text: #ffffff;
+  --ws-sidebar-muted: #b8c7ce;
+}
+
+html[data-color-theme="blue"] {
+  --ws-header: #075db0;
+  --ws-sidebar: #172b45;
+  --ws-sidebar-active: #102037;
+  --ws-sidebar-expanded: #263d59;
+}
+
+html[data-color-theme="green"] {
+  --ws-header: #198754;
+  --ws-sidebar: #1c302d;
+  --ws-sidebar-active: #142420;
+  --ws-sidebar-expanded: #29433c;
+}
+
+html[data-color-theme="purple"] {
+  --ws-header: #6941c6;
+  --ws-sidebar: #29243b;
+  --ws-sidebar-active: #211c31;
+  --ws-sidebar-expanded: #39324f;
+}
+
+html[data-color-theme="dark"] {
+  --ws-header: #343a40;
+  --ws-sidebar: #212529;
+  --ws-sidebar-active: #16191c;
+  --ws-sidebar-expanded: #343a40;
+}
+
+/* ============================================
+   WORKSTOCK ORIGINAL - BLANCO
+============================================ */
+
+html[data-color-theme="original"] {
+  --ws-header: #ffffff;
+  --ws-sidebar: #ffffff;
+  --ws-sidebar-active: #e8f1fc;
+  --ws-sidebar-expanded: #f8fafc;
+
+  --ws-sidebar-hover: #f1f5f9;
+  --ws-sidebar-text: #334155;
+  --ws-sidebar-muted: #64748b;
+}

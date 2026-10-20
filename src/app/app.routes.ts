@@ -1,3 +1,4 @@
+
 import {
   Routes
 } from '@angular/router';
@@ -10,27 +11,60 @@ import {
   guestGuard
 } from './core/guards/guest.guard';
 
-import { adminGuard } from './core/guards/admin.guard';
-import { tipoCuentaGuard } from './core/guards/tipo-cuenta.guard';
+import {
+  adminGuard
+} from './core/guards/admin.guard';
+
+import {
+  tipoCuentaGuard
+} from './core/guards/tipo-cuenta.guard';
+
 
 export const routes: Routes = [
 
   // ============================================
-  // LOGIN
+  // LOGIN PERSONALIZADO POR EMPRESA
+  //
+  // /login/MYC
+  // /login/WORKSTOCK-INICIAL
+  //
+  // El código solamente personaliza el logo
+  // y nombre de la empresa.
+  // ============================================
+
+  {
+    path: 'login/:codigoEmpresa',
+
+    canActivate: [
+      guestGuard
+    ],
+
+    loadComponent: () =>
+      import(
+        './features/auth/login/login'
+      ).then(
+        m => m.Login
+      )
+  },
+
+
+  // ============================================
+  // LOGIN GENERAL WORKSTOCK
   // ============================================
 
   {
     path: 'login',
+
     canActivate: [
       guestGuard
     ],
+
     loadComponent: () =>
       import(
         './features/auth/login/login'
+      ).then(
+        m => m.Login
       )
-        .then(
-          m => m.Login
-        )
   },
 
 
@@ -48,18 +82,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import(
         './layout/main-layout/main-layout'
-      )
-        .then(
-          m => m.MainLayout
-        ),
+      ).then(
+        m => m.MainLayout
+      ),
 
-    // Bloquea navegación a módulos comerciales desde una cuenta global.
-    canActivateChild: [tipoCuentaGuard],
+    canActivateChild: [
+      tipoCuentaGuard
+    ],
 
     children: [
 
       // ============================================
       // INICIO
+      // ADMINISTRADOR Y VENDEDOR
       // ============================================
 
       {
@@ -68,100 +103,120 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/inicio/inicio'
+          ).then(
+            m => m.Inicio
           )
-            .then(
-              m => m.Inicio
-            )
       },
 
 
       // ============================================
       // CATEGORÍAS DE ACCESORIOS
+      // SOLO ADMINISTRADOR
       // ============================================
 
       {
         path: 'accesorios/categorias',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/accesorios/categorias/categorias'
+          ).then(
+            m => m.Categorias
           )
-            .then(
-              m => m.Categorias
-            )
       },
 
 
       // ============================================
       // MARCAS
+      // SOLO ADMINISTRADOR
       // ============================================
 
       {
         path: 'marcas',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/marcas/marcas'
+          ).then(
+            m => m.Marcas
           )
-            .then(
-              m => m.Marcas
-            )
       },
 
 
       // ============================================
       // MODELOS
+      // SOLO ADMINISTRADOR
       // ============================================
 
       {
         path: 'modelos',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/modelos/modelos'
+          ).then(
+            m => m.Modelos
           )
-            .then(
-              m => m.Modelos
-            )
       },
 
 
       // ============================================
       // PROVEEDORES
+      // SOLO ADMINISTRADOR
       // ============================================
 
       {
         path: 'proveedores',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/proveedores/proveedores'
+          ).then(
+            m => m.Proveedores
           )
-            .then(
-              m => m.Proveedores
-            )
       },
 
 
       // ============================================
       // CLIENTES
+      // SOLO ADMINISTRADOR
       // ============================================
 
       {
         path: 'clientes',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/clientes/clientes'
+          ).then(
+            m => m.Clientes
           )
-            .then(
-              m => m.Clientes
-            )
       },
 
 
       // ============================================
       // INVENTARIO CELULARES
+      // ADMINISTRADOR Y VENDEDOR
       // ============================================
 
       {
@@ -170,15 +225,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/stock-celulares/stock-celulares'
+          ).then(
+            m => m.StockCelulares
           )
-            .then(
-              m => m.StockCelulares
-            )
       },
 
 
       // ============================================
       // FACTURACIÓN
+      // ADMINISTRADOR Y VENDEDOR
       // ============================================
 
       {
@@ -187,10 +242,9 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/facturas/facturacion/facturacion'
+          ).then(
+            m => m.Facturacion
           )
-            .then(
-              m => m.Facturacion
-            )
       },
 
 
@@ -200,15 +254,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/facturas/historial/historial'
+          ).then(
+            m => m.Historial
           )
-            .then(
-              m => m.Historial
-            )
       },
 
 
       // ============================================
       // NOTAS DE VENTA CELULARES
+      // ADMINISTRADOR Y VENDEDOR
       // ============================================
 
       {
@@ -217,25 +271,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/notas-venta/nueva-nota/nueva-nota'
+          ).then(
+            m => m.NuevaNotaVenta
           )
-            .then(
-              m => m.NuevaNotaVenta
-            )
       },
-      {
-        path:
-          'accesorios/notas-venta/historial',
 
-        loadComponent:
-          () =>
-            import(
-              './features/accesorios-notas-venta/historial/historial-accesorios'
-            )
-              .then(
-                m =>
-                  m.HistorialAccesorios
-              )
-      },
 
       {
         path: 'notas-venta/historial',
@@ -243,15 +283,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/notas-venta/historial/historial-notas'
+          ).then(
+            m => m.HistorialNotas
           )
-            .then(
-              m => m.HistorialNotas
-            )
       },
 
 
       // ============================================
-      // NOTAS DE VENTA DE ACCESORIOS
+      // NOTAS DE VENTA ACCESORIOS
+      // ADMINISTRADOR Y VENDEDOR
       // ============================================
 
       {
@@ -260,70 +300,167 @@ export const routes: Routes = [
         loadComponent: () =>
           import(
             './features/accesorios-notas-venta/nueva-nota-accesorios/nueva-nota-accesorios'
+          ).then(
+            m => m.NuevaNotaAccesorios
           )
-            .then(
-              m => m.NuevaNotaAccesorios
-            )
+      },
+
+
+      {
+        path: 'accesorios/notas-venta/historial',
+
+        loadComponent: () =>
+          import(
+            './features/accesorios-notas-venta/historial/historial-accesorios'
+          ).then(
+            m => m.HistorialAccesorios
+          )
       },
 
 
       // ============================================
       // SERVICIO TÉCNICO
+      // SOLO ADMINISTRADOR
       // ============================================
+
+      // NUEVA ORDEN
 
       {
         path: 'servicio-tecnico/nueva',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/ordenes-trabajo/nueva-orden/nueva-orden'
+          ).then(
+            m => m.NuevaOrden
           )
-            .then(
-              m => m.NuevaOrden
-            )
       },
 
+
+      // ÓRDENES DE TRABAJO UNIFICADAS
+
+      {
+        path: 'servicio-tecnico/ordenes',
+
+        canActivate: [
+          adminGuard
+        ],
+
+        loadComponent: () =>
+          import(
+            './features/ordenes-trabajo/ordenes-historial/ordenes-historial'
+          ).then(
+            m => m.OrdenesHistorial
+          )
+      },
+
+
+      // ============================================
+      // REDIRECCIONES ANTERIORES
+      // ============================================
 
       {
         path: 'servicio-tecnico/pendientes',
 
-        loadComponent: () =>
-          import(
-            './features/ordenes-trabajo/ordenes-pendientes/ordenes-pendientes'
-          )
-            .then(
-              m => m.OrdenesPendientes
-            )
+        pathMatch: 'full',
+
+        redirectTo: 'servicio-tecnico/ordenes'
       },
 
 
       {
         path: 'servicio-tecnico/historial',
 
-        loadComponent: () =>
-          import(
-            './features/ordenes-trabajo/ordenes-historial/ordenes-historial'
-          )
-            .then(
-              m => m.OrdenesHistorial
-            )
+        pathMatch: 'full',
+
+        redirectTo: 'servicio-tecnico/ordenes'
       },
 
 
       // ============================================
       // STOCK DE ACCESORIOS
+      // SOLO ADMINISTRADOR
       // ============================================
 
       {
         path: 'accesorios/accesorios-stock',
 
+        canActivate: [
+          adminGuard
+        ],
+
         loadComponent: () =>
           import(
             './features/accesorios-stock/accesorios-stock'
+          ).then(
+            m => m.AccesoriosStock
           )
-            .then(
-              m => m.AccesoriosStock
-            )
+      },
+
+
+      // ============================================
+      // ADMINISTRACIÓN
+      // ============================================
+
+      {
+        path: 'administracion',
+
+        canActivate: [
+          adminGuard
+        ],
+
+        loadComponent: () =>
+          import(
+            './features/administracion/administracion'
+          ).then(
+            m => m.Administracion
+          )
+      },
+
+
+      // ============================================
+      // CONFIGURACIÓN - IVA
+      // SOLO ADMINISTRADOR
+      // ============================================
+
+      {
+        path: 'configuracion/iva',
+
+        canActivate: [
+          adminGuard
+        ],
+
+        loadComponent: () =>
+          import(
+            './features/configuracion/iva/iva'
+          ).then(
+            m => m.Iva
+          )
+      },
+
+
+      // ============================================
+      // REPORTERÍA
+      // SOLO ADMINISTRADOR
+      // ============================================
+
+      {
+        path: 'reporteria/exportar-informacion',
+
+        canActivate: [
+          adminGuard
+        ],
+
+        loadComponent: () =>
+          import(
+            './features/reporteria/exportar-informacion/exportar-informacion'
+          ).then(
+            m => m.ExportarInformacion
+          )
       },
 
 
@@ -337,48 +474,11 @@ export const routes: Routes = [
         pathMatch: 'full',
 
         redirectTo: 'inicio'
-      },
-
-      // ============================================
-      // ADMINISTRACIÓN DE EMPRESAS Y USUARIOS
-      // ============================================
-      {
-        path: 'administracion',
-        canActivate: [adminGuard],
-        loadComponent: () =>
-          import('./features/administracion/administracion')
-            .then(m => m.Administracion)
-      },
-
-      // ============================================
-      // CONFIGURACIÓN - ACTUALIZACIÓN IVA
-      // ============================================
-
-      {
-        path: 'configuracion/iva',
-
-        loadComponent: () =>
-          import(
-            './features/configuracion/iva/iva'
-          )
-            .then(
-              m => m.Iva
-            )
-      },
-
-
-      {
-        path: 'reporteria/exportar-informacion',
-        loadComponent: () =>
-          import(
-            './features/reporteria/exportar-informacion/exportar-informacion'
-          ).then(m => m.ExportarInformacion)
-      },
+      }
 
     ]
 
   },
-
 
 
   // ============================================

@@ -1,330 +1,587 @@
 <div class="dialog-header no-print">
+
   <div>
-    <h2>Nota de Venta</h2>
+
+    <h2>
+      Nota de Venta
+    </h2>
 
     @if (nota(); as n) {
-      <p>#{{ n.numeroNV }}</p>
+
+    <p>
+      #{{ n.numeroNV }}
+    </p>
+
     }
+
   </div>
 
-  <button
-    mat-icon-button
-    type="button"
-    (click)="cerrar()"
-  >
-    <mat-icon>close</mat-icon>
+  <button mat-icon-button type="button" (click)="cerrar()">
+
+    <mat-icon>
+      close
+    </mat-icon>
+
   </button>
+
 </div>
 
-@if (cargando()) {
-  <mat-progress-bar
-    mode="indeterminate"
-    class="no-print"
-  />
+
+@if (cargando() || cargandoEmpresa()) {
+
+<mat-progress-bar mode="indeterminate" class="no-print" />
+
 }
+
 
 <mat-dialog-content>
 
+  @if (errorEmpresa()) {
+
+  <p class="no-print">
+    {{ errorEmpresa() }}
+  </p>
+
+  }
+
   @if (nota(); as n) {
 
-    <div
-      class="ticket"
-      id="ticketNotaVenta"
-    >
+  <div class="ticket" id="ticketNotaVenta">
 
-      <!-- LOGO -->
-      <div class="centrado logo-container">
-        <img
-          src="/images/logoBlancoNegro.png"
-          alt="M&C"
-          class="logo"
-        >
-      </div>
+    <!-- ==================================================
+           LOGO DINÁMICO EMPRESA
+      =================================================== -->
 
+    @if (logoEmpresaUrl() && coincideEmpresaDocumento()) {
 
-      <!-- DATOS EMPRESA -->
-      <div class="centrado business-info">
+    <div class="centrado logo-container">
 
-        <strong>
-          '' CONTRIBUYENTE RIMPE NEGOCIO POPULAR ''
-        </strong>
+      <img [src]="logoEmpresaUrl()" alt="Logo de la empresa" class="logo">
 
-        <br><br>
+    </div>
 
-        CARLOS MARCELO GUEVARA TORRES<br>
-        RUC: 1719984534001<br>
-        DIR: Bustamante s/n y Mejía D16<br>
-        TELEFONO: 099 566 4394<br>
-        QUITO - ECUADOR
-
-        <br><br>
-
-        <strong class="title">
-          LOCAL 71
-        </strong>
-
-        <br>
-
-        VENTA Y REPARACION PROFESIONAL
-
-        <br><br>
-
-        <strong class="title">
-          DATOS NOTA DE VENTA
-        </strong>
-
-        <br><br>
-
-      </div>
+    }
 
 
-      <!-- INFORMACIÓN NOTA -->
-      <table class="info-table">
+    <!-- ==================================================
+           DATOS DINÁMICOS EMPRESA
+      =================================================== -->
 
-        <tr>
-          <td>N° DOCUMENTO:</td>
+    <div class="centrado business-info">
 
-          <td>
-            <strong>
-              {{ n.numeroNV }}
-            </strong>
-          </td>
-        </tr>
+      @if (empresa(); as e) {
 
-        <tr>
-          <td>FECHA:</td>
+      @if (coincideEmpresaDocumento()) {
 
-          <td>
-            {{ n.fechaNotaVenta | date:'dd/MM/yyyy HH:mm' }}
-          </td>
-        </tr>
+      @if (e.regimenTributario) {
 
-        <tr>
-          <td>CAJA:</td>
+      <strong>
+        {{ e.regimenTributario }}
+      </strong>
 
-          <td>
-            {{ n.vendedor }}
-          </td>
-        </tr>
+      <br>
+      <br>
 
+      }
 
-        <!-- CLIENTE -->
-        <tr>
-          <td
-            colspan="2"
-            class="client-title"
-          >
-            CLIENTE
-          </td>
-        </tr>
+      @if (e.razonSocial || e.nombreEmpresa) {
 
-        <tr>
-          <td>RUC:</td>
-
-          <td>
-            {{ n.identificacion }}
-          </td>
-        </tr>
-
-        <tr>
-          <td>NOMBRE:</td>
-
-          <td>
-            {{ n.nombreCliente }}
-          </td>
-        </tr>
-
-        <tr>
-          <td>TELEFONO:</td>
-
-          <td>
-            {{ n.telefono || '-' }}
-          </td>
-        </tr>
-
-        <tr>
-          <td>CORREO:</td>
-
-          <td>
-            {{ n.correo || '-' }}
-          </td>
-        </tr>
-
-        <tr>
-          <td>DIRECCION:</td>
-
-          <td>
-            {{ n.direccion || '-' }}
-          </td>
-        </tr>
-
-      </table>
-
+      {{ e.razonSocial || e.nombreEmpresa }}
 
       <br>
 
+      }
 
-      <!-- PRODUCTOS -->
-      <table class="products-table">
+      @if (e.ruc) {
 
-        <thead>
+      RUC: {{ e.ruc }}
 
-          <tr>
-            <th>DESCRIPCION</th>
-            <th>CANT.</th>
-            <th>P. UNIT</th>
-            <th>TOTAL</th>
-          </tr>
+      <br>
 
-        </thead>
+      }
 
-        <tbody>
+      @if (e.direccion) {
 
-          @for (x of n.detalle; track x.id) {
+      DIR: {{ e.direccion }}
 
-            <tr>
+      <br>
 
-              <td class="description">
+      }
 
-                {{ x.nombreMarca }}/{{ x.nombreModelo }}
+      @if (e.telefono) {
 
-                @if (x.ram) {
-                  /{{ x.ram }}RAM
-                }
+      TELEFONO: {{ e.telefono }}
 
-                @if (x.almacenamiento) {
-                  /{{ x.almacenamiento }}GB
-                }
+      <br>
 
-                @if (x.color) {
-                  /{{ x.color }}
-                }
+      }
 
-                <br>
+      @if (e.ciudad || e.pais) {
 
-                {{ x.imei1 }}
+      {{ e.ciudad || '' }}
 
-                @if (x.imei2) {
-                  <br>
-                  {{ x.imei2 }}
-                }
+      @if (e.ciudad && e.pais) {
+      -
+      }
 
-              </td>
+      {{ e.pais || '' }}
+
+      <br>
+
+      }
+
+      @if (e.correoElectronico) {
+
+      CORREO: {{ e.correoElectronico }}
+
+      <br>
+
+      }
+
+      @if (e.whatsApp) {
+
+      WHATSAPP: {{ e.whatsApp }}
+
+      <br>
+
+      }
+
+      @if (e.nombreLocal) {
+
+      <br>
+
+      <strong class="title">
+        {{ e.nombreLocal }}
+      </strong>
+
+      <br>
+
+      }
+
+      @if (e.actividadComercial) {
+
+      {{ e.actividadComercial }}
+
+      <br>
+
+      }
+
+      <!-- @if (e.obligadoLlevarContabilidad !== null) {
+
+      OBLIGADO A LLEVAR CONTABILIDAD:
+      {{ e.obligadoLlevarContabilidad ? 'SÍ' : 'NO' }}
+
+      <br>
+
+      } -->
+
+      }
+
+      }
+
+      <br>
+      <br>
+
+      <strong class="title">
+        DATOS NOTA DE VENTA
+      </strong>
+
+      <br>
+      <br>
+
+    </div>
 
 
-              <td class="center">
-                {{ x.cantidad }}
-              </td>
+    <!-- ==================================================
+           INFORMACIÓN NOTA
+      =================================================== -->
 
+    <table class="info-table">
 
-              <td class="center">
-                {{ x.precioUnitario | currency:'USD':'symbol':'1.2-2' }}
-              </td>
+      <tr>
 
+        <td>
+          N° DOCUMENTO:
+        </td>
 
-              <td class="center">
-                {{ x.precioTotal | currency:'USD':'symbol':'1.2-2' }}
-              </td>
+        <td>
 
-            </tr>
+          @if (numeroEstablecimiento()) {
+
+          {{ numeroEstablecimiento() }}-
 
           }
 
+          <strong>
+            {{ n.numeroNV }}
+          </strong>
 
-          <!-- TOTAL -->
-          <tr class="total-row">
+        </td>
 
-            <td></td>
-            <td></td>
-
-            <td class="label-total">
-              <strong>
-                TOTAL:
-              </strong>
-            </td>
-
-            <td class="value-total">
-
-              <strong>
-                {{ n.totalVenta | currency:'USD':'symbol':'1.2-2' }}
-              </strong>
-
-            </td>
-
-          </tr>
-
-        </tbody>
-
-      </table>
+      </tr>
 
 
-      <!-- GARANTÍA -->
-      <div class="warranty">
+      <tr>
 
-        <strong>
-          GARANTIA EQUIPO NUEVO:
-        </strong>
+        <td>
+          FECHA:
+        </td>
 
-        12 meses a partir de la fecha de compra por defectos de fabricación.
-        Esta garantía no cubre golpes, rayones, agua, sobre cargas eléctricas,
-        mala manipulación, VIRUS, programas mal instalados.
-        La garantía tiene un periodo de revisión de 48 a 72 horas laborables.
+        <td>
 
-        <br><br>
+          {{
+          n.fechaNotaVenta
+          | date:'dd/MM/yyyy HH:mm'
+          }}
 
-        <strong>
-          EQUIPOS USOS:
-        </strong>
+        </td>
 
-        <br>
-
-        Línea telefónica 12 meses a partir de la fecha de compra.
-
-        <br>
-
-        Buen funcionamiento del equipo 30 días a partir de la fecha de compra.
-
-      </div>
+      </tr>
 
 
-      <p class="centrado thanks">
+      <tr>
 
-        ¡GRACIAS POR SU COMPRA!
+        <td>
+          CAJA:
+        </td>
 
-        <br>
+        <td>
+          {{ n.vendedor }}
+        </td>
 
-        M & C
+      </tr>
 
-      </p>
+
+      <!-- ==================================================
+             CLIENTE
+        =================================================== -->
+
+      <tr>
+
+        <td colspan="2" class="client-title">
+
+          CLIENTE
+
+        </td>
+
+      </tr>
+
+
+      <tr>
+
+        <td>
+          RUC:
+        </td>
+
+        <td>
+          {{ n.identificacion }}
+        </td>
+
+      </tr>
+
+
+      <tr>
+
+        <td>
+          NOMBRE:
+        </td>
+
+        <td>
+          {{ n.nombreCliente }}
+        </td>
+
+      </tr>
+
+
+      <tr>
+
+        <td>
+          TELEFONO:
+        </td>
+
+        <td>
+          {{ n.telefono || '-' }}
+        </td>
+
+      </tr>
+
+
+      <tr>
+
+        <td>
+          CORREO:
+        </td>
+
+        <td>
+          {{ n.correo || '-' }}
+        </td>
+
+      </tr>
+
+
+      <tr>
+
+        <td>
+          DIRECCION:
+        </td>
+
+        <td>
+          {{ n.direccion || '-' }}
+        </td>
+
+      </tr>
+
+    </table>
+
+
+    <br>
+
+
+    <!-- ==================================================
+           PRODUCTOS
+           SE CONSERVA LA ESTRUCTURA ORIGINAL
+      =================================================== -->
+
+    <table class="products-table">
+
+      <thead>
+
+        <tr>
+
+          <th>
+            DESCRIPCION
+          </th>
+
+          <th>
+            CANT.
+          </th>
+
+          <th>
+            P. UNIT
+          </th>
+
+          <th>
+            TOTAL
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        @for (
+        x of n.detalle;
+        track x.id
+        ) {
+
+        <tr>
+
+          <td class="description">
+
+            {{ x.nombreMarca }}/{{ x.nombreModelo }}
+
+            @if (x.ram) {
+
+            /{{ x.ram }}RAM
+
+            }
+
+            @if (x.almacenamiento) {
+
+            /{{ x.almacenamiento }}GB
+
+            }
+
+            @if (x.color) {
+
+            /{{ x.color }}
+
+            }
+
+            <br>
+
+            {{ x.imei1 }}
+
+            @if (x.imei2) {
+
+            <br>
+
+            {{ x.imei2 }}
+
+            }
+
+          </td>
+
+
+          <td class="center">
+
+            {{ x.cantidad }}
+
+          </td>
+
+
+          <td class="center">
+
+            {{
+            x.precioUnitario
+            | currency:'USD':'symbol':'1.2-2'
+            }}
+
+          </td>
+
+
+          <td class="center">
+
+            {{
+            x.precioTotal
+            | currency:'USD':'symbol':'1.2-2'
+            }}
+
+          </td>
+
+        </tr>
+
+        }
+
+
+        <!-- ==================================================
+               TOTAL
+          =================================================== -->
+
+        <tr class="total-row">
+
+          <td>
+          </td>
+
+          <td>
+          </td>
+
+          <td class="label-total">
+
+            <strong>
+              TOTAL:
+            </strong>
+
+          </td>
+
+          <td class="value-total">
+
+            <strong>
+
+              {{
+              n.totalVenta
+              | currency:'USD':'symbol':'1.2-2'
+              }}
+
+            </strong>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+
+    <!-- ==================================================
+           GARANTÍA
+           SIN MODIFICACIONES
+      =================================================== -->
+
+    <div class="warranty">
+
+      <strong>
+        GARANTIA EQUIPO NUEVO:
+      </strong>
+
+      12 meses a partir de la fecha de compra por defectos de fabricación.
+      Esta garantía no cubre golpes, rayones, agua, sobre cargas eléctricas,
+      mala manipulación, VIRUS, programas mal instalados.
+      La garantía tiene un periodo de revisión de 48 a 72 horas laborables.
+
+      <br>
+      <br>
+
+      <strong>
+        EQUIPOS USOS:
+      </strong>
+
+      <br>
+
+      Línea telefónica 12 meses a partir de la fecha de compra.
+
+      <br>
+
+      Buen funcionamiento del equipo 30 días a partir de la fecha de compra.
 
     </div>
+
+
+    <!-- ==================================================
+           PIE DINÁMICO
+      =================================================== -->
+
+    <p class="centrado thanks">
+
+      @if (empresa()?.leyendaTicket && coincideEmpresaDocumento()) {
+
+      {{ empresa()?.leyendaTicket }}
+
+      } @else {
+
+      ¡GRACIAS POR SU COMPRA!
+
+      }
+
+      <br>
+
+      <!-- @if (coincideEmpresaDocumento()) {
+
+      {{ empresa()?.nombreEmpresa || '' }}
+
+      } -->
+
+    </p>
+
+  </div>
 
   }
 
 </mat-dialog-content>
 
 
-<mat-dialog-actions
-  align="end"
-  class="no-print"
->
+<mat-dialog-actions align="end" class="no-print">
 
-  <button
-    mat-stroked-button
-    type="button"
-    (click)="cerrar()"
-  >
+  <button mat-stroked-button type="button" (click)="cerrar()">
+
     Cerrar
+
   </button>
 
-  <button
-    mat-flat-button
-    type="button"
-    (click)="imprimir()"
-  >
-    <mat-icon>print</mat-icon>
+
+  <button mat-flat-button type="button" (click)="imprimir()" [disabled]="
+      cargando()
+      ||
+      cargandoEmpresa()
+      ||
+      cargandoLogo()
+      ||
+      !nota()
+      ||
+      !empresa()
+      ||
+      !coincideEmpresaDocumento()
+    ">
+
+    <mat-icon>
+      print
+    </mat-icon>
 
     Imprimir
+
   </button>
 
 </mat-dialog-actions>

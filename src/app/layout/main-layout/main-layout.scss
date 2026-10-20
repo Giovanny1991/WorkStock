@@ -94,3 +94,111 @@
 }
 .layout-container .main-column,
 .layout-container .sidebar { transition: background-color .2s ease, color .2s ease; }
+
+
+/* =====================================================
+   PALETAS: SOLO ENCABEZADO Y NAVEGACIÓN
+   El modo claro/oscuro conserva sus propios tokens.
+   ===================================================== */
+.layout-container {
+  --ws-header-bg: #dd4b39;
+  --ws-side-bg: #222d32;
+  --ws-side-active: #1a2226;
+  --ws-side-expanded: #2c3b41;
+  --ws-side-text: #e3e9ed;
+  --ws-side-muted: #b8c7ce;
+  --ws-side-hover: #314249;
+}
+.layout-container[data-workstock-palette='azul'] {
+  --ws-header-bg: #075db0;
+  --ws-side-bg: #172b45;
+  --ws-side-active: #102037;
+  --ws-side-expanded: #263d59;
+  --ws-side-hover: #304865;
+}
+.layout-container[data-workstock-palette='verde'] {
+  --ws-header-bg: #198754;
+  --ws-side-bg: #1c302d;
+  --ws-side-active: #142420;
+  --ws-side-expanded: #29433c;
+  --ws-side-hover: #36564c;
+}
+.layout-container[data-workstock-palette='morado'] {
+  --ws-header-bg: #6941c6;
+  --ws-side-bg: #29243b;
+  --ws-side-active: #211c31;
+  --ws-side-expanded: #39324f;
+  --ws-side-hover: #483e60;
+}
+.layout-container[data-workstock-palette='grafito'] {
+  --ws-header-bg: #343a40;
+  --ws-side-bg: #212529;
+  --ws-side-active: #16191c;
+  --ws-side-expanded: #343a40;
+  --ws-side-hover: #424a52;
+}
+.layout-container .sidebar {
+  background: var(--ws-side-bg);
+  border-right-color: var(--ws-side-active);
+}
+
+
+/* ============================================
+   WORKSTOCK ORIGINAL - TEMA BLANCO
+============================================ */
+
+/* ============================================
+   WORKSTOCK ORIGINAL - TEMA BLANCO
+============================================ */
+
+.layout-container[data-workstock-palette='original'] {
+  --ws-header-bg: #ffffff;
+  --ws-header-text: #1e293b;
+  --ws-header-icon: #334155;
+
+  --ws-side-bg: #ffffff;
+  --ws-side-active: #e8f1fc;
+  --ws-side-expanded: #f8fafc;
+  --ws-side-hover: #f1f5f9;
+  --ws-side-text: #334155;
+  --ws-side-muted: #64748b;
+}
+
+
+/* =====================================================
+   WORKSTOCK - MODO OSCURO INTEGRAL
+   Prioridad sobre las paletas de navegación
+   ===================================================== */
+
+/*
+ * Ajustar .dark-theme al selector real de WorkStock.
+ * Se supone que se aplica sobre .layout-container.
+ */
+
+.layout-container.dark-theme {
+  --ws-header-bg: #1e293b;
+
+  --ws-side-bg: #17212f;
+  --ws-side-active: #293d55;
+  --ws-side-expanded: #233247;
+  --ws-side-hover: #2c4056;
+
+  --ws-side-text: #f1f5f9;
+  --ws-side-muted: #aab9c9;
+
+  --ws-header-text: #f1f5f9;
+  --ws-header-icon: #e2e8f0;
+}
+
+/* Recupera prioridad frente a los temas originales */
+.layout-container.dark-theme[data-workstock-palette] {
+  --ws-header-bg: #1e293b;
+
+  --ws-side-bg: #17212f;
+  --ws-side-active: #293d55;
+  --ws-side-expanded: #233247;
+  --ws-side-hover: #2c4056;
+
+  --ws-side-text: #f1f5f9;
+  --ws-side-muted: #aab9c9;
+}

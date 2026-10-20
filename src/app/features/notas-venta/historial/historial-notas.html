@@ -1,5 +1,9 @@
 <div class="page">
 
+  <!-- =====================================================
+       ENCABEZADO
+  ====================================================== -->
+
   <div class="page-header">
 
     <div>
@@ -9,7 +13,7 @@
       </h1>
 
       <p>
-        Consulta y administración de notas de venta registradas.
+        Consulta y administración de notas de venta registradas
       </p>
 
     </div>
@@ -17,158 +21,272 @@
   </div>
 
 
+  <!-- =====================================================
+       CONTENEDOR
+  ====================================================== -->
+
   <div class="card">
 
-    <!-- =====================================================
-         TOOLBAR
-    ====================================================== -->
-
-    <div class="toolbar">
-
-      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-
-        <mat-label>
-          Buscar
-        </mat-label>
-
-        <mat-icon matPrefix>
-          search
-        </mat-icon>
-
-        <input matInput placeholder="Número, cliente, identificación..." (keyup)="aplicarFiltro($event)">
-
-      </mat-form-field>
-
-    </div>
-
-
-    <!-- =====================================================
+    <!-- =================================================
          CARGANDO
-    ====================================================== -->
+    ================================================== -->
 
-    @if (cargando) {
+    @if (cargando()) {
 
-    <mat-progress-bar mode="indeterminate" />
+    <mat-progress-bar mode="indeterminate">
+    </mat-progress-bar>
 
     }
 
 
-    <!-- =====================================================
+    <!-- =================================================
+         TOOLBAR
+    ================================================== -->
+
+    <div class="toolbar">
+
+      <!-- ===============================================
+           BÚSQUEDA
+      ================================================ -->
+
+      <mat-form-field appearance="outline" class="search-field ws-search" subscriptSizing="dynamic">
+
+        <input matInput type="text" placeholder="Nota, cliente, identificación, vendedor..."
+          aria-label="Buscar nota de venta" autocomplete="off" [formControl]="buscarControl">
+
+
+        @if (buscarControl.value) {
+
+        <button mat-icon-button matSuffix type="button" class="clear-search" matTooltip="Limpiar búsqueda"
+          aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()">
+
+          <mat-icon>
+            close
+          </mat-icon>
+
+        </button>
+
+        } @else {
+
+        <mat-icon matSuffix>
+          search
+        </mat-icon>
+
+        }
+
+      </mat-form-field>
+
+
+      <!-- ===============================================
+           FILTROS
+      ================================================ -->
+
+      <div class="toolbar-right">
+
+        <div class="document-filters" role="group" aria-label="Filtrar notas de venta">
+
+          <!-- TODOS -->
+
+          <button type="button" class="filter-chip" [class.selected]="
+              filtroEstado() === 'TODOS'
+            " [attr.aria-pressed]="
+              filtroEstado() === 'TODOS'
+            " (click)="
+              cambiarFiltroEstado('TODOS')
+            ">
+
+            Todos
+
+          </button>
+
+
+          <!-- FACTURADOS -->
+
+          <button type="button" class="filter-chip" [class.selected]="
+              filtroEstado() === 'FACTURADO'
+            " [attr.aria-pressed]="
+              filtroEstado() === 'FACTURADO'
+            " (click)="
+              cambiarFiltroEstado('FACTURADO')
+            ">
+
+            <mat-icon>
+              task_alt
+            </mat-icon>
+
+            Facturados
+
+          </button>
+
+
+          <!-- ANULADOS -->
+
+          <button type="button" class="filter-chip" [class.selected]="
+              filtroEstado() === 'ANULADA'
+            " [attr.aria-pressed]="
+              filtroEstado() === 'ANULADA'
+            " (click)="
+              cambiarFiltroEstado('ANULADA')
+            ">
+
+            <mat-icon>
+              cancel
+            </mat-icon>
+
+            Anulados
+
+          </button>
+
+        </div>
+
+
+        <!-- ===============================================
+             CONTADOR REAL
+        ================================================ -->
+
+        <span class="records">
+
+          @if (
+          totalRegistros() > 0
+          ) {
+
+          {{
+          registroDesde()
+          }}
+
+          -
+
+          {{
+          registroHasta()
+          }}
+
+          de
+
+          {{
+          totalRegistros()
+          }}
+
+          registros
+
+          } @else {
+
+          0 registros
+
+          }
+
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
          TABLA
-    ====================================================== -->
+    ================================================== -->
 
-    <div class="table-container">
+    <div class="table-wrapper">
 
-      <table mat-table [dataSource]="dataSource" matSort>
+      <table mat-table [dataSource]="notas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+        [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
-        <!-- =================================================
+        <!-- =============================================
              NÚMERO
-        ================================================== -->
+        ============================================== -->
 
         <ng-container matColumnDef="numero">
 
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="numero">
+
             N.º Nota
+
           </th>
+
 
           <td mat-cell *matCellDef="let nota">
 
             <span class="invoice-number">
-              #{{nota.numeroNV }}
+
+              #{{ nota.numeroNV }}
+
             </span>
+
+
             <small>
-              {{nota.fechaNotaVenta | date:'dd/MM/yyyy HH:mm'}}</small>
-          </td>
 
+              {{
+              nota.fechaNotaVenta
+              | date:'dd/MM/yyyy HH:mm'
+              }}
 
+            </small>
 
-        </ng-container>
-
-
-        <!-- =================================================
-             FECHA
-        ================================================== -->
-
-        <ng-container matColumnDef="fecha">
-
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            Fecha
-          </th>
-
-          <td mat-cell *matCellDef="let nota">
-            {{
-            nota.fechaNotaVenta
-            | date:'dd/MM/yyyy HH:mm'
-            }}
           </td>
 
         </ng-container>
 
 
-        <!-- =================================================
+        <!-- =============================================
              CLIENTE
-        ================================================== -->
+        ============================================== -->
 
         <ng-container matColumnDef="cliente">
 
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">
+
             Cliente
+
           </th>
+
 
           <td mat-cell *matCellDef="let nota">
 
             <span class="client-name">
-              {{ nota.nombreCliente }}
-            </span>
 
+              {{ nota.nombreCliente }}
+
+            </span>
+            <small>
+              {{ nota.identificacion }}</small>
           </td>
 
         </ng-container>
 
 
-        <!-- =================================================
+        <!-- =============================================
              IDENTIFICACIÓN
-        ================================================== -->
+        ============================================== -->
 
         <ng-container matColumnDef="identificacion">
 
-          <th mat-header-cell *matHeaderCellDef>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="identificacion">
+
             Identificación
+
           </th>
 
+
           <td mat-cell *matCellDef="let nota">
+
             {{ nota.identificacion }}
+
           </td>
 
         </ng-container>
 
 
-        <!-- =================================================
-             VENDEDOR
-        ================================================== -->
-
-        <ng-container matColumnDef="vendedor">
-
-          <th mat-header-cell *matHeaderCellDef>
-            Vendedor
-          </th>
-
-          <td mat-cell *matCellDef="let nota">
-            {{ nota.vendedor }}
-          </td>
-
-        </ng-container>
-
-
-        <!-- =================================================
+        <!-- =============================================
              TOTAL
-        ================================================== -->
+        ============================================== -->
 
         <ng-container matColumnDef="total">
 
-          <th mat-header-cell *matHeaderCellDef mat-sort-header class="money-column">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="total" class="money-column">
+
             Total
+
           </th>
+
 
           <td mat-cell *matCellDef="let nota" class="money-column">
 
@@ -186,61 +304,114 @@
         </ng-container>
 
 
-        <!-- =================================================
+        <!-- =============================================
              ESTADO
-        ================================================== -->
+        ============================================== -->
 
         <ng-container matColumnDef="estado">
 
-          <th mat-header-cell *matHeaderCellDef class="status-column">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
+
             Estado
+
           </th>
+
 
           <td mat-cell *matCellDef="let nota" class="status-column">
 
-            <span class="status" [class.active]="nota.estado !== 'ANULADA'"
-              [class.cancelled]="nota.estado === 'ANULADA'">
+            <span class="status" [class.active]="
+                nota.estado === 'FACTURADO'
+              " [class.cancelled]="
+                nota.estado === 'ANULADA'
+              ">
+
               {{ nota.estado }}
+
             </span>
 
           </td>
 
         </ng-container>
 
+        <!-- =============================================
+             VENDEDOR
+        ============================================== -->
 
-        <!-- =================================================
+        <ng-container matColumnDef="vendedor">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="vendedor">
+
+            Vendedor
+
+          </th>
+
+
+          <td mat-cell *matCellDef="let nota">
+
+            {{ nota.vendedor }}
+
+          </td>
+
+        </ng-container>
+
+        <!-- =============================================
              ACCIONES
-        ================================================== -->
+        ============================================== -->
 
         <ng-container matColumnDef="acciones">
 
           <th mat-header-cell *matHeaderCellDef class="actions-header">
+
             Acciones
+
           </th>
 
 
           <td mat-cell *matCellDef="let nota" class="actions-cell">
 
-            <!-- VISUALIZAR -->
+            <!-- =========================================
+                 VISUALIZAR
 
-            <button mat-icon-button type="button" class="view-btn" matTooltip="Visualizar" (click)="visualizar(nota)">
+                 FACTURADO ✅
+                 ANULADA   ✅
+            ========================================== -->
+
+            <button mat-icon-button type="button" class="view-btn" matTooltip="Visualizar nota"
+              (click)="visualizar(nota)">
+
               <mat-icon>
                 visibility
               </mat-icon>
+
             </button>
 
 
-            <!-- ANULAR -->
+            <!-- =========================================
+                 ANULAR
+
+                 ADMINISTRADOR + FACTURADO
+            ========================================== -->
 
             @if (
-            esAdministrador() &&
-            nota.estado !== 'ANULADA'
+            esAdministrador()
+            &&
+            nota.estado === 'FACTURADO'
             ) {
 
-            <button mat-icon-button type="button" class="delete-btn" matTooltip="Anular nota" (click)="anular(nota)">
+            <button mat-icon-button type="button" class="delete-btn" matTooltip="Anular nota" [disabled]="
+                  anulando() === nota.id
+                " (click)="anular(nota)">
+
               <mat-icon>
-                cancel
+
+                {{
+                anulando() === nota.id
+                ? 'hourglass_top'
+                : 'cancel'
+                }}
+
               </mat-icon>
+
             </button>
 
             }
@@ -250,34 +421,53 @@
         </ng-container>
 
 
-        <!-- =================================================
+        <!-- =============================================
              FILAS
-        ================================================== -->
+        ============================================== -->
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-
-
-        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="
-    (row.estado ?? '').trim().toUpperCase() === 'ANULADA'
-  ">
+        <tr mat-header-row *matHeaderRowDef="
+            displayedColumns
+          ">
         </tr>
 
 
+        <tr mat-row *matRowDef="
+            let row;
+            columns: displayedColumns
+          " [class.row-cancelled]="
+            row.estado === 'ANULADA'
+          ">
+        </tr>
 
-        <!-- =================================================
+
+        <!-- =============================================
              SIN DATOS
-        ================================================== -->
+        ============================================== -->
 
-        <tr class="mat-row no-data-row" *matNoDataRow>
+        <tr *matNoDataRow>
 
-          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          <td class="no-data" [attr.colspan]="
+              displayedColumns.length
+            ">
 
             <mat-icon>
               receipt_long
             </mat-icon>
 
-            No existen notas de venta para mostrar.
+
+            @if (
+            busqueda()
+            ||
+            filtroEstado() !== 'TODOS'
+            ) {
+
+            No existen notas que coincidan con los filtros aplicados
+
+            } @else {
+
+            No existen notas de venta para mostrar
+
+            }
 
           </td>
 
@@ -288,16 +478,13 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          PAGINADOR
-    ====================================================== -->
+    ================================================== -->
 
-    <mat-paginator [pageSize]="10" [pageSizeOptions]="[
-        5,
-        10,
-        25,
-        50
-      ]" showFirstLastButtons />
+    <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
+      [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)">
+    </mat-paginator>
 
   </div>
 

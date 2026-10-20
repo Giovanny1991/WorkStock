@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   OnInit,
   signal
@@ -15,6 +16,21 @@ import {
   FormControl,
   ReactiveFormsModule
 } from '@angular/forms';
+
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  startWith,
+  Subject,
+  switchMap
+} from 'rxjs';
+
+import {
+  takeUntilDestroyed
+} from '@angular/core/rxjs-interop';
 
 import {
   MatButtonModule
@@ -47,16 +63,17 @@ import {
 } from '@angular/material/progress-bar';
 
 import {
+  MatSortModule,
+  Sort
+} from '@angular/material/sort';
+
+import {
   MatTableModule
 } from '@angular/material/table';
 
 import {
   MatTooltipModule
 } from '@angular/material/tooltip';
-
-import {
-  finalize
-} from 'rxjs';
 
 
 import {
@@ -75,12 +92,21 @@ import {
   NotificationService
 } from '../../../core/services/notification';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { ConfirmDialog } from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
 import {
-  MatSortModule,
-  Sort
-} from '@angular/material/sort';
+  AuthService
+} from '../../../core/auth/auth.service';
+
+import {
+  ConfirmDialog
+} from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
+
+import {
+  AccesoriosNotasVentaHistorialService,
+  AccesorioNotaOrden,
+  DireccionOrdenAccesorioNota,
+  EstadoFiltroAccesorioNota
+} from './accesorios-notas-venta-historial.service';
+
 
 @Component({
 
@@ -102,10 +128,9 @@ import {
     MatInputModule,
     MatPaginatorModule,
     MatProgressBarModule,
+    MatSortModule,
     MatTableModule,
-    MatTooltipModule,
-     MatSortModule,
-  
+    MatTooltipModule
 
   ],
 
@@ -117,11 +142,26 @@ import {
 
 })
 export class HistorialAccesorios
-
-
   implements OnInit {
 
 
+  /* =====================================================
+     SERVICIOS
+  ===================================================== */
+
+  private readonly historialService =
+    inject(
+      AccesoriosNotasVentaHistorialService
+    );
+
+
+  /*
+   * Se mantiene el servicio original para:
+   *
+   * - anulación
+   * - creación en otros componentes
+   * - consulta individual
+   */
   private readonly service =
     inject(
       AccesoriosNotasVentaService
@@ -139,12 +179,39 @@ export class HistorialAccesorios
       MatDialog
     );
 
-readonly columnaOrden = signal('fecha');
-readonly direccionOrden = signal<'asc' | 'desc'>('desc');
 
+  private readonly authService =
+    inject(
+      AuthService
+    );
+
+
+  private readonly destroyRef =
+    inject(
+      DestroyRef
+    );
+
+
+  /* =====================================================
+     RECARGA
+  ===================================================== */
+
+  private readonly recargar$ =
+    new Subject<void>();
+
+
+  /* =====================================================
+     ESTADO GENERAL
+  ===================================================== */
 
   readonly cargando =
     signal(false);
+
+
+  readonly anulando =
+    signal<number | null>(
+      null
+    );
 
 
   readonly registros =
@@ -153,17 +220,25 @@ readonly direccionOrden = signal<'asc' | 'desc'>('desc');
     >([]);
 
 
-  readonly busqueda =
-    signal('');
+  /* =====================================================
+     PERMISOS
+  ===================================================== */
+
+  readonly esAdministrador =
+    computed(
+      () =>
+        this.authService
+          .usuario()
+          ?.rol
+          ?.toUpperCase()
+        ===
+        'ADMINISTRADOR'
+    );
 
 
-  readonly pageIndex =
-    signal(0);
-
-
-  readonly pageSize =
-    signal(10);
-
+  /* =====================================================
+     BÚSQUEDA
+  ===================================================== */
 
   readonly buscarControl =
     new FormControl(
@@ -174,242 +249,566 @@ readonly direccionOrden = signal<'asc' | 'desc'>('desc');
     );
 
 
-  readonly displayedColumns = [
+  readonly busqueda =
+    signal('');
 
-    'numeroNV',
-    // 'fecha',
-    'cliente',
-    'vendedor',
-    'total',
-    'estado',
-    'acciones'
 
+  /* =====================================================
+     FILTRO ESTADO
+  ===================================================== */
+
+  readonly filtroEstado =
+    signal<EstadoFiltroAccesorioNota>(
+      'TODOS'
+    );
+
+
+  /* =====================================================
+     PAGINACIÓN
+
+     Angular:
+     página inicial = 0
+
+     Backend:
+     página inicial = 1
+  ===================================================== */
+
+  readonly pageIndex =
+    signal(0);
+
+
+  readonly pageSize =
+    signal(25);
+
+
+  readonly opcionesPagina = [
+    10,
+    25,
+    50,
+    100
   ];
 
 
-  readonly registrosFiltrados =
+  readonly totalRegistros =
+    signal(0);
+
+
+  readonly totalPaginas =
+    signal(0);
+
+
+  /* =====================================================
+     ORDENAMIENTO
+  ===================================================== */
+
+  readonly columnaOrden =
+    signal<AccesorioNotaOrden>(
+      'fecha'
+    );
+
+
+  readonly direccionOrden =
+    signal<DireccionOrdenAccesorioNota>(
+      'desc'
+    );
+
+
+  /* =====================================================
+     COLUMNAS
+  ===================================================== */
+
+  readonly displayedColumns = [
+    'numeroNV',
+    'cliente',
+    'total',
+    'estado',
+   'vendedor',
+    'acciones'
+  ];
+
+
+  /* =====================================================
+     INFORMACIÓN DE PAGINACIÓN
+  ===================================================== */
+
+  readonly registroDesde =
     computed(() => {
 
-      const texto =
-        this.busqueda()
-          .trim()
-          .toLowerCase();
+      if (
+        this.totalRegistros() === 0
+      ) {
 
-
-      if (!texto) {
-
-        return this.registros();
+        return 0;
 
       }
 
 
-      return this.registros()
-        .filter(
-          registro => {
-
-            const contenido =
-              [
-
-                registro.numeroNV,
-                registro.identificacion,
-                registro.nombreCliente,
-                registro.vendedor,
-                registro.estado,
-                registro.totalVenta
-
-              ]
-                .join(' ')
-                .toLowerCase();
-
-
-            return contenido
-              .includes(
-                texto
-              );
-
-          }
-        );
+      return (
+        this.pageIndex()
+        *
+        this.pageSize()
+      ) + 1;
 
     });
 
 
-readonly registrosPagina = computed(() => {
+  readonly registroHasta =
+    computed(() => {
 
-  const inicio = this.pageIndex() * this.pageSize();
-  const fin = inicio + this.pageSize();
-
-  return this.registrosOrdenados().slice(inicio, fin);
-
-});
-
-    readonly esAdministrador = computed(() => {
-  return this.authService.usuario()?.rol === 'ADMINISTRADOR';
-});
+      const hasta =
+        (
+          this.pageIndex() + 1
+        )
+        *
+        this.pageSize();
 
 
-readonly registrosOrdenados = computed(() => {
+      return Math.min(
+        hasta,
+        this.totalRegistros()
+      );
 
-  const columna = this.columnaOrden();
-  const direccion = this.direccionOrden();
-
-  const registros = [...this.registrosFiltrados()];
-
-  const multiplicador = direccion === 'asc' ? 1 : -1;
-
-  const obtenerValor = (
-    registro: AccesorioNotaVentaResumen
-  ): string | number => {
-
-    switch (columna) {
-
-      case 'numeroNV':
-        return Number(registro.numeroNV) || 0;
-
-      case 'fecha':
-        return registro.fechaNotaVenta
-          ? new Date(registro.fechaNotaVenta).getTime() || 0
-          : 0;
-
-      case 'cliente':
-        return String(registro.nombreCliente ?? '')
-          .trim()
-          .toLocaleLowerCase('es');
-
-      case 'vendedor':
-        return String(registro.vendedor ?? '')
-          .trim()
-          .toLocaleLowerCase('es');
-
-      case 'total':
-        return Number(registro.totalVenta) || 0;
-
-      case 'estado':
-        return String(registro.estado ?? '')
-          .trim()
-          .toLocaleLowerCase('es');
-
-      default:
-        return 0;
-
-    }
-
-  };
-
-  return registros.sort((a, b) => {
-
-    const valorA = obtenerValor(a);
-    const valorB = obtenerValor(b);
-
-    if (
-      typeof valorA === 'number' &&
-      typeof valorB === 'number'
-    ) {
-      return (valorA - valorB) * multiplicador;
-    }
-
-    return String(valorA).localeCompare(
-      String(valorB),
-      'es',
-      { numeric: true, sensitivity: 'base' }
-    ) * multiplicador;
-
-  });
-
-});
+    });
 
 
-private readonly authService = inject(AuthService);
-
+  /* =====================================================
+     INICIO
+  ===================================================== */
 
   ngOnInit(): void {
 
-    this.cargar();
+    this.configurarBusqueda();
 
-
-    this.buscarControl
-      .valueChanges
-      .subscribe(value => {
-
-        this.busqueda.set(
-          value
-        );
-
-
-        this.pageIndex.set(
-          0
-        );
-
-      });
+    this.configurarCarga();
 
   }
 
 
-  cargar(): void {
+  /* =====================================================
+     BÚSQUEDA REMOTA
 
-    this.cargando.set(
-      true
-    );
+     Esperamos 350 ms antes de consultar SQL Server.
+  ===================================================== */
 
+  private configurarBusqueda():
+    void {
 
-    this.service
-      .listar()
+    this.buscarControl
+      .valueChanges
+
       .pipe(
 
-        finalize(
-          () =>
-            this.cargando.set(false)
+        debounceTime(
+          350
+        ),
+
+        map(
+          valor =>
+            valor.trim()
+        ),
+
+        distinctUntilChanged(),
+
+        takeUntilDestroyed(
+          this.destroyRef
         )
 
       )
-      .subscribe({
 
-        next: response => {
+      .subscribe(
+        valor => {
 
-          this.registros.set(
-            response.data ??
-            []
+          this.busqueda.set(
+            valor
           );
 
 
+          /*
+           * Toda búsqueda nueva empieza
+           * nuevamente en la primera página.
+           */
           this.pageIndex.set(
             0
           );
 
-        },
 
-
-        error: error => {
-
-          this.notify.error(
-
-            error?.error?.message ??
-
-            'No fue posible cargar el historial de notas de venta'
-
-          );
+          this.cargar();
 
         }
-
-      });
+      );
 
   }
 
+
+  /* =====================================================
+     CARGAR DESDE BACKEND
+  ===================================================== */
+
+  private configurarCarga():
+    void {
+
+    this.recargar$
+
+      .pipe(
+
+        /*
+         * Primera carga automática.
+         */
+        startWith(
+          undefined
+        ),
+
+        /*
+         * Si se produce una nueva consulta,
+         * switchMap deja de usar la anterior.
+         */
+        switchMap(
+          () => {
+
+            this.cargando.set(
+              true
+            );
+
+
+            return this.historialService
+              .listar({
+
+                page:
+                  this.pageIndex()
+                  + 1,
+
+                pageSize:
+                  this.pageSize(),
+
+                estado:
+                  this.filtroEstado(),
+
+                busqueda:
+                  this.busqueda(),
+
+                sortBy:
+                  this.columnaOrden(),
+
+                sortDir:
+                  this.direccionOrden()
+
+              })
+
+              .pipe(
+
+                catchError(
+                  error => {
+
+                    this.notify.error(
+
+                      error?.error?.message
+                      ??
+                      'No fue posible cargar el historial de notas de accesorios'
+
+                    );
+
+
+                    return of(null);
+
+                  }
+                )
+
+              );
+
+          }
+        ),
+
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+
+      )
+
+      .subscribe(
+        response => {
+
+          this.cargando.set(
+            false
+          );
+
+
+          if (!response) {
+
+            return;
+
+          }
+
+
+          const pagination =
+            response.pagination;
+
+
+          const total =
+            Number(
+              pagination?.total
+              ?? 0
+            );
+
+
+          const totalPages =
+            Number(
+              pagination?.totalPages
+              ?? 0
+            );
+
+
+          const paginaServidor =
+            Number(
+              pagination?.page
+              ?? 1
+            );
+
+
+          /* =================================================
+             CONTROLAR PÁGINA FUERA DE RANGO
+          ================================================= */
+
+          if (
+            totalPages > 0
+            &&
+            paginaServidor > totalPages
+          ) {
+
+            this.pageIndex.set(
+              totalPages - 1
+            );
+
+
+            this.cargar();
+
+            return;
+
+          }
+
+
+          /* =================================================
+             ACTUALIZAR DATOS
+          ================================================= */
+
+          this.registros.set(
+            response.data
+            ?? []
+          );
+
+
+          this.totalRegistros.set(
+            total
+          );
+
+
+          this.totalPaginas.set(
+            totalPages
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =====================================================
+     RECARGAR
+  ===================================================== */
+
+  cargar(): void {
+
+    this.recargar$.next();
+
+  }
+
+
+  /* =====================================================
+     FILTRAR ESTADO
+  ===================================================== */
+
+  cambiarFiltroEstado(
+    estado: EstadoFiltroAccesorioNota
+  ): void {
+
+    if (
+      this.filtroEstado() ===
+      estado
+    ) {
+
+      return;
+
+    }
+
+
+    this.filtroEstado.set(
+      estado
+    );
+
+
+    this.pageIndex.set(
+      0
+    );
+
+
+    this.cargar();
+
+  }
+
+
+  /* =====================================================
+     CAMBIAR PÁGINA
+  ===================================================== */
 
   cambiarPagina(
     event: PageEvent
   ): void {
 
-    this.pageIndex.set(
-      event.pageIndex
-    );
+    const cambioTamanio =
+      event.pageSize !==
+      this.pageSize();
 
 
     this.pageSize.set(
       event.pageSize
     );
 
+
+    if (
+      cambioTamanio
+    ) {
+
+      /*
+       * Si cambia por ejemplo:
+       *
+       * 25 -> 50
+       *
+       * volvemos a página 1.
+       */
+      this.pageIndex.set(
+        0
+      );
+
+    } else {
+
+      this.pageIndex.set(
+        event.pageIndex
+      );
+
+    }
+
+
+    this.cargar();
+
   }
 
+
+  /* =====================================================
+     ORDENAMIENTO REMOTO
+  ===================================================== */
+
+  cambiarOrden(
+    event: Sort
+  ): void {
+
+    if (
+      event.direction !== 'asc'
+      &&
+      event.direction !== 'desc'
+    ) {
+
+      return;
+
+    }
+
+
+    const columnasPermitidas:
+      AccesorioNotaOrden[] = [
+
+        'numero',
+
+        'fecha',
+
+        'cliente',
+
+        'identificacion',
+
+        'vendedor',
+
+        'total',
+
+        'estado'
+
+      ];
+
+
+    const columna =
+      columnasPermitidas.find(
+        item =>
+          item === event.active
+      );
+
+
+    if (!columna) {
+
+      return;
+
+    }
+
+
+    const direccion =
+      event.direction;
+
+
+    this.columnaOrden.set(
+      columna
+    );
+
+
+    this.direccionOrden.set(
+      direccion
+    );
+
+
+    this.pageIndex.set(
+      0
+    );
+
+
+    this.cargar();
+
+  }
+
+
+  /* =====================================================
+     LIMPIAR BÚSQUEDA
+  ===================================================== */
+
+  limpiarBusqueda():
+    void {
+
+    if (
+      !this.buscarControl.value
+    ) {
+
+      return;
+
+    }
+
+
+    this.buscarControl.setValue(
+      ''
+    );
+
+  }
+
+
+  /* =====================================================
+     VISUALIZAR TICKET
+
+     Disponible para:
+     - FACTURADO
+     - ANULADA
+  ===================================================== */
 
   visualizar(
     registro:
@@ -447,72 +846,227 @@ private readonly authService = inject(AuthService);
 
   }
 
-  anular(nota: any): void {
-  if (!this.esAdministrador()) {
-    this.notify.warning(
-      'No tiene permisos para anular notas de venta'
-    );
-    return;
-  }
 
-  if (nota.estado?.toUpperCase() === 'ANULADA') {
-    this.notify.warning(
-      'La nota de venta ya se encuentra anulada'
-    );
-    return;
-  }
+  /* =====================================================
+     ANULAR
+  ===================================================== */
 
-  this.dialog.open(
-    ConfirmDialog,
-    {
-      width: '430px',
-      maxWidth: '92vw',
-      disableClose: true,
-      data: {
-        title: 'Anular nota de venta',
-        message:
-          `¿Desea anular la nota de venta N.º ${nota.numeroNV}? El stock de accesorios será devuelto al inventario.`,
-        confirmText: 'Anular'
-      }
+  anular(
+    nota:
+      AccesorioNotaVentaResumen
+  ): void {
+
+    /* =================================================
+       SOLO ADMINISTRADOR
+    ================================================= */
+
+    if (
+      !this.esAdministrador()
+    ) {
+
+      this.notify.warning(
+        'No tiene permisos para anular notas de venta'
+      );
+
+      return;
+
     }
-  )
-  .afterClosed()
-  .subscribe(confirmado => {
-    if (!confirmado) return;
 
-    this.service.anular(nota.id)
-      .subscribe({
-        next: r => {
-          this.notify.success(
-            r.message ?? 'Nota de venta anulada correctamente'
+
+    /* =================================================
+       VALIDAR ESTADO
+    ================================================= */
+
+    const estado =
+      String(
+        nota.estado
+        ?? ''
+      )
+        .trim()
+        .toUpperCase();
+
+
+    if (
+      estado === 'ANULADA'
+    ) {
+
+      this.notify.warning(
+        'La nota de venta ya se encuentra anulada'
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * No usamos:
+     *
+     * estado !== ANULADA
+     *
+     * sino explícitamente FACTURADO.
+     */
+    if (
+      estado !== 'FACTURADO'
+    ) {
+
+      this.notify.warning(
+        'La nota de venta no se encuentra en un estado válido para anulación'
+      );
+
+      return;
+
+    }
+
+
+    /* =================================================
+       EVITAR DOBLE CLIC
+    ================================================= */
+
+    if (
+      this.anulando() !== null
+    ) {
+
+      return;
+
+    }
+
+
+    const referencia =
+      nota.numeroNV
+
+        ? `N.º ${nota.numeroNV}`
+
+        : `ID ${nota.id}`;
+
+
+    /* =================================================
+       CONFIRMAR
+    ================================================= */
+
+    this.dialog.open(
+      ConfirmDialog,
+      {
+
+        width:
+          '430px',
+
+        maxWidth:
+          '92vw',
+
+        disableClose:
+          true,
+
+        data: {
+
+          title:
+            'Anular nota de venta',
+
+          message:
+            `¿Desea anular la nota de venta ${referencia}? ` +
+            'El stock de accesorios será devuelto al inventario.',
+
+          confirmText:
+            'Anular'
+
+        }
+
+      }
+    )
+
+      .afterClosed()
+
+      .subscribe(
+        confirmado => {
+
+          if (
+            !confirmado
+          ) {
+
+            return;
+
+          }
+
+
+          this.ejecutarAnulacion(
+            nota
           );
 
+        }
+      );
+
+  }
+
+
+  /* =====================================================
+     EJECUTAR ANULACIÓN
+  ===================================================== */
+
+  private ejecutarAnulacion(
+    nota:
+      AccesorioNotaVentaResumen
+  ): void {
+
+    this.anulando.set(
+      nota.id
+    );
+
+
+    this.service
+      .anular(
+        nota.id
+      )
+
+      .subscribe({
+
+        next: response => {
+
+          this.anulando.set(
+            null
+          );
+
+
+          this.notify.success(
+
+            response?.message
+            ??
+            'Nota de venta anulada correctamente'
+
+          );
+
+
+          /*
+           * Se mantiene:
+           *
+           * filtro
+           * búsqueda
+           * orden
+           * página actual
+           */
           this.cargar();
+
         },
 
-        error: e => {
-          this.notify.error(
-            e?.error?.message ??
-            'No fue posible anular la nota de venta'
+
+        error: error => {
+
+          this.anulando.set(
+            null
           );
+
+
+          this.notify.error(
+
+            error?.error?.message
+            ??
+            'No fue posible anular la nota de venta'
+
+          );
+
         }
+
       });
-  });
-}
 
-
-cambiarOrden(event: Sort): void {
-
-  this.columnaOrden.set(
-    event.active || 'fecha'
-  );
-
-  this.direccionOrden.set(
-    event.direction || 'desc'
-  );
-
-  this.pageIndex.set(0);
-
-}
+  }
 
 }

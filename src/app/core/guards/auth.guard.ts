@@ -1,4 +1,7 @@
-import { inject } from '@angular/core';
+
+import {
+  inject
+} from '@angular/core';
 
 import {
   CanActivateFn,
@@ -18,25 +21,28 @@ import {
 
 export const authGuard: CanActivateFn = () => {
 
-  const authService =
-    inject(AuthService);
+  // =====================================================
+  // SERVICIOS
+  // =====================================================
 
-  const router =
-    inject(Router);
+  const authService = inject(AuthService);
 
+  const router = inject(Router);
 
-  // Ya está cargado en memoria
+  // =====================================================
+  // SESIÓN YA CARGADA EN MEMORIA
+  // =====================================================
+
   if (authService.autenticado()) {
 
     return true;
 
   }
 
+  // =====================================================
+  // RESTAURAR COOKIE HTTPONLY
+  // =====================================================
 
-  /*
-   * Si el navegador todavía tiene la cookie
-   * HttpOnly, consultamos /auth/me.
-   */
   return authService
     .restaurarSesion()
     .pipe(
@@ -45,12 +51,21 @@ export const authGuard: CanActivateFn = () => {
 
       catchError(() => {
 
+        // Obtener primero la ruta correspondiente
+        // al negocio.
+
+        const rutaLogin =
+          authService.obtenerRutaLogin();
+
+        // Limpiar identidad autenticada.
+
         authService.limpiarSesion();
 
+        // Redirigir usando UrlTree para evitar
+        // navegaciones innecesarias dentro del guard.
+
         return of(
-          router.createUrlTree([
-            '/login'
-          ])
+          router.parseUrl(rutaLogin)
         );
 
       })

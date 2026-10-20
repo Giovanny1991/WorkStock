@@ -1,153 +1,379 @@
+<!-- =====================================================
+     WORKSTOCK - INVENTARIO DE CELULARES
+     SOLAMENTE EQUIPOS DISPONIBLES
+===================================================== -->
+
 <div class="page-header">
+
   <div>
-    <h1>Inventario de celulares</h1>
-    <p>Stock y disponibilidad de equipos</p>
+
+    <h1>
+      Inventario de celulares
+    </h1>
+
+    <p>
+      Stock y disponibilidad de equipos
+    </p>
+
   </div>
 
   @if (esAdministrador()) {
-  <button mat-flat-button type="button" class="primary-btn" (click)="nuevo()">
-    <mat-icon>add</mat-icon>
+
+  <button mat-flat-button type="button" class="primary-btn" [disabled]="cargando()" (click)="nuevo()">
+
+    <mat-icon>
+      add
+    </mat-icon>
+
     Nuevo equipo
+
   </button>
+
   }
+
 </div>
 
 <div class="card">
+
+  <!-- =================================================
+       CARGANDO
+  ================================================== -->
+
   @if (cargando()) {
-  <mat-progress-bar mode="indeterminate" />
+
+  <mat-progress-bar mode="indeterminate">
+  </mat-progress-bar>
+
   }
 
+  <!-- =================================================
+       BUSCADOR
+  ================================================== -->
+
   <div class="toolbar">
+
     <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput placeholder="Buscar IMEI, modelo, proveedor..." autocomplete="off" (keyup)="filtrar($event)">
+
+      <mat-label>
+        Buscar
+      </mat-label>
+
+      <input matInput [formControl]="buscarControl"
+        placeholder="Buscar IMEI, marca, modelo, proveedor, RAM, almacenamiento o color..." autocomplete="off">
+
+      @if (buscarControl.value) {
+
+      <button mat-icon-button matSuffix type="button" matTooltip="Limpiar búsqueda" aria-label="Limpiar búsqueda"
+        (click)="limpiarBusqueda()">
+
+        <mat-icon>
+          close
+        </mat-icon>
+
+      </button>
+
+      } @else {
+
+      <mat-icon matSuffix>
+        search
+      </mat-icon>
+
+      }
+
     </mat-form-field>
 
     <span class="records">
-      {{ dataSource.filteredData.length }} registros
+
+      @if (totalRegistros() > 0) {
+
+      {{ registroDesde() }}
+      -
+      {{ registroHasta() }}
+      de
+      {{ totalRegistros() }}
+      registros
+
+      } @else {
+
+      0 registros
+
+      }
+
     </span>
+
   </div>
 
+  <!-- =================================================
+       TABLA
+  ================================================== -->
+
   <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" matSort>
 
-      <!-- ID -->
+    <table mat-table [dataSource]="stock()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
+
+      <!-- =============================================
+           ID
+      ============================================== -->
+
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="id">ID</th>
-        <td mat-cell *matCellDef="let x">{{ x.id }}</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="id">
+
+          ID
+
+        </th>
+
+        <td mat-cell *matCellDef="let x">
+
+          {{ x.id }}
+
+        </td>
+
       </ng-container>
 
-      <!-- PROVEEDOR -->
+      <!-- =============================================
+           PROVEEDOR
+      ============================================== -->
+
       <ng-container matColumnDef="proveedor">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="proveedor">Proveedor</th>
-        <td mat-cell *matCellDef="let x">{{ x.nombreProveedor }}</td>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="proveedor">
+
+          Proveedor
+
+        </th>
+
+        <td mat-cell *matCellDef="let x">
+
+          {{ x.nombreProveedor }}
+
+        </td>
+
       </ng-container>
 
-      <!-- MODELO -->
+      <!-- =============================================
+           MODELO
+      ============================================== -->
+
       <ng-container matColumnDef="modelo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="modelo">Modelo</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="modelo">
+
+          Modelo
+
+        </th>
+
         <td mat-cell *matCellDef="let x">
-          {{ x.nombreMarca }} - {{ x.nombreModelo }}
+
+          {{ x.nombreMarca }} {{ x.nombreModelo }}
+
           <small>
-            {{ x.ram }} RAM - {{ x.almacenamiento }} GB
-            <b>/ {{ x.estadoCelular }}</b>
+
+            {{ x.ram }} RAM -
+            {{ x.almacenamiento }} GB
+
+            <b>
+              / {{ x.estadoCelular }}
+            </b>
+
           </small>
+
         </td>
+
       </ng-container>
 
-      <!-- IMEI -->
+      <!-- =============================================
+           IMEI
+      ============================================== -->
+
       <ng-container matColumnDef="imei">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="imei">IMEI</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="imei">
+
+          IMEI
+
+        </th>
+
         <td mat-cell *matCellDef="let x">
-          <strong>{{ x.imei1 }}</strong>
+
+          <strong>
+            {{ x.imei1 }}
+          </strong>
+
           @if (x.imei2) {
-          <small>{{ x.imei2 }}</small>
+
+          <small>
+            {{ x.imei2 }}
+          </small>
+
           }
+
         </td>
+
       </ng-container>
 
-      <!-- DOCUMENTO -->
+      <!-- =============================================
+           DOCUMENTO
+      ============================================== -->
+
       <ng-container matColumnDef="documento">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="documento">Documento</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="documento">
+
+          Documento
+
+        </th>
+
         <td mat-cell *matCellDef="let x">
-          {{ x.factura === 'SI' ? 'Factura' : 'Nota venta' }}
+
+          {{
+          x.factura === 'SI'
+          ? 'Factura'
+          : 'Nota venta'
+          }}
+
         </td>
+
       </ng-container>
 
-      <!-- COSTO -->
+      <!-- =============================================
+           PRECIO COSTO
+      ============================================== -->
+
       <ng-container matColumnDef="costo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="costo">Costo</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="costo">
+
+          Costo
+
+        </th>
+
         <td mat-cell *matCellDef="let x">
-          {{ x.precioCosto | currency:'USD':'symbol':'1.2-2' }}
+
+          {{
+          x.precioCosto
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+
         </td>
+
       </ng-container>
 
-      <!-- VENTA -->
+      <!-- =============================================
+           PRECIO VENTA
+      ============================================== -->
+
       <ng-container matColumnDef="venta">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="venta">Venta</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="venta">
+
+          Venta
+
+        </th>
+
         <td mat-cell *matCellDef="let x" class="price">
-          {{ x.precioVenta | currency:'USD':'symbol':'1.2-2' }}
+
+          {{
+          x.precioVenta
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+
         </td>
+
       </ng-container>
 
-      <!-- ESTADO DEL EQUIPO (OPCIONAL) -->
-      <ng-container matColumnDef="estadoEquipo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="estadoEquipo">Equipo</th>
-        <td mat-cell *matCellDef="let x">{{ x.estadoCelular }}</td>
-      </ng-container>
+      <!-- =============================================
+           ESTADO DEL INVENTARIO
+      ============================================== -->
 
-      <!-- ESTADO DE STOCK (OPCIONAL) -->
       <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado">Estado</th>
+
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="estado">
+
+          Estado
+
+        </th>
+
         <td mat-cell *matCellDef="let x">
-          <span class="status" [class.available]="x.estado === 'INGRESADO'">
-            {{ x.estado }}
+
+          <span class="status" [class.available]="
+              x.estado === 'INGRESADO'
+            ">
+
+            {{ descripcionEstado(x) }}
+
           </span>
+
         </td>
+
       </ng-container>
 
+      <!-- =============================================
+           ACCIONES
+      ============================================== -->
 
-      <!-- ACCIONES -->
       <ng-container matColumnDef="acciones">
 
         <th mat-header-cell *matHeaderCellDef class="col-actions">
+
           Acciones
+
         </th>
 
         <td mat-cell *matCellDef="let x" class="col-actions">
 
           <div class="actions-group">
 
-            <!-- GENERAR FACTURA O NOTA DE VENTA -->
+            <!-- =======================================
+                 VENDER EQUIPO
+            ======================================== -->
+
             @if (x.estado === 'INGRESADO') {
 
-            <button mat-icon-button type="button" class="action sell" [matTooltip]="
-            x.factura === 'SI'
-              ? 'Generar factura'
-              : 'Generar nota de venta'
-          " (click)="venderEquipo(x)">
+            <button mat-icon-button type="button" class="action sell" [disabled]="
+                  eliminandoId() !== null
+                " [matTooltip]="
+                  x.factura === 'SI'
+                    ? 'Generar factura'
+                    : 'Generar nota de venta'
+                " (click)="venderEquipo(x)">
 
               <mat-icon>
-                {{ x.factura === 'SI' ? 'receipt_long' : 'note_add' }}
+                {{
+                x.factura === 'SI'
+                ? 'receipt_long'
+                : 'note_add'
+                }}
               </mat-icon>
 
             </button>
 
             }
 
-            <!-- ACCIONES ADMINISTRATIVAS -->
+            <!-- =======================================
+                 ACCIONES ADMINISTRADOR
+            ======================================== -->
+
             @if (esAdministrador()) {
 
-            <button mat-icon-button type="button" class="action edit" matTooltip="Editar equipo" (click)="editar(x)">
+            <button mat-icon-button type="button" class="action edit" matTooltip="Editar equipo" [disabled]="
+                  eliminandoId() !== null
+                " (click)="editar(x)">
 
-              <mat-icon>edit</mat-icon>
+              <mat-icon>
+                edit
+              </mat-icon>
 
             </button>
 
-            <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar equipo"
-              (click)="eliminar(x)">
+            <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar equipo" [disabled]="
+                  eliminandoId() !== null
+                " (click)="eliminar(x)">
 
-              <mat-icon>delete_outline</mat-icon>
+              <mat-icon>
+                delete_outline
+              </mat-icon>
 
             </button>
 
@@ -159,17 +385,53 @@
 
       </ng-container>
 
+      <!-- =============================================
+           FILAS
+      ============================================== -->
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()">
+      </tr>
+
+      <tr mat-row *matRowDef="
+          let row;
+          columns: displayedColumns()
+        ">
+      </tr>
+
+      <!-- =============================================
+           SIN RESULTADOS
+      ============================================== -->
 
       <tr *matNoDataRow>
-        <td class="no-data" [attr.colspan]="displayedColumns.length">
-          No existen equipos para mostrar
+
+        <td class="no-data" [attr.colspan]="displayedColumns().length">
+
+          @if (busqueda()) {
+
+          No existen equipos disponibles
+          que coincidan con la búsqueda
+
+          } @else {
+
+          No existen equipos disponibles
+          para mostrar
+
+          }
+
         </td>
+
       </tr>
+
     </table>
+
   </div>
 
-  <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons />
+  <!-- =================================================
+       PAGINADOR REMOTO
+  ================================================== -->
+
+  <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
+    [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)">
+  </mat-paginator>
+
 </div>

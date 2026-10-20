@@ -1,4 +1,3 @@
-
 <!-- =====================================================
      WORKSTOCK - NUEVO / EDITAR EQUIPO
 ===================================================== -->
@@ -23,9 +22,9 @@
 
       <p>
         {{
-          esEdicion
-            ? 'Actualiza la información del dispositivo.'
-            : 'Registra un nuevo dispositivo en el inventario.'
+        esEdicion
+        ? 'Actualiza la información del dispositivo.'
+        : 'Registra un nuevo dispositivo en el inventario.'
         }}
       </p>
 
@@ -33,12 +32,7 @@
 
   </div>
 
-  <button
-    mat-icon-button
-    type="button"
-    class="close-button"
-    aria-label="Cerrar formulario"
-    [disabled]="guardando()"
+  <button mat-icon-button type="button" class="close-button" aria-label="Cerrar formulario" [disabled]="guardando()"
     (click)="cancelar()">
 
     <mat-icon>close</mat-icon>
@@ -46,7 +40,6 @@
   </button>
 
 </div>
-
 
 <!-- CONTENIDO -->
 
@@ -62,40 +55,47 @@
         Proveedor
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <input
-          id="equipo-proveedor"
-          matInput
-          type="text"
-          placeholder="Buscar proveedor..."
-          aria-label="Buscar proveedor"
-          autocomplete="off"
-          [formControl]="proveedorTexto"
-          [matAutocomplete]="autoProveedor">
+        <input id="equipo-proveedor" matInput type="text" placeholder="Buscar proveedor..."
+          aria-label="Buscar proveedor" autocomplete="off" [formControl]="proveedorTexto"
+          [matAutocomplete]="autoProveedor" [readonly]="cargandoSeleccionInicial()">
 
         <mat-icon matSuffix class="suffix-icon">
           search
         </mat-icon>
 
-        <mat-autocomplete
-          #autoProveedor="matAutocomplete"
+        <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="mostrarProveedor"
           (optionSelected)="seleccionarProveedor($event.option.value)">
 
           @for (x of proveedoresFiltrados(); track x.id) {
 
-            <mat-option [value]="x.nombreProveedor">
-              {{ x.nombreProveedor }}
-            </mat-option>
+          <mat-option [value]="x">
+            {{ x.nombreProveedor }}
+          </mat-option>
 
-          } @empty {
+          }
 
-            <mat-option disabled>
-              No se encontraron proveedores
-            </mat-option>
+          @if (buscandoProveedores()) {
+
+          <mat-option disabled>
+            Buscando proveedores...
+          </mat-option>
+
+          } @else if (errorBusquedaProveedores()) {
+
+          <mat-option disabled>
+            No fue posible buscar proveedores
+          </mat-option>
+
+          } @else if (
+          proveedoresFiltrados().length === 0 &&
+          !proveedorSeleccionado()
+          ) {
+
+          <mat-option disabled>
+            Escriba al menos 2 caracteres para buscar
+          </mat-option>
 
           }
 
@@ -104,7 +104,6 @@
       </mat-form-field>
 
     </div>
-
 
     <!-- MODELO -->
 
@@ -114,40 +113,47 @@
         Modelo
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <input
-          id="equipo-modelo"
-          matInput
-          type="text"
-          placeholder="Buscar marca o modelo..."
-          aria-label="Buscar modelo"
-          autocomplete="off"
-          [formControl]="modeloTexto"
-          [matAutocomplete]="autoModelo">
+        <input id="equipo-modelo" matInput type="text" placeholder="Buscar marca o modelo..." aria-label="Buscar modelo"
+          autocomplete="off" [formControl]="modeloTexto" [matAutocomplete]="autoModelo"
+          [readonly]="cargandoSeleccionInicial()">
 
         <mat-icon matSuffix class="suffix-icon">
           search
         </mat-icon>
 
-        <mat-autocomplete
-          #autoModelo="matAutocomplete"
+        <mat-autocomplete #autoModelo="matAutocomplete" [displayWith]="mostrarModelo"
           (optionSelected)="seleccionarModelo($event.option.value)">
 
           @for (x of modelosFiltrados(); track x.id) {
 
-            <mat-option [value]="descripcionModelo(x)">
-              {{ descripcionModelo(x) }}
-            </mat-option>
+          <mat-option [value]="x">
+            {{ descripcionModelo(x) }}
+          </mat-option>
 
-          } @empty {
+          }
 
-            <mat-option disabled>
-              No se encontraron modelos
-            </mat-option>
+          @if (buscandoModelos()) {
+
+          <mat-option disabled>
+            Buscando modelos...
+          </mat-option>
+
+          } @else if (errorBusquedaModelos()) {
+
+          <mat-option disabled>
+            No fue posible buscar modelos
+          </mat-option>
+
+          } @else if (
+          modelosFiltrados().length === 0 &&
+          !modeloSeleccionado()
+          ) {
+
+          <mat-option disabled>
+            Escriba al menos 2 caracteres para buscar
+          </mat-option>
 
           }
 
@@ -157,7 +163,6 @@
 
     </div>
 
-
     <!-- IMEI 1 -->
 
     <div class="field-group">
@@ -166,36 +171,25 @@
         IMEI 1
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <input
-          id="equipo-imei1"
-          matInput
-          type="text"
-          formControlName="imei1"
-          maxlength="15"
-          inputmode="numeric"
-          placeholder="Ingrese 15 dígitos"
-          autocomplete="off">
+        <input id="equipo-imei1" matInput type="text" formControlName="imei1" maxlength="15" inputmode="numeric"
+          placeholder="Ingrese 15 dígitos" autocomplete="off">
 
         @if (
-          form.controls.imei1.invalid &&
-          form.controls.imei1.touched
+        form.controls.imei1.invalid &&
+        form.controls.imei1.touched
         ) {
 
-          <mat-error>
-            Debe contener 15 dígitos
-          </mat-error>
+        <mat-error>
+          Debe contener 15 dígitos
+        </mat-error>
 
         }
 
       </mat-form-field>
 
     </div>
-
 
     <!-- IMEI 2 -->
 
@@ -205,25 +199,14 @@
         IMEI 2
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <input
-          id="equipo-imei2"
-          matInput
-          type="text"
-          formControlName="imei2"
-          maxlength="15"
-          inputmode="numeric"
-          placeholder="IMEI secundario"
-          autocomplete="off">
+        <input id="equipo-imei2" matInput type="text" formControlName="imei2" maxlength="15" inputmode="numeric"
+          placeholder="IMEI secundario" autocomplete="off">
 
       </mat-form-field>
 
     </div>
-
 
     <!-- PRECIO COSTO -->
 
@@ -233,28 +216,18 @@
         Precio costo
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
         <span matTextPrefix>
           $&nbsp;
         </span>
 
-        <input
-          id="equipo-costo"
-          matInput
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="0.00"
+        <input id="equipo-costo" matInput type="number" min="0" step="0.01" placeholder="0.00"
           formControlName="precioCosto">
 
       </mat-form-field>
 
     </div>
-
 
     <!-- PRECIO VENTA -->
 
@@ -264,28 +237,18 @@
         Precio de venta al público
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
         <span matTextPrefix>
           $&nbsp;
         </span>
 
-        <input
-          id="equipo-venta"
-          matInput
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="0.00"
+        <input id="equipo-venta" matInput type="number" min="0" step="0.01" placeholder="0.00"
           formControlName="precioVenta">
 
       </mat-form-field>
 
     </div>
-
 
     <!-- DOCUMENTO -->
 
@@ -295,15 +258,9 @@
         Documento
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <mat-select
-          id="equipo-documento"
-          formControlName="factura"
-          placeholder="Seleccionar documento">
+        <mat-select id="equipo-documento" formControlName="factura" placeholder="Seleccionar documento">
 
           <mat-option value="SI">
             Factura
@@ -319,7 +276,6 @@
 
     </div>
 
-
     <!-- ESTADO DEL EQUIPO -->
 
     <div class="field-group">
@@ -328,15 +284,9 @@
         Estado del equipo
       </label>
 
-      <mat-form-field
-        appearance="outline"
-        class="compact-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <mat-select
-          id="equipo-estado"
-          formControlName="estadoCelular"
-          placeholder="Seleccionar estado">
+        <mat-select id="equipo-estado" formControlName="estadoCelular" placeholder="Seleccionar estado">
 
           <mat-option value="NUEVO">
             Nuevo
@@ -349,13 +299,13 @@
         </mat-select>
 
         @if (
-          form.controls.estadoCelular.invalid &&
-          form.controls.estadoCelular.touched
+        form.controls.estadoCelular.invalid &&
+        form.controls.estadoCelular.touched
         ) {
 
-          <mat-error>
-            Seleccione el estado del equipo
-          </mat-error>
+        <mat-error>
+          Seleccione el estado del equipo
+        </mat-error>
 
         }
 
@@ -367,30 +317,23 @@
 
 </mat-dialog-content>
 
-
 <!-- ACCIONES INFERIORES -->
 
-<mat-dialog-actions
-  class="dialog-actions"
-  align="end">
+<mat-dialog-actions class="dialog-actions" align="end">
 
-  <button
-    mat-stroked-button
-    type="button"
-    class="cancel-btn"
-    [disabled]="guardando()"
-    (click)="cancelar()">
+  <button mat-stroked-button type="button" class="cancel-btn" [disabled]="guardando()" (click)="cancelar()">
 
     Cancelar
 
   </button>
 
-  <button
-    mat-flat-button
-    type="button"
-    class="save-btn"
-    [disabled]="form.invalid || guardando()"
-    (click)="guardar()">
+  <button mat-flat-button type="button" class="save-btn" [disabled]="
+      form.invalid ||
+      !proveedorSeleccionado() ||
+      !modeloSeleccionado() ||
+      cargandoSeleccionInicial() ||
+      guardando()
+    " (click)="guardar()">
 
     <mat-icon>
       {{ guardando() ? 'hourglass_top' : 'save' }}
@@ -398,11 +341,13 @@
 
     <span>
       {{
-        guardando()
-          ? 'Guardando...'
-          : esEdicion
-            ? 'Actualizar equipo'
-            : 'Guardar equipo'
+      guardando()
+      ? 'Guardando...'
+      : cargandoSeleccionInicial()
+      ? 'Cargando...'
+      : esEdicion
+      ? 'Actualizar equipo'
+      : 'Guardar equipo'
       }}
     </span>
 

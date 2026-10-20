@@ -1,32 +1,34 @@
+<!-- ================================================
+     WORKSTOCK - LAYOUT PRINCIPAL
+================================================ -->
 
-<mat-sidenav-container
-  class="layout-container"
-  [attr.data-workstock-theme]="tema">
+<mat-sidenav-container class="layout-container" [attr.data-workstock-theme]="tema" [attr.data-workstock-palette]="paleta">
 
-  <mat-sidenav
-    class="sidebar"
-    [mode]="isMobile ? 'over' : 'side'"
-    [opened]="sidebarOpened"
-    (openedChange)="sidebarOpened = $event"
-    [autoFocus]="false">
+  <!-- ============================================
+       MENÚ LATERAL
+  ============================================= -->
 
-    <app-sidebar
-      (navegar)="cerrarMenuEnMovil()" />
+  <mat-sidenav class="sidebar" [mode]="isMobile ? 'over' : 'side'" [opened]="sidebarOpened"
+    (openedChange)="sidebarOpened = $event" [autoFocus]="false">
+
+    <app-sidebar (navegar)="cerrarMenuEnMovil()" />
 
   </mat-sidenav>
 
+
+  <!-- ============================================
+       CONTENIDO PRINCIPAL
+  ============================================= -->
+
   <mat-sidenav-content class="main-column">
 
-    <app-header
-      (menuClick)="toggleMenu()"
-      [tema]="tema"
-      (cambiarTema)="alternarTema()" />
+    <!-- HEADER -->
 
-    <main
-      class="content"
-      id="contenido-principal">
+    <app-header (menuClick)="toggleMenu()" [tema]="tema" (cambiarTema)="alternarTema()" [paleta]="paleta" (cambiarPaleta)="cambiarPaleta($event)" />
 
-      <!-- <app-breadcrumbs></app-breadcrumbs> -->
+    <!-- CONTENIDO DE CADA MÓDULO -->
+
+    <main class="content" id="contenido-principal">
 
       <router-outlet />
 
@@ -35,3 +37,13 @@
   </mat-sidenav-content>
 
 </mat-sidenav-container>
+
+
+<!-- ================================================
+     INDICADOR GLOBAL DE CARGA
+
+     FUERA DEL MAT-SIDENAV-CONTAINER
+     PARA CUBRIR TODA LA PANTALLA
+================================================ -->
+
+<app-global-loading />

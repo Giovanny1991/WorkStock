@@ -1,20 +1,58 @@
 <div class="page-header">
+
   <div>
-    <h1>Marcas de dispositivos</h1>
-    <p>Administración de marcas registradas</p>
+
+    <h1>
+      Marcas de dispositivos
+    </h1>
+
+    <p>
+      Administración de marcas registradas
+    </p>
+
   </div>
 
-  <button mat-flat-button class="primary-btn" (click)="nueva()">
-    <mat-icon>add</mat-icon>
+
+  <button
+    mat-flat-button
+    class="primary-btn"
+    type="button"
+    [disabled]="cargando()"
+    (click)="nueva()"
+  >
+
+    <mat-icon>
+      add
+    </mat-icon>
+
     Nueva marca
+
   </button>
+
 </div>
+
 
 <div class="card">
 
-  @if (cargando()) {
-    <mat-progress-bar mode="indeterminate" />
+
+  <!-- =================================================
+       CARGANDO
+  ================================================== -->
+
+  @if (
+    cargando()
+  ) {
+
+    <mat-progress-bar
+      mode="indeterminate"
+    />
+
   }
+
+
+  <!-- =================================================
+       BUSCADOR
+  ================================================== -->
 
   <div class="toolbar">
 
@@ -23,105 +61,364 @@
       class="search-field"
       subscriptSizing="dynamic"
     >
-      <mat-icon matPrefix>search</mat-icon>
+
+      <mat-label>
+        Buscar
+      </mat-label>
+
 
       <input
         matInput
+        [formControl]="buscarControl"
         placeholder="Buscar marca..."
         autocomplete="off"
-        (keyup)="filtrar($event)"
       >
+
+
+      @if (
+        buscarControl.value
+      ) {
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          matTooltip="Limpiar búsqueda"
+          aria-label="Limpiar búsqueda"
+          (click)="limpiarBusqueda()"
+        >
+
+          <mat-icon>
+            close
+          </mat-icon>
+
+        </button>
+
+      } @else {
+
+        <mat-icon matSuffix>
+          search
+        </mat-icon>
+
+      }
+
     </mat-form-field>
 
+
+    <!-- ===============================================
+         CONTADOR REAL
+    ================================================= -->
+
     <span class="records">
-      {{ dataSource.filteredData.length }} registros
+
+      @if (
+        totalRegistros() > 0
+      ) {
+
+        {{ registroDesde() }}
+        -
+        {{ registroHasta() }}
+        de
+        {{ totalRegistros() }}
+        registros
+
+      } @else {
+
+        0 registros
+
+      }
+
     </span>
 
   </div>
 
+
+  <!-- =================================================
+       TABLA
+  ================================================== -->
+
   <div class="table-wrapper">
 
-    <table mat-table [dataSource]="dataSource" matSort>
+    <table
+      mat-table
+      [dataSource]="marcas()"
+      matSort
+      matSortDisableClear
+      [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()"
+      (matSortChange)="cambiarOrden($event)"
+    >
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-id">
+
+      <!-- =============================================
+           ID
+      ============================================== -->
+
+      <ng-container
+        matColumnDef="id"
+      >
+
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="id"
+          class="col-id"
+        >
+
           ID
+
         </th>
-        <td mat-cell *matCellDef="let item" class="col-id">
+
+
+        <td
+          mat-cell
+          *matCellDef="let item"
+          class="col-id"
+        >
+
           {{ item.id }}
+
         </td>
+
       </ng-container>
 
-      <ng-container matColumnDef="nombreMarca">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+
+      <!-- =============================================
+           MARCA
+      ============================================== -->
+
+      <ng-container
+        matColumnDef="nombreMarca"
+      >
+
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="nombreMarca"
+        >
+
           Marca
+
         </th>
-        <td mat-cell *matCellDef="let item" class="marca-name">
+
+
+        <td
+          mat-cell
+          *matCellDef="let item"
+          class="marca-name"
+        >
+
           {{ item.nombreMarca }}
+
         </td>
+
       </ng-container>
 
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-status">
+
+      <!-- =============================================
+           ESTADO
+      ============================================== -->
+
+      <ng-container
+        matColumnDef="estado"
+      >
+
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="estado"
+          class="col-status"
+        >
+
           Estado
+
         </th>
 
-        <td mat-cell *matCellDef="let item" class="col-status">
+
+        <td
+          mat-cell
+          *matCellDef="let item"
+          class="col-status"
+        >
+
           <span
             class="status"
-            [class.active]="item.estado === 'ACTIVO'"
+            [class.active]="
+              item.estado === 'ACTIVO'
+            "
           >
+
             {{ item.estado }}
+
           </span>
+
         </td>
+
       </ng-container>
 
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef class="col-actions">
+
+      <!-- =============================================
+           ACCIONES
+      ============================================== -->
+
+      <ng-container
+        matColumnDef="acciones"
+      >
+
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="col-actions"
+        >
+
           Acciones
+
         </th>
 
-        <td mat-cell *matCellDef="let item" class="col-actions">
+
+        <td
+          mat-cell
+          *matCellDef="let item"
+          class="col-actions"
+        >
 
           <button
             mat-icon-button
+            type="button"
             class="action edit"
             matTooltip="Editar"
+            [disabled]="
+              eliminandoId() !== null
+            "
             (click)="editar(item)"
           >
-            <mat-icon>edit</mat-icon>
+
+            <mat-icon>
+              edit
+            </mat-icon>
+
           </button>
+
 
           <button
             mat-icon-button
+            type="button"
             class="action delete"
             matTooltip="Eliminar"
+            [disabled]="
+              eliminandoId() !== null
+            "
             (click)="eliminar(item)"
           >
-            <mat-icon>delete_outline</mat-icon>
+
+            <mat-icon>
+              delete_outline
+            </mat-icon>
+
           </button>
 
         </td>
+
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-      <tr *matNoDataRow>
-        <td class="no-data" [attr.colspan]="displayedColumns.length">
-          <mat-icon>search_off</mat-icon>
-          <span>No existen marcas para mostrar</span>
+      <!-- =============================================
+           FILAS
+      ============================================== -->
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="
+          displayedColumns
+        "
+      >
+      </tr>
+
+
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          columns: displayedColumns
+        "
+      >
+      </tr>
+
+
+      <!-- =============================================
+           SIN RESULTADOS
+      ============================================== -->
+
+      <tr
+        *matNoDataRow
+      >
+
+        <td
+          class="no-data"
+          [attr.colspan]="
+            displayedColumns.length
+          "
+        >
+
+          <mat-icon>
+            search_off
+          </mat-icon>
+
+
+          @if (
+            busqueda()
+          ) {
+
+            <span>
+              No existen marcas que coincidan con la búsqueda
+            </span>
+
+          } @else {
+
+            <span>
+              No existen marcas para mostrar
+            </span>
+
+          }
+
         </td>
+
       </tr>
 
     </table>
 
   </div>
 
+
+  <!-- =================================================
+       PAGINADOR REMOTO
+  ================================================== -->
+
   <mat-paginator
-    [pageSize]="10"
-    [pageSizeOptions]="[5, 10, 25, 50]"
+
+    [length]="
+      totalRegistros()
+    "
+
+    [pageIndex]="
+      paginaActual()
+    "
+
+    [pageSize]="
+      tamanioPagina()
+    "
+
+    [pageSizeOptions]="
+      opcionesPagina
+    "
+
     showFirstLastButtons
-  />
+
+    (page)="
+      cambiarPagina($event)
+    "
+
+  >
+  </mat-paginator>
 
 </div>

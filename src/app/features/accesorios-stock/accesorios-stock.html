@@ -1,515 +1,320 @@
+
 <div class="page-header">
-
   <div>
-
-    <h1>
-
-      Stock de accesorios
-
-    </h1>
-
-    <p>
-
-      Administración de inventario, costos y precios de venta
-
-    </p>
-
+    <h1>Stock de accesorios</h1>
+    <p>Administración de inventario, costos y precios de venta</p>
   </div>
 
-  <button
-
-    mat-flat-button
-
-    type="button"
-
-    (click)="nuevo()"
-
-  >
-
-    <mat-icon>
-
-      add
-
-    </mat-icon>
-
+  <button mat-flat-button type="button" (click)="nuevo()">
+    <mat-icon>add</mat-icon>
     Nuevo accesorio
-
   </button>
-
 </div>
 
-<!-- ==================================================
-
-     RESUMEN
-
-\================================================== -->
+<!-- =====================================================
+     RESUMEN GLOBAL
+====================================================== -->
 
 <div class="summary-grid">
 
   <div class="summary-card">
-
     <div class="summary-icon">
-
-      <mat-icon>
-
-        inventory_2
-
-      </mat-icon>
-
+      <mat-icon>inventory_2</mat-icon>
     </div>
 
     <div class="summary-content">
-
-      <span>
-
-        Accesorios
-
-      </span>
-
-      <strong>
-
-        {{ totalAccesorios() }}
-
-      </strong>
-
+      <span>Accesorios</span>
+      <strong>{{ totalAccesorios() }}</strong>
     </div>
-
   </div>
 
   <div class="summary-card">
-
     <div class="summary-icon">
-
-      <mat-icon>
-
-        inventory
-
-      </mat-icon>
-
+      <mat-icon>inventory</mat-icon>
     </div>
 
     <div class="summary-content">
-
-      <span>
-
-        Unidades disponibles
-
-      </span>
-
-      <strong>
-
-        {{ totalUnidades() }}
-
-      </strong>
-
+      <span>Unidades disponibles</span>
+      <strong>{{ totalUnidades() }}</strong>
     </div>
-
   </div>
 
   <div class="summary-card">
-
     <div class="summary-icon warning">
-
-      <mat-icon>
-
-        production_quantity_limits
-
-      </mat-icon>
-
+      <mat-icon>production_quantity_limits</mat-icon>
     </div>
 
     <div class="summary-content">
-
-      <span>
-
-        Sin stock
-
-      </span>
-
-      <strong>
-
-        {{ sinStock() }}
-
-      </strong>
-
+      <span>Sin stock</span>
+      <strong>{{ sinStock() }}</strong>
     </div>
-
   </div>
 
   <div class="summary-card">
-
     <div class="summary-icon danger">
-
-      <mat-icon>
-
-        warning
-
-      </mat-icon>
-
+      <mat-icon>warning</mat-icon>
     </div>
 
     <div class="summary-content">
-
-      <span>
-
-        Revisar precios
-
-      </span>
-
-      <strong>
-
-        {{ preciosAdvertencia() }}
-
-      </strong>
-
+      <span>Revisar precios</span>
+      <strong>{{ preciosAdvertencia() }}</strong>
     </div>
-
   </div>
 
 </div>
 
-<!-- ==================================================
-
+<!-- =====================================================
      CONTENEDOR
-
-\================================================== -->
+====================================================== -->
 
 <div class="card">
 
   @if (cargando()) {
-
-    <mat-progress-bar
-
-      mode="indeterminate"
-
-    />
-
+    <mat-progress-bar mode="indeterminate" />
   }
 
-  <!-- TOOLBAR -->
+  <!-- =====================================================
+       TOOLBAR
+  ====================================================== -->
 
   <div class="toolbar">
 
+    <!-- BUSCADOR -->
+
     <mat-form-field
-
       appearance="outline"
-
       class="search-field ws-search"
-
-      subscriptSizing="dynamic">
-
+      subscriptSizing="dynamic"
+    >
       <input
-
         matInput
-
         type="text"
-
         placeholder="Accesorio, marca, categoría..."
-
         aria-label="Buscar accesorio, marca o categoría"
-
         autocomplete="off"
+        [formControl]="buscarControl"
+      />
 
-        [formControl]="buscarControl">
-
-      <mat-icon matSuffix>search</mat-icon>
-
+      @if (buscarControl.value) {
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="clear-search"
+          matTooltip="Limpiar búsqueda"
+          aria-label="Limpiar búsqueda"
+          (click)="limpiarBusqueda()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      } @else {
+        <mat-icon matSuffix>search</mat-icon>
+      }
     </mat-form-field>
+
+    <!-- FILTROS -->
 
     <div class="toolbar-right">
 
-      <div class="inventory-filters" role="group" aria-label="Filtrar inventario">
+      <div
+        class="inventory-filters"
+        role="group"
+        aria-label="Filtrar inventario"
+      >
 
-        <button type="button" class="filter-chip"
+        <!-- DISPONIBLE: FILTRO PREDETERMINADO -->
 
+        <button
+          type="button"
+          class="filter-chip"
+          [class.selected]="filtroInventario() === 'disponible'"
+          [attr.aria-pressed]="filtroInventario() === 'disponible'"
+          (click)="cambiarFiltroInventario('disponible')"
+        >
+          <mat-icon>check_circle</mat-icon>
+          Disponible
+        </button>
+
+        <!-- TODOS -->
+
+        <button
+          type="button"
+          class="filter-chip"
           [class.selected]="filtroInventario() === 'todos'"
-
           [attr.aria-pressed]="filtroInventario() === 'todos'"
-
-          (click)="cambiarFiltroInventario('todos')">
-
+          (click)="cambiarFiltroInventario('todos')"
+        >
           Todos
-
         </button>
 
-        <button type="button" class="filter-chip"
+        <!-- SIN STOCK -->
 
+        <button
+          type="button"
+          class="filter-chip"
           [class.selected]="filtroInventario() === 'sin_stock'"
-
           [attr.aria-pressed]="filtroInventario() === 'sin_stock'"
-
-          (click)="cambiarFiltroInventario('sin_stock')">
-
+          (click)="cambiarFiltroInventario('sin_stock')"
+        >
           <mat-icon>production_quantity_limits</mat-icon>
-
-          Sin stock <span class="filter-count">{{ sinStock() }}</span>
-
+          Sin stock
+          <span class="filter-count">
+            {{ sinStock() }}
+          </span>
         </button>
 
-        <button type="button" class="filter-chip"
+        <!-- REVISAR PRECIOS -->
 
+        <button
+          type="button"
+          class="filter-chip"
           [class.selected]="filtroInventario() === 'revisar_precio'"
-
           [attr.aria-pressed]="filtroInventario() === 'revisar_precio'"
-
-          (click)="cambiarFiltroInventario('revisar_precio')">
-
+          (click)="cambiarFiltroInventario('revisar_precio')"
+        >
           <mat-icon>price_check</mat-icon>
-
-          Revisar precios <span class="filter-count">{{ preciosAdvertencia() }}</span>
-
+          Revisar precios
+          <span class="filter-count">
+            {{ preciosAdvertencia() }}
+          </span>
         </button>
 
       </div>
 
-      <span class="records">{{ accesoriosFiltrados().length }} registros</span>
+      <!-- CONTADOR DE REGISTROS -->
+
+      <span class="records">
+        @if (totalRegistros() > 0) {
+          {{ registroDesde() }} - {{ registroHasta() }}
+          de {{ totalRegistros() }} registros
+        } @else {
+          0 registros
+        }
+      </span>
 
     </div>
-
   </div>
 
-  <!-- ==================================================
-
-       TABLA
-
-  ================================================== -->
+  <!-- =====================================================
+       TABLA DE INVENTARIO
+  ====================================================== -->
 
   <div class="table-wrapper">
 
     <table
-        mat-table
-        [dataSource]="accesoriosPaginados()"
-        matSort
-        matSortDisableClear
-        [matSortActive]="columnaOrden()"
-        [matSortDirection]="direccionOrden()"
-        (matSortChange)="cambiarOrden($event)"
+      mat-table
+      [dataSource]="accesorios()"
+      matSort
+      matSortDisableClear
+      [matSortActive]="columnaOrden()"
+      [matSortDirection]="direccionOrden()"
+      (matSortChange)="cambiarOrden($event)"
     >
 
       <!-- ACCESORIO -->
 
-      <ng-container
-
-        matColumnDef="accesorio"
-
-      >
+      <ng-container matColumnDef="accesorio">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="accesorio"
-
+          mat-sort-header="accesorio"
         >
-
           Accesorio
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
-
+        <td mat-cell *matCellDef="let x">
           <span class="product-name">
-
             {{ x.accesorio }}
-
           </span>
 
           <small>
-
-            {{ x.categoria }}
-
-            ·
-
-            {{ x.nombreMarca }}
-
+            {{ x.categoria }} · {{ x.nombreMarca }}
           </small>
-
         </td>
 
       </ng-container>
 
       <!-- CALIDAD -->
 
-      <ng-container
-
-        matColumnDef="calidad"
-
-      >
+      <ng-container matColumnDef="calidad">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="calidad"
-
+          mat-sort-header="calidad"
         >
-
           Calidad
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
-
+        <td mat-cell *matCellDef="let x">
           {{ x.calidad }}
-
         </td>
 
       </ng-container>
 
       <!-- STOCK -->
 
-      <ng-container
-
-        matColumnDef="stock"
-
-      >
+      <ng-container matColumnDef="stock">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="stock"
-
+          mat-sort-header="stock"
         >
-
           Stock
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
-
+        <td mat-cell *matCellDef="let x">
           <span
-
             class="stock"
-
-            [class.no-stock]="
-
-              x.cantidadStock <= 0
-
-            "
-
+            [class.no-stock]="x.cantidadStock <= 0"
           >
-
             {{ x.cantidadStock }}
-
           </span>
-
         </td>
 
       </ng-container>
 
       <!-- COSTO -->
 
-      <ng-container
-
-        matColumnDef="costo"
-
-      >
+      <ng-container matColumnDef="costo">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="costo"
-
+          mat-sort-header="costo"
         >
-
           Costo
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
+        <td mat-cell *matCellDef="let x">
 
           <div class="cost-container">
 
             <strong
-
               class="cost"
-
-              [class.cost-warning]="
-
-                nivelPrecio(x) === 'warning'
-
-              "
-
-              [class.cost-danger]="
-
-                nivelPrecio(x) === 'danger'
-
-              "
-
+              [class.cost-warning]="nivelPrecio(x) === 'warning'"
+              [class.cost-danger]="nivelPrecio(x) === 'danger'"
             >
-
               {{
-
                 x.precioUnitario
-
-                  | currency:'USD':'symbol':'1.3-3'
-
+                | currency:'USD':'symbol':'1.3-3'
               }}
-
             </strong>
 
-            @if (
-
-              nivelPrecio(x) !== 'normal'
-
-            ) {
-
+            @if (nivelPrecio(x) !== 'normal') {
               <mat-icon
-
                 class="price-alert-icon"
-
-                [class.danger]="
-
-                  nivelPrecio(x) === 'danger'
-
-                "
-
+                [class.danger]="nivelPrecio(x) === 'danger'"
                 [matTooltip]="mensajePrecio(x)"
-
               >
-
                 {{
-
                   nivelPrecio(x) === 'danger'
-
-                    ? 'error'
-
-                    : 'warning'
-
+                  ? 'error'
+                  : 'warning'
                 }}
-
               </mat-icon>
-
             }
 
           </div>
@@ -520,157 +325,80 @@
 
       <!-- PVP 1 -->
 
-      <ng-container
-
-        matColumnDef="pvp1"
-
-      >
+      <ng-container matColumnDef="pvp1">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="pvp1"
-
+          mat-sort-header="pvp1"
         >
-
           PVP 1
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
-
+        <td mat-cell *matCellDef="let x">
           {{
-
             x.pvp1
-
-              | currency:'USD':'symbol':'1.2-2'
-
+            | currency:'USD':'symbol':'1.2-2'
           }}
-
         </td>
 
       </ng-container>
 
       <!-- PVP 2 -->
 
-      <ng-container
-
-        matColumnDef="pvp2"
-
-      >
+      <ng-container matColumnDef="pvp2">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="pvp2"
-
+          mat-sort-header="pvp2"
         >
-
           PVP 2
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
-
+        <td mat-cell *matCellDef="let x">
           <strong class="sale-price">
-
             {{
-
               x.pvp2
-
-                | currency:'USD':'symbol':'1.2-2'
-
+              | currency:'USD':'symbol':'1.2-2'
             }}
-
           </strong>
-
         </td>
 
       </ng-container>
 
-      <!-- ACTUALIZADO -->
+      <!-- FECHA DE ACTUALIZACIÓN -->
 
-      <ng-container
-
-        matColumnDef="actualizado"
-
-      >
+      <ng-container matColumnDef="actualizado">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="actualizado"
-
+          mat-sort-header="actualizado"
         >
-
           Actualizado
-
         </th>
 
-        <td
+        <td mat-cell *matCellDef="let x">
 
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
-
-          @if (
-
-            x.fechaActualizacion
-
-          ) {
+          @if (x.fechaActualizacion) {
 
             <span class="update-date">
-
               {{
-
                 x.fechaActualizacion
-
-                  | date:'dd/MM/yyyy'
-
+                | date:'dd/MM/yyyy'
               }}
-
             </span>
 
             <small>
-
               {{
-
                 x.fechaActualizacion
-
-                  | date:'HH:mm'
-
+                | date:'HH:mm'
               }}
-
             </small>
 
           } @else {
-
-            <span class="empty-value">
-
-              -
-
-            </span>
-
+            <span class="empty-value">-</span>
           }
 
         </td>
@@ -679,47 +407,23 @@
 
       <!-- ESTADO -->
 
-      <ng-container
-
-        matColumnDef="estado"
-
-      >
+      <ng-container matColumnDef="estado">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-            mat-sort-header="estado"
-
+          mat-sort-header="estado"
         >
-
           Estado
-
         </th>
 
-        <td
-
-          mat-cell
-
-          *matCellDef="let x"
-
-        >
+        <td mat-cell *matCellDef="let x">
 
           <span
-
             class="status"
-
-            [class.active]="
-
-              x.estado === 'ACTIVO'
-
-            "
-
+            [class.active]="x.estado === 'ACTIVO'"
           >
-
             {{ x.estado }}
-
           </span>
 
         </td>
@@ -728,102 +432,51 @@
 
       <!-- ACCIONES -->
 
-      <ng-container
-
-        matColumnDef="acciones"
-
-      >
+      <ng-container matColumnDef="acciones">
 
         <th
-
           mat-header-cell
-
           *matHeaderCellDef
-
           class="col-actions"
-
         >
-
           Acciones
-
         </th>
 
         <td
-
           mat-cell
-
           *matCellDef="let x"
-
           class="col-actions"
-
         >
 
           <button
-
             mat-icon-button
-
             type="button"
-
             class="action stock-action"
-
             matTooltip="Ingresar stock"
-
             (click)="ingresarStock(x)"
-
           >
-
-            <mat-icon>
-
-              add_box
-
-            </mat-icon>
-
+            <mat-icon>add_box</mat-icon>
           </button>
 
           <button
-
             mat-icon-button
-
             type="button"
-
             class="action edit"
-
             matTooltip="Editar"
-
             (click)="editar(x)"
-
           >
-
-            <mat-icon>
-
-              edit
-
-            </mat-icon>
-
+            <mat-icon>edit</mat-icon>
           </button>
 
           <button
-
             mat-icon-button
-
             type="button"
-
             class="action delete"
-
             matTooltip="Eliminar"
-
             [disabled]="eliminando()"
-
             (click)="eliminar(x)"
-
           >
-
-            <mat-icon>
-
-              delete
-
-            </mat-icon>
-
+            <mat-icon>delete</mat-icon>
           </button>
 
         </td>
@@ -833,95 +486,54 @@
       <!-- FILAS -->
 
       <tr
-
         mat-header-row
-
-        *matHeaderRowDef="
-
-          displayedColumns
-
-        "
-
+        *matHeaderRowDef="displayedColumns"
       ></tr>
 
       <tr
-
         mat-row
-
-        *matRowDef="
-
-          let row;
-
-          columns: displayedColumns
-
-        "
-
-        [class.row-warning]="
-
-          nivelPrecio(row) === 'warning'
-
-        "
-
-        [class.row-danger]="
-
-          nivelPrecio(row) === 'danger'
-
-        "
-
+        *matRowDef="let row; columns: displayedColumns"
+        [class.row-warning]="nivelPrecio(row) === 'warning'"
+        [class.row-danger]="nivelPrecio(row) === 'danger'"
       ></tr>
 
       <!-- SIN DATOS -->
 
-      <tr
-
-        *matNoDataRow
-
-      >
-
+      <tr *matNoDataRow>
         <td
-
           class="no-data"
-
-          [attr.colspan]="
-
-            displayedColumns.length
-
-          "
-
+          [attr.colspan]="displayedColumns.length"
         >
+          <mat-icon>inventory_2</mat-icon>
 
-          <mat-icon>
-
-            inventory_2
-
-          </mat-icon>
-
-          No existen accesorios para mostrar
-
+          @if (
+            busqueda() ||
+            filtroInventario() !== 'todos'
+          ) {
+            No existen accesorios que coincidan
+            con los filtros aplicados
+          } @else {
+            No existen accesorios para mostrar
+          }
         </td>
-
       </tr>
 
     </table>
 
   </div>
 
-  <!-- PAGINADOR -->
+  <!-- =====================================================
+       PAGINADOR REMOTO
+  ====================================================== -->
 
   <mat-paginator
-
-    [length]="accesoriosFiltrados().length"
-
+    [length]="totalRegistros()"
     [pageIndex]="paginaActual()"
-
     [pageSize]="tamanioPagina()"
-
     [pageSizeOptions]="opcionesPagina"
-
     showFirstLastButtons
-
     (page)="cambiarPagina($event)"
-
-  />
+  >
+  </mat-paginator>
 
 </div>

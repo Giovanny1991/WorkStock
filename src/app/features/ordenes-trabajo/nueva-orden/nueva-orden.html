@@ -1,4 +1,3 @@
-
 <div class="page-header">
   <div>
     <h1>Nueva orden de trabajo</h1>
@@ -11,9 +10,11 @@
   <!-- ==========================================
        COLUMNA PRINCIPAL
   ========================================== -->
+
   <div class="main-column">
 
     <!-- CLIENTE -->
+
     <section class="card form-card">
 
       <div class="section-header">
@@ -30,54 +31,95 @@
       <div class="client-selector">
 
         <mat-form-field appearance="outline" class="autocomplete-field">
-          <input
-            matInput
-            [formControl]="clienteTexto"
-            [matAutocomplete]="autoCliente"
-            placeholder="Cédula, RUC, pasaporte o nombre">
+
+          <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
+            placeholder="Cédula, RUC, pasaporte o nombre" autocomplete="off">
 
           <mat-icon matSuffix>search</mat-icon>
 
-          <mat-autocomplete
-            #autoCliente="matAutocomplete"
+          <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="mostrarCliente"
             (optionSelected)="seleccionarCliente($event.option.value)">
 
-            @for (cliente of clientesFiltrados(); track cliente.id) {
-              <mat-option [value]="descripcionCliente(cliente)">
-                <div class="option-main">
-                  {{ cliente.nombreCliente }}
-                </div>
-                <div class="option-secondary">
-                  {{ cliente.identificacion }}
-                </div>
-              </mat-option>
+            @for (
+            cliente of clientesFiltrados();
+            track cliente.id
+            ) {
+
+            <mat-option [value]="cliente">
+
+              <div class="option-main">
+                {{ cliente.nombreCliente }}
+              </div>
+
+              <div class="option-secondary">
+                {{ cliente.identificacion }}
+              </div>
+
+            </mat-option>
+
+            }
+
+            @if (buscandoClientes()) {
+
+            <mat-option disabled>
+              Buscando clientes...
+            </mat-option>
+
+            } @else if (errorBusquedaClientes()) {
+
+            <mat-option disabled>
+              No fue posible realizar la búsqueda
+            </mat-option>
+
+            } @else if (
+            clientesFiltrados().length === 0 &&
+            busquedaCliente().length >= 2 &&
+            !clienteSeleccionado()
+            ) {
+
+            <mat-option disabled>
+              Cliente no encontrado
+            </mat-option>
+
+            } @else if (
+            busquedaCliente().length === 1 &&
+            !clienteSeleccionado()
+            ) {
+
+            <mat-option disabled>
+              Escriba al menos 2 caracteres
+            </mat-option>
+
             }
 
           </mat-autocomplete>
+
         </mat-form-field>
 
         @if (puedeRegistrarCliente()) {
-          <button
-            mat-stroked-button
-            type="button"
-            class="client-action-btn"
-            matTooltip="Registrar nuevo cliente"
-            (click)="registrarCliente()">
-            <mat-icon>person_add</mat-icon>
-            Nuevo
-          </button>
+
+        <button mat-stroked-button type="button" class="client-action-btn" matTooltip="Registrar nuevo cliente"
+          (click)="registrarCliente()">
+
+          <mat-icon>person_add</mat-icon>
+
+          Nuevo
+
+        </button>
+
         }
 
         @if (clienteSeleccionado()) {
-          <button
-            mat-stroked-button
-            type="button"
-            class="client-action-btn edit"
-            matTooltip="Actualizar datos del cliente"
-            (click)="editarCliente()">
-            <mat-icon>edit</mat-icon>
-            Editar
-          </button>
+
+        <button mat-stroked-button type="button" class="client-action-btn edit"
+          matTooltip="Actualizar datos del cliente" (click)="editarCliente()">
+
+          <mat-icon>edit</mat-icon>
+
+          Editar
+
+        </button>
+
         }
 
       </div>
@@ -85,9 +127,11 @@
     </section>
 
     <!-- EQUIPO RECIBIDO -->
+
     <section class="card form-card">
 
       <div class="section-header">
+
         <div class="section-icon">
           <mat-icon>smartphone</mat-icon>
         </div>
@@ -96,49 +140,44 @@
           <h2>Equipo recibido</h2>
           <p>Información y estado del dispositivo.</p>
         </div>
+
       </div>
 
       <div class="form-grid">
 
         <mat-form-field appearance="outline">
-          <input
-            matInput
-            [formControl]="modelo"
-            maxlength="100"
-            placeholder="Modelo del dispositivo">
+
+          <input matInput [formControl]="modelo" maxlength="100" placeholder="Modelo del dispositivo">
+
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <input
-            matInput
-            [formControl]="imei"
-            maxlength="15"
-            inputmode="numeric"
-            placeholder="IMEI">
+
+          <input matInput [formControl]="imei" maxlength="15" inputmode="numeric" placeholder="IMEI">
 
           <mat-hint>15 dígitos</mat-hint>
+
         </mat-form-field>
 
       </div>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Daño o novedad reportada</mat-label>
 
-        <textarea
-          matInput
-          [formControl]="dano"
-          rows="2"
-          maxlength="500"></textarea>
+        <mat-label>
+          Daño o novedad reportada
+        </mat-label>
+
+        <textarea matInput [formControl]="dano" rows="2" maxlength="500"></textarea>
+
       </mat-form-field>
 
       <div class="form-block">
+
         <label class="field-label">
           Estado de recepción
         </label>
 
-        <mat-radio-group
-          [formControl]="estadoRecepcion"
-          class="radio-group">
+        <mat-radio-group [formControl]="estadoRecepcion" class="radio-group">
 
           <mat-radio-button value="ENCENDIDO">
             Encendido
@@ -149,9 +188,11 @@
           </mat-radio-button>
 
         </mat-radio-group>
+
       </div>
 
       <div class="form-block last-block">
+
         <label class="field-label">
           Elementos recibidos
         </label>
@@ -171,14 +212,17 @@
           </mat-checkbox>
 
         </div>
+
       </div>
 
     </section>
 
     <!-- VALORES -->
+
     <section class="card form-card">
 
       <div class="section-header">
+
         <div class="section-icon">
           <mat-icon>payments</mat-icon>
         </div>
@@ -187,52 +231,47 @@
           <h2>Valores</h2>
           <p>Valor estimado y abono recibido.</p>
         </div>
+
       </div>
 
       <div class="pending-container">
-        <mat-checkbox
-          [formControl]="totalPendiente"
-          class="pending-check">
+
+        <mat-checkbox [formControl]="totalPendiente" class="pending-check">
           Valor por confirmar
         </mat-checkbox>
+
       </div>
 
       <div class="form-grid three-columns">
 
         <mat-form-field appearance="outline">
+
           <mat-label>Valor servicio</mat-label>
+
           <span matTextPrefix>$&nbsp;</span>
 
-          <input
-            matInput
-            type="number"
-            min="0"
-            step="0.01"
-            [formControl]="total"
-            [readonly]="totalPendiente.value">
+          <input matInput type="number" min="0" step="0.01" [formControl]="total" [readonly]="totalPendiente.value">
+
         </mat-form-field>
 
         <mat-form-field appearance="outline">
+
           <mat-label>Abono</mat-label>
+
           <span matTextPrefix>$&nbsp;</span>
 
-          <input
-            matInput
-            type="number"
-            min="0"
-            step="0.01"
-            [formControl]="abono"
-            [readonly]="totalPendiente.value">
+          <input matInput type="number" min="0" step="0.01" [formControl]="abono" [readonly]="totalPendiente.value">
+
         </mat-form-field>
 
         <mat-form-field appearance="outline">
+
           <mat-label>Saldo</mat-label>
+
           <span matTextPrefix>$&nbsp;</span>
 
-          <input
-            matInput
-            readonly
-            [value]="saldo() | number:'1.2-2'">
+          <input matInput readonly [value]="saldo() | number:'1.2-2'">
+
         </mat-form-field>
 
       </div>
@@ -243,6 +282,7 @@
          EVIDENCIA FOTOGRÁFICA
          DEBAJO DE VALORES
     ========================================== -->
+
     <div class="images-section">
       <app-orden-trabajo-imagenes />
     </div>
@@ -252,67 +292,103 @@
   <!-- ==========================================
        COLUMNA DERECHA - RESUMEN
   ========================================== -->
+
   <aside class="summary-card">
 
     <div class="summary-title">
+
       <mat-icon>receipt_long</mat-icon>
-      <span>Resumen de orden</span>
+
+      <span>
+        Resumen de orden
+      </span>
+
     </div>
 
     <div class="summary-content">
 
       <div class="summary-row">
+
         <span>Cliente</span>
+
         <strong>
           {{ clienteSeleccionado()?.nombreCliente || '-' }}
         </strong>
+
       </div>
 
       <div class="summary-row">
+
         <span>IMEI</span>
+
         <strong>
           {{ imei.value || '-' }}
         </strong>
+
       </div>
 
       <div class="summary-row">
+
         <span>Recepción</span>
+
         <strong>
           {{ estadoRecepcion.value || '-' }}
         </strong>
+
       </div>
 
       @if (totalPendiente.value) {
 
-        <div class="summary-total">
-          <span>Valor</span>
-          <strong class="pending-value">
-            POR CONFIRMAR
-          </strong>
-        </div>
+      <div class="summary-total">
+
+        <span>Valor</span>
+
+        <strong class="pending-value">
+          POR CONFIRMAR
+        </strong>
+
+      </div>
 
       } @else {
 
-        <div class="summary-row">
-          <span>Servicio</span>
-          <strong>
-            {{ total.value | currency:'USD':'symbol':'1.2-2' }}
-          </strong>
-        </div>
+      <div class="summary-row">
 
-        <div class="summary-row">
-          <span>Abono</span>
-          <strong>
-            {{ abono.value | currency:'USD':'symbol':'1.2-2' }}
-          </strong>
-        </div>
+        <span>Servicio</span>
 
-        <div class="summary-total">
-          <span>Saldo</span>
-          <strong>
-            {{ saldo() | currency:'USD':'symbol':'1.2-2' }}
-          </strong>
-        </div>
+        <strong>
+          {{
+          total.value
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+        </strong>
+
+      </div>
+
+      <div class="summary-row">
+
+        <span>Abono</span>
+
+        <strong>
+          {{
+          abono.value
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+        </strong>
+
+      </div>
+
+      <div class="summary-total">
+
+        <span>Saldo</span>
+
+        <strong>
+          {{
+          saldo()
+          | currency:'USD':'symbol':'1.2-2'
+          }}
+        </strong>
+
+      </div>
 
       }
 
@@ -320,18 +396,17 @@
 
     <div class="summary-footer">
 
-      <button
-        mat-flat-button
-        type="button"
-        class="save-btn"
-        [disabled]="guardando()"
-        (click)="guardar()">
+      <button mat-flat-button type="button" class="save-btn" [disabled]="guardando()" (click)="guardar()">
 
         <mat-icon>
           {{ guardando() ? 'hourglass_top' : 'save' }}
         </mat-icon>
 
-        {{ guardando() ? 'Guardando...' : 'Registrar orden' }}
+        {{
+        guardando()
+        ? 'Guardando...'
+        : 'Registrar orden'
+        }}
 
       </button>
 

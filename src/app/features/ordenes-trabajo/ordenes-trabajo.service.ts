@@ -1,3 +1,4 @@
+
 import {
   inject,
   Injectable
@@ -183,35 +184,75 @@ export class OrdenesTrabajoService {
 
   }
 
+
   // ===================================================
   // EVIDENCIAS FOTOGRÁFICAS
   // ===================================================
 
-  listarImagenes(idOrden: number): Observable<OrdenTrabajoImagenesResponse> {
-    return this.http.get<OrdenTrabajoImagenesResponse>(
+  listarImagenes(
+    idOrden: number
+  ): Observable<OrdenTrabajoImagenesResponse> {
+
+    return this.http.get<
+      OrdenTrabajoImagenesResponse
+    >(
       `${this.apiUrl}/${idOrden}/imagenes`
     );
+
   }
 
-  subirImagenes(idOrden: number, archivos: File[]): Observable<OrdenTrabajoImagenesResponse> {
+
+  subirImagenes(
+    idOrden: number,
+    archivos: File[]
+  ): Observable<OrdenTrabajoImagenesResponse> {
+
     const formData = new FormData();
-    archivos.forEach(archivo => formData.append('imagenes', archivo, archivo.name));
-    return this.http.post<OrdenTrabajoImagenesResponse>(
-      `${this.apiUrl}/${idOrden}/imagenes`, formData
+
+    archivos.forEach(archivo =>
+      formData.append(
+        'imagenes',
+        archivo,
+        archivo.name
+      )
     );
+
+    return this.http.post<
+      OrdenTrabajoImagenesResponse
+    >(
+      `${this.apiUrl}/${idOrden}/imagenes`,
+      formData
+    );
+
   }
 
-  obtenerArchivoImagen(idOrden: number, idImagen: number): Observable<Blob> {
+
+  obtenerArchivoImagen(
+    idOrden: number,
+    idImagen: number
+  ): Observable<Blob> {
+
     return this.http.get(
       `${this.apiUrl}/${idOrden}/imagenes/${idImagen}/archivo`,
-      { responseType: 'blob' }
+      {
+        responseType: 'blob'
+      }
     );
+
   }
 
-  eliminarImagen(idOrden: number, idImagen: number): Observable<OrdenTrabajoImagenOperacionResponse> {
-    return this.http.delete<OrdenTrabajoImagenOperacionResponse>(
+
+  eliminarImagen(
+    idOrden: number,
+    idImagen: number
+  ): Observable<OrdenTrabajoImagenOperacionResponse> {
+
+    return this.http.delete<
+      OrdenTrabajoImagenOperacionResponse
+    >(
       `${this.apiUrl}/${idOrden}/imagenes/${idImagen}`
     );
+
   }
 
 }

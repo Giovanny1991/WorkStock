@@ -1,43 +1,23 @@
+
 <div class="page-header">
 
   <div>
-
-    <h1>
-
-      Nueva nota de venta de accesorios
-
-    </h1>
-
-    <p>
-
-      Registro de venta de accesorios
-
-    </p>
-
+    <h1>Nueva nota de venta de accesorios</h1>
+    <p>Registro de venta de accesorios</p>
   </div>
 
 </div>
 
 @if (cargando()) {
-
-<mat-progress-bar mode="indeterminate" />
-
+  <mat-progress-bar mode="indeterminate" />
 }
 
 <div class="invoice-layout">
 
-  <!-- ==================================================
-
-       COLUMNA PRINCIPAL
-
-  =================================================== -->
-
   <div class="main-column">
 
     <!-- ==================================================
-
          CLIENTE
-
     =================================================== -->
 
     <div class="card form-card">
@@ -45,117 +25,83 @@
       <div class="section-header">
 
         <div class="section-icon">
-
-          <mat-icon>
-
-            person
-
-          </mat-icon>
-
+          <mat-icon>person</mat-icon>
         </div>
 
         <div>
-
-          <h2>
-
-            Cliente
-
-          </h2>
-
-          <p>
-
-            Seleccione el cliente para la nota de venta
-
-          </p>
-
+          <h2>Cliente</h2>
+          <p>Seleccione el cliente para la nota de venta</p>
         </div>
 
       </div>
 
       <div class="client-selector">
 
-        <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
+        <mat-form-field
+          appearance="outline"
+          class="autocomplete-field"
+          subscriptSizing="dynamic">
 
-          <!-- <mat-label>
+          <input
+            matInput
+            [formControl]="clienteTexto"
+            [matAutocomplete]="autoCliente"
+            placeholder="Cédula, RUC o nombre..."
+            autocomplete="off">
 
-            Buscar cliente
+          <mat-icon matSuffix>search</mat-icon>
 
-          </mat-label> -->
+          <mat-autocomplete
+            #autoCliente="matAutocomplete"
+            [displayWith]="mostrarCliente"
+            (optionSelected)="seleccionarCliente($event.option.value)">
 
-          <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
-            placeholder="Cédula, RUC o nombre..." autocomplete="off">
+            @for (cliente of clientesFiltrados(); track cliente.id) {
 
-          <mat-icon matSuffix>
+              <mat-option [value]="cliente">
 
-            search
+                <div class="option-main">
+                  {{ cliente.nombreCliente }}
+                </div>
 
-          </mat-icon>
+                <div class="option-secondary">
+                  {{ cliente.identificacion }}
+                </div>
 
-          <mat-autocomplete #autoCliente="matAutocomplete" (optionSelected)="
-
-              seleccionarCliente(
-
-                $event.option.value
-
-              )
-
-            ">
-
-            @for (
-
-            cliente of clientesFiltrados();
-
-            track cliente.id
-
-            ) {
-
-            <mat-option [value]="
-
-                  descripcionCliente(
-
-                    cliente
-
-                  )
-
-                ">
-
-              <div class="option-main">
-
-                {{
-
-                cliente.nombreCliente
-
-                }}
-
-              </div>
-
-              <div class="option-secondary">
-
-                {{
-
-                cliente.identificacion
-
-                }}
-
-              </div>
-
-            </mat-option>
+              </mat-option>
 
             }
 
-            @if (
+            @if (buscandoClientes()) {
 
-            clientesFiltrados().length === 0 &&
+              <mat-option disabled>
+                Buscando clientes...
+              </mat-option>
 
-            busquedaCliente().length > 0
+            } @else if (errorBusquedaClientes()) {
 
+              <mat-option disabled>
+                No fue posible realizar la búsqueda
+              </mat-option>
+
+            } @else if (
+              clientesFiltrados().length === 0 &&
+              busquedaCliente().length >= 2 &&
+              !clienteSeleccionado()
             ) {
 
-            <mat-option disabled>
+              <mat-option disabled>
+                Cliente no encontrado
+              </mat-option>
 
-              Cliente no encontrado
+            } @else if (
+              busquedaCliente().length === 1 &&
+              !clienteSeleccionado()
+            ) {
 
-            </mat-option>
+              <mat-option disabled>
+                Escriba al menos 2 caracteres
+              </mat-option>
 
             }
 
@@ -163,43 +109,33 @@
 
         </mat-form-field>
 
-        @if (
+        @if (puedeRegistrarCliente()) {
 
-        puedeRegistrarCliente()
+          <button
+            mat-stroked-button
+            class="new-client-btn"
+            type="button"
+            (click)="registrarCliente()">
 
-        ) {
+            <mat-icon>person_add</mat-icon>
+            Registrar cliente
 
-        <button mat-stroked-button class="new-client-btn" type="button" (click)="registrarCliente()">
-
-          <mat-icon>
-
-            person_add
-
-          </mat-icon>
-
-          Registrar cliente
-
-        </button>
+          </button>
 
         }
 
-        @if (
+        @if (clienteSeleccionado()) {
 
-        clienteSeleccionado()
+          <button
+            mat-stroked-button
+            class="edit-client-btn"
+            type="button"
+            (click)="actualizarCliente()">
 
-        ) {
+            <mat-icon>edit</mat-icon>
+            Actualizar cliente
 
-        <button mat-stroked-button class="edit-client-btn" type="button" (click)="actualizarCliente()">
-
-          <mat-icon>
-
-            edit
-
-          </mat-icon>
-
-          Actualizar cliente
-
-        </button>
+          </button>
 
         }
 
@@ -208,9 +144,8 @@
     </div>
 
     <!-- ==================================================
-
          AGREGAR ACCESORIO
-
+         AUTOCOMPLETE REMOTO
     =================================================== -->
 
     <div class="card form-card">
@@ -218,123 +153,92 @@
       <div class="section-header">
 
         <div class="section-icon">
-
-          <mat-icon>
-
-            headphones
-
-          </mat-icon>
-
+          <mat-icon>headphones</mat-icon>
         </div>
 
         <div>
-
-          <h2>
-
-            Agregar accesorio
-
-          </h2>
-
-          <p>
-
-            Solo se muestran accesorios con stock disponible
-
-          </p>
-
+          <h2>Agregar accesorio</h2>
+          <p>Solo se muestran accesorios con stock disponible</p>
         </div>
 
       </div>
 
-      <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
+      <mat-form-field
+        appearance="outline"
+        class="autocomplete-field"
+        subscriptSizing="dynamic">
 
-        <!-- <mat-label>
+        <input
+          matInput
+          [formControl]="productoTexto"
+          [matAutocomplete]="autoProducto"
+          placeholder="Buscar categoría, marca, accesorio o calidad..."
+          autocomplete="off">
 
-          Buscar accesorio
+        <mat-icon matSuffix>search</mat-icon>
 
-        </mat-label> -->
-
-        <input matInput [formControl]="productoTexto" [matAutocomplete]="autoProducto"
-          placeholder="Categoría, marca o accesorio..." autocomplete="off">
-
-        <mat-icon matSuffix>
-
-          search
-
-        </mat-icon>
-
-        <mat-autocomplete #autoProducto="matAutocomplete" (optionSelected)="
-
-            seleccionarAccesorio(
-
-              $event.option.value
-
-            )
-
-          ">
+        <mat-autocomplete
+          #autoProducto="matAutocomplete"
+          [displayWith]="mostrarAccesorio"
+          (optionSelected)="seleccionarAccesorio($event.option.value)">
 
           @for (
-
-          producto of accesoriosFiltrados();
-
-          track producto.id
-
+            producto of accesoriosFiltrados();
+            track producto.id
           ) {
 
-          <mat-option [value]="
+            <mat-option [value]="producto">
 
-                descripcionAccesorio(
+              <div class="option-main">
+                {{ producto.accesorio }}
+              </div>
 
-                  producto
+              <div class="option-secondary">
 
-                )
+                {{ producto.calidad }}
 
-              ">
+                · Stock: {{ producto.cantidadStock }}
 
-            <div class="option-main">
+                · PVP:
+                {{
+                  producto.pvp2
+                    | currency:'USD':'symbol':'1.2-2'
+                }}
 
-              {{
+              </div>
 
-              producto.accesorio
-
-              }}
-
-            </div>
-
-            <div class="option-secondary">
-
-              {{ producto.calidad }}
-
-              · Stock:
-
-              {{ producto.cantidadStock }}
-
-              · PVP:
-
-              {{
-
-              producto.pvp2
-
-              | currency:'USD':'symbol':'1.2-2'
-
-              }}
-
-            </div>
-
-          </mat-option>
+            </mat-option>
 
           }
 
-          @if (
+          @if (buscandoAccesorios()) {
 
-          accesoriosFiltrados().length === 0
+            <mat-option disabled>
+              Buscando accesorios disponibles...
+            </mat-option>
 
+          } @else if (errorBusquedaAccesorios()) {
+
+            <mat-option disabled>
+              No fue posible consultar los accesorios
+            </mat-option>
+
+          } @else if (
+            accesoriosFiltrados().length === 0 &&
+            busquedaAccesorio().length >= 2
           ) {
 
-          <mat-option disabled>
+            <mat-option disabled>
+              No se encontraron accesorios disponibles
+            </mat-option>
 
-            No existen accesorios disponibles
+          } @else if (
+            busquedaAccesorio().length === 1
+          ) {
 
-          </mat-option>
+            <mat-option disabled>
+              Escriba al menos 2 caracteres
+            </mat-option>
 
           }
 
@@ -345,9 +249,7 @@
     </div>
 
     <!-- ==================================================
-
-         DETALLE
-
+         DETALLE DE VENTA
     =================================================== -->
 
     <div class="card">
@@ -355,59 +257,50 @@
       <div class="toolbar">
 
         <div>
-
-          <strong>
-
-            Detalle de nota de venta
-
-          </strong>
-
+          <strong>Detalle de nota de venta</strong>
         </div>
 
         <span class="records">
-
-          {{
-
-          detalle().length
-
-          }}
-
-          productos
-
+          {{ detalle().length }} productos
         </span>
 
       </div>
 
       <div class="table-wrapper">
 
-        <table mat-table [dataSource]="detalle()" class="sale-table">
+        <table
+          mat-table
+          [dataSource]="detalle()"
+          class="sale-table">
 
           <!-- ==================================================
-
-         PRODUCTO
-
-    =================================================== -->
+               PRODUCTO
+          =================================================== -->
 
           <ng-container matColumnDef="producto">
 
-            <th mat-header-cell *matHeaderCellDef class="col-product">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-product">
               Accesorio
-
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-product">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-product">
 
-              <div class="product-name" [matTooltip]="x.accesorio">
+              <div
+                class="product-name"
+                [matTooltip]="x.accesorio">
 
                 {{ x.accesorio }}
 
               </div>
 
               <small>
-
                 {{ x.calidad }}
-
               </small>
 
             </td>
@@ -415,25 +308,25 @@
           </ng-container>
 
           <!-- ==================================================
-
-         STOCK
-
-    =================================================== -->
+               STOCK
+          =================================================== -->
 
           <ng-container matColumnDef="stock">
 
-            <th mat-header-cell *matHeaderCellDef class="col-stock">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-stock">
               Stock
-
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-stock">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-stock">
 
               <span class="stock-badge">
-
                 {{ x.cantidadStock }}
-
               </span>
 
             </td>
@@ -441,27 +334,26 @@
           </ng-container>
 
           <!-- ==================================================
-
-         COSTO
-
-    =================================================== -->
+               COSTO - SOLO ADMINISTRADOR
+          =================================================== -->
 
           <ng-container matColumnDef="costo">
 
-            <th mat-header-cell *matHeaderCellDef class="col-money">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-money">
               Costo
-
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-money">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-money">
 
               {{
-
-              x.precioCosto
-
-              | currency:'USD':'symbol':'1.2-2'
-
+                x.precioCosto
+                  | currency:'USD':'symbol':'1.2-2'
               }}
 
             </td>
@@ -469,41 +361,67 @@
           </ng-container>
 
           <!-- ==================================================
+               PVP1
+          =================================================== -->
 
-         CANTIDAD
-
-    =================================================== -->
-
-          <!-- PVP 1 (LOCALES): visible para todos -->
           <ng-container matColumnDef="pvp1">
-            <th mat-header-cell *matHeaderCellDef class="col-money">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-money">
               (Locales)
             </th>
-            <td mat-cell *matCellDef="let x" class="col-money">
-              {{ x.pvp1 | currency:'USD':'symbol':'1.2-2' }}
+
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-money">
+
+              {{
+                x.pvp1
+                  | currency:'USD':'symbol':'1.2-2'
+              }}
+
             </td>
+
           </ng-container>
+
+          <!-- ==================================================
+               CANTIDAD
+          =================================================== -->
 
           <ng-container matColumnDef="cantidad">
 
-            <th mat-header-cell *matHeaderCellDef class="col-quantity">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-quantity">
               Cant.
-
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-quantity">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-quantity">
 
-              <div class="quantity-input" [class.invalid-quantity]="
+              <div
+                class="quantity-input"
+                [class.invalid-quantity]="
+                  x.cantidad <= 0 ||
+                  x.cantidad > x.cantidadStock
+                ">
 
-            x.cantidad <= 0 ||
-
-            x.cantidad > x.cantidadStock
-
-          ">
-
-                <input type="number" min="1" step="1" [max]="x.cantidadStock" [value]="x.cantidad"
-                  (blur)="actualizarCantidad(x.id, $any($event.target).value)"
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  [max]="x.cantidadStock"
+                  [value]="x.cantidad"
+                  (blur)="actualizarCantidad(
+                    x.id,
+                    $any($event.target).value
+                  )"
                   (keydown.enter)="$any($event.target).blur()">
 
               </div>
@@ -513,33 +431,42 @@
           </ng-container>
 
           <!-- ==================================================
-
-         PRECIO
-
-    =================================================== -->
+               PRECIO
+          =================================================== -->
 
           <ng-container matColumnDef="precio">
 
-            <th mat-header-cell *matHeaderCellDef class="col-price">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-price">
               Precio
-
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-price">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-price">
 
               <div class="price-input">
 
-                <span>
+                <span>$</span>
 
-                  $
-
-                </span>
-
-                <input type="number" min="0" step="0.01" [value]="x.precioUnitario"
-                  [class.warning-price]="nivelPrecio(x) === 'warning'"
-                  [class.invalid-price]="nivelPrecio(x) === 'danger'"
-                  (blur)="actualizarPrecio(x.id, $any($event.target).value)"
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  [value]="x.precioUnitario"
+                  [class.warning-price]="
+                    nivelPrecio(x) === 'warning'
+                  "
+                  [class.invalid-price]="
+                    nivelPrecio(x) === 'danger'
+                  "
+                  (blur)="actualizarPrecio(
+                    x.id,
+                    $any($event.target).value
+                  )"
                   (keydown.enter)="$any($event.target).blur()">
 
               </div>
@@ -549,29 +476,28 @@
           </ng-container>
 
           <!-- ==================================================
-
-         TOTAL
-
-    =================================================== -->
+               TOTAL
+          =================================================== -->
 
           <ng-container matColumnDef="total">
 
-            <th mat-header-cell *matHeaderCellDef class="col-total">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-total">
               Total
-
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-total">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-total">
 
               <strong class="total-line">
 
                 {{
-
-                totalProducto(x)
-
-                | currency:'USD':'symbol':'1.2-2'
-
+                  totalProducto(x)
+                    | currency:'USD':'symbol':'1.2-2'
                 }}
 
               </strong>
@@ -581,26 +507,30 @@
           </ng-container>
 
           <!-- ==================================================
-
-         ACCIONES
-
-    =================================================== -->
+               ACCIONES
+          =================================================== -->
 
           <ng-container matColumnDef="acciones">
 
-            <th mat-header-cell *matHeaderCellDef class="col-actions">
-
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="col-actions">
             </th>
 
-            <td mat-cell *matCellDef="let x" class="col-actions">
+            <td
+              mat-cell
+              *matCellDef="let x"
+              class="col-actions">
 
-              <button mat-icon-button class="action delete" matTooltip="Quitar" (click)="eliminarProducto(x)">
+              <button
+                mat-icon-button
+                type="button"
+                class="action delete"
+                matTooltip="Quitar"
+                (click)="eliminarProducto(x)">
 
-                <mat-icon>
-
-                  delete_outline
-
-                </mat-icon>
+                <mat-icon>delete_outline</mat-icon>
 
               </button>
 
@@ -609,53 +539,28 @@
           </ng-container>
 
           <!-- ==================================================
+               FILAS
+          =================================================== -->
 
-         FILAS
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns()">
+          </tr>
 
-    =================================================== -->
-
-          <tr mat-header-row *matHeaderRowDef="
-
-        displayedColumns()
-
-      "></tr>
-
-          <tr mat-row *matRowDef="
-
-        let row;
-
-        columns: displayedColumns()
-
-      " [class.row-warning]="
-
-        nivelPrecio(row) === 'warning'
-
-      " [class.row-danger]="
-
-        nivelPrecio(row) === 'danger'
-
-      "></tr>
-
-          <!-- ==================================================
-
-         SIN DATOS
-
-    =================================================== -->
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns()"
+            [class.row-warning]="nivelPrecio(row) === 'warning'"
+            [class.row-danger]="nivelPrecio(row) === 'danger'">
+          </tr>
 
           <tr *matNoDataRow>
 
-            <td class="no-data" [attr.colspan]="
+            <td
+              class="no-data"
+              [attr.colspan]="displayedColumns().length">
 
-          displayedColumns().length
-
-        ">
-
-              <mat-icon>
-
-                shopping_cart
-
-              </mat-icon>
-
+              <mat-icon>shopping_cart</mat-icon>
               Agregue accesorios a la nota de venta
 
             </td>
@@ -671,9 +576,7 @@
   </div>
 
   <!-- ==================================================
-
        RESUMEN
-
   =================================================== -->
 
   <div class="summary-column">
@@ -681,95 +584,58 @@
     <div class="summary-card">
 
       <div class="summary-title">
-
-        <mat-icon>
-
-          receipt_long
-
-        </mat-icon>
-
+        <mat-icon>receipt_long</mat-icon>
         Resumen
-
       </div>
 
       <div class="summary-row">
 
-        <span>
-
-          Productos
-
-        </span>
+        <span>Productos</span>
 
         <strong>
-
           {{ totalProductos() }}
-
         </strong>
 
       </div>
 
       <div class="summary-row">
 
-        <span>
-
-          Unidades
-
-        </span>
+        <span>Unidades</span>
 
         <strong>
-
           {{ totalUnidades() }}
-
         </strong>
 
       </div>
 
       <div class="summary-total">
 
-        <span>
-
-          Total
-
-        </span>
+        <span>Total</span>
 
         <strong>
-
           {{
-
-          total()
-
-          | currency:'USD':'symbol':'1.2-2'
-
+            total()
+              | currency:'USD':'symbol':'1.2-2'
           }}
-
         </strong>
 
       </div>
 
-      <button mat-flat-button class="invoice-btn" [disabled]="guardando()" (click)="generar()">
+      <button
+        mat-flat-button
+        type="button"
+        class="invoice-btn"
+        [disabled]="!puedeGenerar() || guardando()"
+        (click)="generar()">
 
         <mat-icon>
-
-          {{
-
-          guardando()
-
-          ? 'hourglass_top'
-
-          : 'receipt_long'
-
-          }}
-
+          {{ guardando() ? 'hourglass_top' : 'receipt_long' }}
         </mat-icon>
 
         {{
-
-        guardando()
-
-        ? 'Generando...'
-
-        : 'Generar nota de venta'
-
+          guardando()
+            ? 'Generando...'
+            : 'Generar nota de venta'
         }}
 
       </button>
