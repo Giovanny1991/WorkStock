@@ -301,7 +301,7 @@ export class Marcas
 
   readonly displayedColumns = [
 
-    'id',
+  
 
     'nombreMarca',
 

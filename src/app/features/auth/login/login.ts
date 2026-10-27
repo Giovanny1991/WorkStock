@@ -1,8 +1,11 @@
 
+import { Title } from '@angular/platform-browser';
+
 import {
   Component,
   DestroyRef,
   inject,
+  OnDestroy,
   signal
 } from '@angular/core';
 
@@ -42,32 +45,24 @@ import {
   AuthService
 } from '../../../core/auth/auth.service';
 
-
 // =====================================================
 // IDENTIDAD VISUAL DE EMPRESA
-//
-// Solamente se utiliza para personalizar el login.
-// No interviene en la autenticación.
 // =====================================================
 
 interface EmpresaLogin {
-
   codigo: string;
-
   nombreEmpresa: string;
-
   tieneLogo: boolean;
-
 }
 
 interface EmpresaLoginResponse {
-
   success: boolean;
-
   data: EmpresaLogin;
-
 }
 
+// =====================================================
+// COMPONENTE LOGIN
+// =====================================================
 
 @Component({
   selector: 'app-login',
@@ -81,7 +76,11 @@ interface EmpresaLoginResponse {
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
-export class Login {
+export class Login implements OnDestroy {
+
+  // ===================================================
+  // SERVICIOS
+  // ===================================================
 
   private readonly fb =
     inject(FormBuilder);
@@ -101,37 +100,50 @@ export class Login {
   private readonly destroyRef =
     inject(DestroyRef);
 
+  private readonly titleService =
+    inject(Title);
 
   // ===================================================
-  // ESTADO ORIGINAL DEL LOGIN
+  // CONFIGURACIÓN DEL TÍTULO
   // ===================================================
 
-  readonly cargando =
-    signal(false);
+  private readonly tituloDefecto = 'WorkStock';
+
+  // ===================================================
+  // ESTADO DEL LOGIN
+  // ===================================================
+
+  readonly cargando = signal(false);
 
   readonly mensajeError =
     signal<string | null>(null);
 
-  readonly mostrarPassword =
-    signal(false);
-
+  readonly mostrarPassword = signal(false);
 
   // ===================================================
-  // IDENTIDAD VISUAL PERSONALIZADA
+  // IDENTIDAD DE EMPRESA
   // ===================================================
 
   readonly empresaLogin =
     signal<EmpresaLogin | null>(null);
 
-  readonly cargandoEmpresa =
-    signal(false);
+  readonly cargandoEmpresa = signal(false);
 
-  readonly logoFallido =
-    signal(false);
+  readonly logoFallido = signal(false);
 
+  readonly cargandoLogo = signal(false);
+
+  readonly logoEmpresaUrl =
+    signal<string | null>(null);
 
   // ===================================================
-  // FORMULARIO ORIGINAL
+  // URL TEMPORAL DEL LOGO
+  // ===================================================
+
+  private logoObjectUrl: string | null = null;
+
+  // ===================================================
+  // FORMULARIO
   // ===================================================
 
   readonly form =
@@ -149,124 +161,281 @@ export class Login {
 
     });
 
-
   // ===================================================
   // CONSTRUCTOR
   // ===================================================
 
   constructor() {
 
+    this.actualizarTitulo(null);
+
     this.escucharCodigoEmpresa();
 
   }
 
+  // ===================================================
+  // ACTUALIZAR TÍTULO DEL NAVEGADOR
+  //
+  // SIN EMPRESA:
+  // WorkStock
+  //
+  // CON EMPRESA:
+  // MYC | WorkStock
+  // ===================================================
+
+  private actualizarTitulo(
+    empresa: EmpresaLogin | null
+  ): void {
+
+    const nombreEmpresa =
+      empresa?.nombreEmpresa?.trim() ?? '';
+
+    if (!nombreEmpresa) {
+
+      this.titleService.setTitle(
+        this.tituloDefecto
+      );
+
+      return;
+
+    }
+
+    // Evitar duplicación del nombre WorkStock
+    if (
+      nombreEmpresa.toLowerCase() ===
+      this.tituloDefecto.toLowerCase()
+    ) {
+
+      this.titleService.setTitle(
+        this.tituloDefecto
+      );
+
+      return;
+
+    }
+
+    this.titleService.setTitle(
+      `${nombreEmpresa} | ${this.tituloDefecto}`
+    );
+
+  }
 
   // ===================================================
   // CONSULTAR EMPRESA SEGÚN URL
   //
   // /login
   // /login/MYC
-  //
-  // No altera el formulario ni las credenciales.
   // ===================================================
 
   private escucharCodigoEmpresa(): void {
 
-    this.route.paramMap.pipe(
+    this.route.paramMap
+      .pipe(
 
-      map(params =>
-        params.get('codigoEmpresa')
-      ),
+        map(params =>
+          params.get('codigoEmpresa')
+        ),
 
-      distinctUntilChanged(),
+        distinctUntilChanged(),
 
-      tap(() => {
+        tap(() => {
 
-        this.empresaLogin.set(null);
+          this.empresaLogin.set(null);
 
-        this.logoFallido.set(false);
+          this.logoFallido.set(false);
+
+          this.cargandoEmpresa.set(false);
+
+          this.cargandoLogo.set(false);
+
+          this.limpiarLogo();
+
+          // Restaurar título mientras se consulta
+          this.actualizarTitulo(null);
+
+        }),
+
+        switchMap(codigoRecibido => {
+
+          if (!codigoRecibido) {
+            return of(null);
+          }
+
+          const codigo =
+            codigoRecibido.trim().toUpperCase();
+
+          if (
+            !/^[A-Z0-9-]{3,30}$/.test(codigo)
+          ) {
+            return of(null);
+          }
+
+          this.cargandoEmpresa.set(true);
+
+          return this.http.get<EmpresaLoginResponse>(
+            `/api/empresas/login/${encodeURIComponent(codigo)}`
+          ).pipe(
+
+            map(response => {
+
+              if (
+                !response.success ||
+                !response.data
+              ) {
+                return null;
+              }
+
+              return response.data;
+
+            }),
+
+            catchError(() => of(null))
+
+          );
+
+        }),
+
+        takeUntilDestroyed(this.destroyRef)
+
+      )
+      .subscribe(empresa => {
+
+        this.empresaLogin.set(empresa);
 
         this.cargandoEmpresa.set(false);
 
-      }),
+        this.logoFallido.set(false);
 
-      switchMap(codigoRecibido => {
+        this.cargandoLogo.set(false);
 
-        if (!codigoRecibido) {
+        this.limpiarLogo();
 
-          return of(null);
+        // =========================================
+        // ACTUALIZAR TÍTULO CON EMPRESA CONSULTADA
+        // =========================================
+
+        this.actualizarTitulo(empresa);
+
+        // =========================================
+        // CONSULTAR LOGO
+        // =========================================
+
+        if (empresa?.tieneLogo) {
+
+          this.cargarLogoEmpresa(
+            empresa.codigo
+          );
 
         }
 
-        const codigo =
-          codigoRecibido
-            .trim()
-            .toUpperCase();
-
-        if (
-          !/^[A-Z0-9-]{3,30}$/.test(codigo)
-        ) {
-
-          return of(null);
-
-        }
-
-        this.cargandoEmpresa.set(true);
-
-        return this.http.get<EmpresaLoginResponse>(
-          `/api/empresas/login/${encodeURIComponent(codigo)}`
-        ).pipe(
-
-          map(response => {
-
-            if (
-              !response.success ||
-              !response.data
-            ) {
-
-              return null;
-
-            }
-
-            return response.data;
-
-          }),
-
-          catchError(() => of(null))
-
-        );
-
-      }),
-
-      takeUntilDestroyed(this.destroyRef)
-
-    ).subscribe(empresa => {
-
-      this.empresaLogin.set(empresa);
-
-      this.logoFallido.set(false);
-
-      this.cargandoEmpresa.set(false);
-
-    });
+      });
 
   }
 
+  // ===================================================
+  // CONSULTAR LOGO UTILIZANDO HTTPCLIENT
+  //
+  // ESTA SOLICITUD PASA POR apiUrlInterceptor.
+  // ===================================================
+
+  private cargarLogoEmpresa(codigo: string): void {
+
+    this.cargandoLogo.set(true);
+
+    this.logoFallido.set(false);
+
+    this.http.get(
+      `/api/empresas/login/${encodeURIComponent(codigo)}/logo`,
+      {
+        responseType: 'blob'
+      }
+    )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+
+        next: blob => {
+
+          if (
+            !blob ||
+            blob.size === 0 ||
+            !blob.type.startsWith('image/')
+          ) {
+
+            this.logoFallido.set(true);
+
+            this.cargandoLogo.set(false);
+
+            this.limpiarLogo();
+
+            return;
+          }
+
+          this.limpiarLogo();
+
+          this.logoObjectUrl =
+            URL.createObjectURL(blob);
+
+          this.logoEmpresaUrl.set(
+            this.logoObjectUrl
+          );
+
+          this.logoFallido.set(false);
+
+          this.cargandoLogo.set(false);
+
+        },
+
+        error: () => {
+
+          this.logoFallido.set(true);
+
+          this.cargandoLogo.set(false);
+
+          this.limpiarLogo();
+
+        }
+
+      });
+
+  }
 
   // ===================================================
-  // NOMBRE MOSTRADO EN EL LOGIN
+  // LIBERAR URL TEMPORAL
+  // ===================================================
+
+  private limpiarLogo(): void {
+
+    if (this.logoObjectUrl) {
+
+      URL.revokeObjectURL(
+        this.logoObjectUrl
+      );
+
+      this.logoObjectUrl = null;
+
+    }
+
+    this.logoEmpresaUrl.set(null);
+
+  }
+
+  // ===================================================
+  // NOMBRE DE EMPRESA
   // ===================================================
 
   nombreEmpresa(): string {
 
-    return this.empresaLogin()?.nombreEmpresa
-      ?? 'WorkStock';
+    const nombre =
+      this.empresaLogin()?.nombreEmpresa?.trim();
+
+    return nombre || this.tituloDefecto;
 
   }
 
-
   // ===================================================
-  // CONSULTAR SI SE PUEDE MOSTRAR EL LOGO
+  // MOSTRAR LOGO
   // ===================================================
 
   mostrarLogoEmpresa(): boolean {
@@ -275,54 +444,36 @@ export class Login {
 
     return Boolean(
       empresa?.tieneLogo &&
+      this.logoEmpresaUrl() &&
       !this.logoFallido()
     );
 
   }
 
-
   // ===================================================
-  // URL PÚBLICA DEL LOGO
+  // URL PÚBLICA TEMPORAL DEL LOGO
   // ===================================================
 
   urlLogoEmpresa(): string | null {
 
-    const empresa = this.empresaLogin();
-
-    if (!empresa?.tieneLogo) {
-
-      return null;
-
-    }
-
-    return (
-      '/api/empresas/login/' +
-      encodeURIComponent(empresa.codigo) +
-      '/logo'
-    );
+    return this.logoEmpresaUrl();
 
   }
 
-
   // ===================================================
-  // ERROR AL CARGAR EL LOGO
+  // ERROR AL MOSTRAR IMAGEN
   // ===================================================
 
   errorLogo(): void {
 
     this.logoFallido.set(true);
 
-  }
+    this.limpiarLogo();
 
+  }
 
   // ===================================================
   // INICIAR SESIÓN
-  //
-  // SE CONSERVA EL PROCESO ORIGINAL.
-  //
-  // No se envía el código de empresa.
-  // El usuario puede ingresar desde cualquier login
-  // siempre que sus credenciales sean válidas.
   // ===================================================
 
   ingresar(): void {
@@ -336,9 +487,7 @@ export class Login {
     }
 
     if (this.cargando()) {
-
       return;
-
     }
 
     this.cargando.set(true);
@@ -367,15 +516,23 @@ export class Login {
         this.cargando.set(false);
 
         this.mensajeError.set(
-
-          error?.error?.message
-          ?? 'No fue posible iniciar sesión'
-
+          error?.error?.message ??
+          'No fue posible iniciar sesión'
         );
 
       }
 
     });
+
+  }
+
+  // ===================================================
+  // DESTRUIR COMPONENTE
+  // ===================================================
+
+  ngOnDestroy(): void {
+
+    this.limpiarLogo();
 
   }
 

@@ -1,0 +1,395 @@
+<!-- =====================================================
+     WORKSTOCK - CELULARES VENDIDOS
+     DISEÑO ESTÁNDAR COMPACTO
+===================================================== -->
+
+<div class="page">
+
+    <div class="page-header">
+        <div>
+            <h1>Celulares vendidos</h1>
+            <p>Consulta de equipos vendidos mediante facturas y notas de venta</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        @if (cargando()) {
+        <mat-progress-bar mode="indeterminate" />
+        }
+
+        <!-- FILTROS -->
+
+        <div class="toolbar">
+
+            <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+
+                <mat-icon matPrefix>search</mat-icon>
+
+                <input matInput type="text" [formControl]="buscarControl" placeholder="IMEI, proveedor, modelo..."
+                    autocomplete="off" aria-label="Buscar celulares vendidos">
+
+                @if (buscarControl.value) {
+                <button mat-icon-button matSuffix type="button" class="clear-search" matTooltip="Limpiar búsqueda"
+                    aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()">
+
+                    <mat-icon>close</mat-icon>
+                </button>
+                }
+
+            </mat-form-field>
+
+            <!-- DESDE -->
+
+            <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
+
+                <mat-label>Desde</mat-label>
+
+                <input matInput readonly [matDatepicker]="pickerInicial" [formControl]="fechaInicialControl"
+                    [max]="fechaMaxima" placeholder="DD/MM/AAAA" (click)="pickerInicial.open()"
+                    aria-label="Fecha inicial de venta">
+
+                <mat-datepicker-toggle matIconSuffix [for]="pickerInicial">
+                </mat-datepicker-toggle>
+
+                <mat-datepicker #pickerInicial></mat-datepicker>
+
+            </mat-form-field>
+
+            <!-- HASTA -->
+
+            <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
+
+                <mat-label>Hasta</mat-label>
+
+                <input matInput readonly [matDatepicker]="pickerFinal" [formControl]="fechaFinalControl"
+                    [min]="fechaInicialControl.value" [max]="fechaMaxima" placeholder="DD/MM/AAAA"
+                    (click)="pickerFinal.open()" aria-label="Fecha final de venta">
+
+                <mat-datepicker-toggle matIconSuffix [for]="pickerFinal">
+                </mat-datepicker-toggle>
+
+                <mat-datepicker #pickerFinal></mat-datepicker>
+
+            </mat-form-field>
+
+            <!-- ACCIONES DE FILTRO -->
+
+            <div class="date-filter-actions">
+
+                <button mat-flat-button type="button" class="btn-apply-filters" [disabled]="cargando()"
+                    matTooltip="Consultar período" (click)="aplicarFechas()">
+
+                    <mat-icon>search</mat-icon>
+                    Consultar
+
+                </button>
+
+                <button mat-stroked-button type="button" class="btn-clear-filters" [disabled]="cargando()"
+                    matTooltip="Restablecer filtros" (click)="limpiarFiltros()">
+
+                    <mat-icon>restart_alt</mat-icon>
+                    Limpiar
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- ERRORES -->
+
+        @if (error()) {
+
+        <div class="error-message" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ error() }}</span>
+        </div>
+
+        }
+
+        <!-- TABLA -->
+
+        <div class="table-wrapper">
+
+            <table mat-table [dataSource]="equipos()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+                [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
+
+                <!-- VENTA -->
+
+                <ng-container matColumnDef="fechaVenta">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="fechaVenta">
+
+                        N.º Venta
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo">
+
+                        <strong class="invoice-number">
+                            #{{ equipo.numeroDocumento }}
+                        </strong>
+
+                        <small class="document-description">
+                            {{ equipo.fechaVenta | date:'dd/MM/yyyy HH:mm' }}
+                        </small>
+
+                    </td>
+
+                </ng-container>
+
+                <!-- PROVEEDOR -->
+
+                <ng-container matColumnDef="proveedor">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="proveedor">
+
+                        Proveedor
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo">
+
+                        <span class="provider-name">
+                            {{ equipo.nombreProveedor }}
+                        </span>
+
+                    </td>
+
+                </ng-container>
+
+                <!-- MODELO -->
+
+                <ng-container matColumnDef="modelo">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="modelo">
+
+                        Modelo
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo">
+
+                        <strong class="primary-value">
+                            {{ equipo.nombreMarca }} {{ equipo.nombreModelo }}
+                        </strong>
+
+                        <small class="model-description">
+
+                            {{ equipo.ram || '-' }} RAM -
+                            {{ equipo.almacenamiento || '-' }} GB - {{ equipo.color }}
+
+                            @if (equipo.estadoCelular) {
+                            <b>/ {{ equipo.estadoCelular }}</b>
+                            }
+
+                        </small>
+
+                    </td>
+
+                </ng-container>
+
+                <!-- IMEI -->
+
+                <ng-container matColumnDef="imei">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="imei">
+
+                        IMEI
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo">
+
+                        <strong class="imei-value">
+                            {{ equipo.imei1 }}
+                        </strong>
+
+                        @if (equipo.imei2) {
+                        <small class="imei-value">
+                            {{ equipo.imei2 }}
+                        </small>
+                        }
+
+                    </td>
+
+                </ng-container>
+
+                <!-- DOCUMENTO -->
+
+                <ng-container matColumnDef="documento">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="documento" class="document-column">
+
+                        Documento
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo" class="document-column">
+
+                        <span class="document-type" [class.invoice]="esFactura(equipo)"
+                            [class.note]="!esFactura(equipo)">
+
+                            {{
+                            esFactura(equipo)
+                            ? 'Factura'
+                            : 'Nota de venta'
+                            }}
+
+                        </span>
+
+                    </td>
+
+                </ng-container>
+
+                <!-- PRECIO DE VENTA -->
+
+                <ng-container matColumnDef="precioVenta">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="precioVenta" class="money-column">
+
+                        Precio venta
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo" class="money-column">
+
+                        <span class="total-value">
+                            {{
+                            equipo.precioVenta
+                            | currency:'USD':'symbol':'1.2-2'
+                            }}
+                        </span>
+
+                    </td>
+
+                </ng-container>
+
+
+
+                <!-- VENDEDOR -->
+
+                <ng-container matColumnDef="vendedor">
+
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header="vendedor">
+
+                        Vendedor
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo">
+
+                        <span class="provider-name">
+                            {{ equipo.vendedor }}
+                        </span>
+
+                    </td>
+
+                </ng-container>
+
+
+                <!-- ESTADO -->
+
+                <ng-container matColumnDef="estado">
+
+                    <th mat-header-cell *matHeaderCellDef class="status-column">
+
+                        Estado
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo" class="status-column">
+
+                        <span class="status" [class.active]="equipo.estadoDetalle === 'FACTURADO'">
+
+                            {{ equipo.estadoDetalle }}
+
+                        </span>
+
+                    </td>
+
+                </ng-container>
+
+                <!-- ACCIONES -->
+
+                <ng-container matColumnDef="acciones">
+
+                    <th mat-header-cell *matHeaderCellDef class="actions-header">
+
+                        Acciones
+
+                    </th>
+
+                    <td mat-cell *matCellDef="let equipo" class="actions-cell">
+
+                        <button mat-icon-button type="button" class="action view" [matTooltip]="
+                esFactura(equipo)
+                  ? 'Visualizar ticket de factura'
+                  : 'Visualizar ticket de nota de venta'
+              " [attr.aria-label]="
+                'Visualizar comprobante ' +
+                equipo.numeroDocumento
+              " (click)="visualizar(equipo)">
+
+                            <mat-icon>visibility</mat-icon>
+
+                        </button>
+
+                    </td>
+
+                </ng-container>
+
+                <!-- FILAS -->
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns">
+                </tr>
+
+                <tr mat-row *matRowDef="let row; columns: displayedColumns">
+                </tr>
+
+                <!-- SIN RESULTADOS -->
+
+                <tr *matNoDataRow>
+
+                    <td class="no-data" [attr.colspan]="displayedColumns.length">
+
+                        <mat-icon>inventory_2</mat-icon>
+
+                        @if (cargando()) {
+
+                        Consultando celulares vendidos...
+
+                        } @else if (error()) {
+
+                        No se pudieron cargar los registros.
+
+                        } @else if (buscarControl.value) {
+
+                        No existen celulares vendidos
+                        que coincidan con la búsqueda.
+
+                        } @else {
+
+                        No existen celulares vendidos
+                        para el período seleccionado.
+
+                        }
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+        <!-- PAGINACIÓN -->
+
+        <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
+            [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)">
+        </mat-paginator>
+
+    </div>
+
+</div>

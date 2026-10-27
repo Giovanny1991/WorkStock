@@ -3,10 +3,8 @@
 /* ==============================================
    WORKSTOCK - SISTEMA GLOBAL DE TEMAS
 ============================================== */
-
 html {
   height: 100%;
-
   @include mat.theme((color: (primary: mat.$azure-palette,
         tertiary: mat.$blue-palette ),
       typography: Roboto,
@@ -16,11 +14,9 @@ html {
 /* ==============================================
    MODO CLARO
 ============================================== */
-
 :root,
 :root[data-workstock-theme='light'] {
   color-scheme: light;
-
   --app-bg: #f5f7fb;
   --app-card: #ffffff;
   --app-card-secondary: #f8fafc;
@@ -29,24 +25,20 @@ html {
   --app-border: #e5e7eb;
   --app-border-soft: #f0f2f5;
   --app-hover: #f1f5f9;
-
   --app-primary: #2563eb;
   --app-primary-soft: #eff6ff;
   --app-success: #166534;
   --app-success-bg: #dcfce7;
   --app-danger: #b42318;
   --app-danger-bg: #fee2e2;
-
   --app-input-bg: #ffffff;
 }
 
 /* ==============================================
    MODO OSCURO
 ============================================== */
-
 :root[data-workstock-theme='dark'] {
   color-scheme: dark;
-
   --app-bg: #0f172a;
   --app-card: #1e293b;
   --app-card-secondary: #263449;
@@ -55,21 +47,18 @@ html {
   --app-border: #334155;
   --app-border-soft: #304054;
   --app-hover: #293a51;
-
   --app-primary: #93c5fd;
   --app-primary-soft: #223d60;
   --app-success: #86efac;
   --app-success-bg: #153e32;
   --app-danger: #fca5a5;
   --app-danger-bg: #51272d;
-
   --app-input-bg: #263449;
 }
 
 /* ==============================================
    ESTRUCTURA GENERAL
 ============================================== */
-
 html,
 body {
   min-height: 100%;
@@ -79,136 +68,93 @@ body {
   margin: 0;
   min-height: 100%;
   font: var(--mat-sys-body-medium);
-
   color-scheme: inherit;
   background-color: var(--app-bg);
   color: var(--app-text);
-
   transition:
     background-color 180ms ease,
     color 180ms ease;
 }
 
-
-
 /* =====================================================
    WORKSTOCK - ESTILOS GLOBALES DE FORMULARIOS
-   Angular Material MDC
+   ANGULAR MATERIAL MDC
 ===================================================== */
-
-/* ==========================================
-   CAMPOS DE TEXTO ESTÁNDAR
-========================================== */
-
 .mat-mdc-form-field.ws-field,
 .mat-mdc-form-field.ws-search {
   width: 100%;
   min-width: 0;
   font-size: 13px;
-
   --mdc-outlined-text-field-container-shape: 7px;
   --mdc-outlined-text-field-outline-color: var(--app-border);
   --mdc-outlined-text-field-hover-outline-color: var(--app-text-muted);
   --mdc-outlined-text-field-focus-outline-color: var(--app-primary);
-
   --mdc-outlined-text-field-input-text-color: var(--app-text);
   --mdc-outlined-text-field-input-text-size: 13px;
-
-  --mdc-outlined-text-field-input-text-placeholder-color:
-    var(--app-text-muted);
-
-  --mdc-outlined-text-field-label-text-color:
-    var(--app-text-muted);
-
-  --mdc-outlined-text-field-focus-label-text-color:
-    var(--app-primary);
+  --mdc-outlined-text-field-input-text-placeholder-color: var(--app-text-muted);
+  --mdc-outlined-text-field-label-text-color: var(--app-text-muted);
+  --mdc-outlined-text-field-focus-label-text-color: var(--app-primary);
 }
 
-/* ==========================================
-   ALTURA COMPACTA
-========================================== */
-
+/* ALTURA COMPACTA */
 .mat-mdc-form-field.ws-field .mat-mdc-text-field-wrapper,
-
 .mat-mdc-form-field.ws-search .mat-mdc-text-field-wrapper {
   height: 40px;
 }
 
 .mat-mdc-form-field.ws-field .mat-mdc-form-field-flex,
-
 .mat-mdc-form-field.ws-search .mat-mdc-form-field-flex {
   height: 40px;
   align-items: center;
 }
 
 .mat-mdc-form-field.ws-field .mat-mdc-form-field-infix,
-
 .mat-mdc-form-field.ws-search .mat-mdc-form-field-infix {
   display: flex;
   align-items: center;
-
   height: 40px;
   min-height: 40px;
-
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
 
-/* ==========================================
-   INPUTS
-========================================== */
-
+/* INPUTS */
 .mat-mdc-form-field.ws-field input.mat-mdc-input-element,
-
 .mat-mdc-form-field.ws-search input.mat-mdc-input-element {
   height: 100%;
   min-height: 0;
   margin: 0;
   padding: 0;
-
   font-size: 13px;
   line-height: normal;
-
   color: var(--app-text);
   caret-color: var(--app-primary);
 }
 
 .mat-mdc-form-field.ws-field input::placeholder,
-
 .mat-mdc-form-field.ws-search input::placeholder {
   color: var(--app-text-muted);
   opacity: 1;
 }
 
-/* ==========================================
-   ICONOS
-========================================== */
-
+/* ICONOS */
 .mat-mdc-form-field.ws-field .mat-mdc-form-field-icon-prefix,
-
 .mat-mdc-form-field.ws-field .mat-mdc-form-field-icon-suffix,
-
 .mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-prefix,
-
 .mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-suffix {
   display: flex;
   align-items: center;
 }
 
 .mat-mdc-form-field.ws-field .mat-mdc-form-field-icon-suffix mat-icon,
-
 .mat-mdc-form-field.ws-search .mat-mdc-form-field-icon-suffix mat-icon {
   width: 19px;
   height: 19px;
   font-size: 19px;
-
   color: var(--app-text-muted);
 }
 
-/* ==========================================
-   BUSCADORES
-========================================== */
-
+/* BUSCADORES */
 .mat-mdc-form-field.ws-search {
   width: 300px;
   max-width: 100%;
@@ -218,14 +164,9 @@ body {
   padding-right: 9px;
 }
 
-
 input[matInput][type="number"] {
   text-align: center;
 }
-
-/* ==========================================
-   RESPONSIVE
-========================================== */
 
 @media (max-width: 700px) {
   .mat-mdc-form-field.ws-search {
@@ -233,11 +174,9 @@ input[matInput][type="number"] {
   }
 }
 
-
 /* ==============================================
    CONTENIDO PRINCIPAL
 ============================================== */
-
 main.content {
   color: var(--app-text);
 }
@@ -255,49 +194,28 @@ main.content p {
 /* ==============================================
    CAMPOS ANGULAR MATERIAL
 ============================================== */
-
 .mat-mdc-form-field {
-  --mdc-outlined-text-field-input-text-color:
-    var(--app-text);
-
-  --mdc-outlined-text-field-label-text-color:
-    var(--app-text-muted);
-
-  --mdc-outlined-text-field-outline-color:
-    var(--app-border);
-
-  --mdc-outlined-text-field-hover-outline-color:
-    var(--app-text-muted);
+  --mdc-outlined-text-field-input-text-color: var(--app-text);
+  --mdc-outlined-text-field-label-text-color: var(--app-text-muted);
+  --mdc-outlined-text-field-outline-color: var(--app-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--app-text-muted);
 }
 
 /* ==============================================
    TABLAS ANGULAR MATERIAL
 ============================================== */
-
 .mat-mdc-table {
-  --mat-table-background-color:
-    var(--app-card);
-
-  --mat-table-header-headline-color:
-    var(--app-text-muted);
-
-  --mat-table-row-item-label-text-color:
-    var(--app-text);
-
-  --mat-table-row-item-outline-color:
-    var(--app-border-soft);
-
+  --mat-table-background-color: var(--app-card);
+  --mat-table-header-headline-color: var(--app-text-muted);
+  --mat-table-row-item-label-text-color: var(--app-text);
+  --mat-table-row-item-outline-color: var(--app-border-soft);
   background: var(--app-card);
   color: var(--app-text);
 }
 
 .mat-mdc-paginator {
-  --mat-paginator-container-background-color:
-    var(--app-card);
-
-  --mat-paginator-container-text-color:
-    var(--app-text-muted);
-
+  --mat-paginator-container-background-color: var(--app-card);
+  --mat-paginator-container-text-color: var(--app-text-muted);
   background: var(--app-card);
   color: var(--app-text);
 }
@@ -305,17 +223,10 @@ main.content p {
 /* ==============================================
    MODALES Y SUPERFICIES
 ============================================== */
-
 .mat-mdc-dialog-surface {
-  --mdc-dialog-container-color:
-    var(--app-card);
-
-  --mdc-dialog-subhead-color:
-    var(--app-text);
-
-  --mdc-dialog-supporting-text-color:
-    var(--app-text);
-
+  --mdc-dialog-container-color: var(--app-card);
+  --mdc-dialog-subhead-color: var(--app-text);
+  --mdc-dialog-supporting-text-color: var(--app-text);
   background-color: var(--app-card);
   color: var(--app-text);
 }
@@ -323,9 +234,6 @@ main.content p {
 /* ==============================================
    IMPRESIÓN
 ============================================== */
-
-
-
 @media print {
 
   :root,
@@ -344,9 +252,7 @@ main.content p {
   .mat-mdc-dialog-surface,
   mat-dialog-content {
     visibility: visible !important;
-
     overflow: visible !important;
-
     max-height: none !important;
   }
 
@@ -354,9 +260,7 @@ main.content p {
     display: none !important;
   }
 
-
-  /* CONTENIDO QUE SE PUEDE IMPRIMIR */
-
+  /* CONTENIDO IMPRIMIBLE */
   #ticketFactura,
   #ticketFactura *,
   #ticketNotaVenta,
@@ -368,47 +272,31 @@ main.content p {
     visibility: visible !important;
   }
 
-
   /* FORMATO TÉRMICO 80 MM */
-
   #ticketFactura,
   #ticketNotaVenta,
   #ticketOrdenTrabajo,
   #ticketNotaAccesorios {
     position: fixed !important;
-
     top: 0 !important;
     left: 0 !important;
-
     width: 80mm !important;
     max-width: 80mm !important;
-
     margin: 0 !important;
-
     padding: 3mm !important;
-
     background: #ffffff !important;
-
     box-shadow: none !important;
-
     color: #000000 !important;
   }
-
 
   @page {
     margin: 0;
   }
-
 }
-
-
 
 /* =============================================
    WORKSTOCK - ESTILOS GLOBALES DE COMPONENTES
 ============================================= */
-
-/* ENCABEZADOS DE PÁGINAS */
-
 .page-header h1 {
   color: var(--app-text);
 }
@@ -417,8 +305,6 @@ main.content p {
   color: var(--app-text-muted);
 }
 
-/* TARJETAS PRINCIPALES */
-
 .card,
 .app-card {
   background-color: var(--app-card);
@@ -426,14 +312,10 @@ main.content p {
   border-color: var(--app-border);
 }
 
-/* BARRAS DE HERRAMIENTAS */
-
 .toolbar {
   background-color: var(--app-card);
   border-color: var(--app-border);
 }
-
-/* INFORMACIÓN SECUNDARIA */
 
 .records,
 .text-muted {
@@ -441,7 +323,6 @@ main.content p {
 }
 
 /* TABLAS */
-
 table.mat-mdc-table {
   background-color: var(--app-card);
   color: var(--app-text);
@@ -470,8 +351,6 @@ table.mat-mdc-table {
   border-bottom-color: var(--app-border-soft);
 }
 
-/* TEXTOS EN TABLAS */
-
 .invoice-number {
   color: var(--app-primary);
 }
@@ -488,15 +367,12 @@ table.mat-mdc-table {
   color: var(--app-text-muted);
 }
 
-/* PAGINACIÓN */
-
 .mat-mdc-paginator {
   background-color: var(--app-card);
   color: var(--app-text-muted);
 }
 
 /* INPUTS */
-
 .mat-mdc-form-field {
   color: var(--app-text);
 }
@@ -512,20 +388,17 @@ table.mat-mdc-table {
 }
 
 /* SELECTORES */
-
 .mat-mdc-select {
   color: var(--app-text);
 }
 
 /* DIÁLOGOS */
-
 .mat-mdc-dialog-surface {
   background-color: var(--app-card);
   color: var(--app-text);
 }
 
 /* MENÚS */
-
 .mat-mdc-menu-panel {
   background-color: var(--app-card);
 }
@@ -535,14 +408,12 @@ table.mat-mdc-table {
 }
 
 /* CONTROLES DESHABILITADOS */
-
 .mat-mdc-button:disabled,
 .mat-mdc-icon-button:disabled {
   opacity: .45;
 }
 
 /* ESTADOS */
-
 .status.active {
   background-color: var(--app-success-bg);
   color: var(--app-success);
@@ -553,8 +424,7 @@ table.mat-mdc-table {
   color: var(--app-danger);
 }
 
-/* TRANSICIÓN VISUAL */
-
+/* TRANSICIONES */
 .card,
 .app-card,
 .mat-mdc-table,
@@ -565,86 +435,59 @@ table.mat-mdc-table {
     border-color 180ms ease;
 }
 
-
-
 /* ==========================================
    WORKSTOCK - MENÚ GLOBAL DE ACCIONES
 ========================================== */
-
 .mat-mdc-menu-panel.workstock-actions-menu {
   min-width: 190px;
   max-width: 210px;
-
   border: 1px solid var(--app-border);
   border-radius: 12px;
-
   background: var(--app-card);
   color: var(--app-text);
-
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, .10);
-
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .10);
   overflow: hidden;
 }
-
-/* CONTENIDO DEL MENÚ */
 
 .workstock-actions-menu .mat-mdc-menu-content {
   padding: 5px;
 }
 
-/* OPCIONES */
-
 .workstock-actions-menu .mat-mdc-menu-item {
   min-height: 38px;
   height: 38px;
-
   padding: 0 10px;
   border-radius: 7px;
-
   font-size: 12px;
   font-weight: 500;
   color: var(--app-text);
 }
-
-/* CONTENIDO HORIZONTAL */
 
 .workstock-actions-menu .mat-mdc-menu-item .mat-icon {
   width: 18px;
   height: 18px;
   font-size: 18px;
   line-height: 18px;
-
   margin-right: 11px;
   flex-shrink: 0;
 }
-
-/* HOVER */
 
 .workstock-actions-menu .mat-mdc-menu-item:hover:not([disabled]) {
   background: var(--app-hover);
 }
 
-/* VISUALIZAR */
-
 .workstock-actions-menu .ws-icon-view {
   color: var(--app-primary);
 }
-
-/* GESTIONAR */
 
 .workstock-actions-menu .ws-icon-edit {
   color: var(--app-text-muted);
 }
 
-/* SEPARADOR */
-
 .workstock-actions-menu mat-divider {
   margin: 5px 8px;
   border-top-color: var(--app-border);
 }
-
-/* ELIMINAR */
 
 .workstock-actions-menu .mat-mdc-menu-item.ws-menu-danger {
   color: var(--app-danger);
@@ -658,19 +501,14 @@ table.mat-mdc-table {
   background: var(--app-danger-bg);
 }
 
-/* DESHABILITADO */
-
 .workstock-actions-menu .mat-mdc-menu-item[disabled] {
   opacity: .45;
 }
 
-
 /* ==========================================
    WORKSTOCK - VISOR MATDIALOG
 ========================================== */
-
 .ws-visor-dialog {
-
   .mat-mdc-dialog-container {
     --mdc-dialog-container-color: var(--app-card);
     --mdc-dialog-container-shape: 10px;
@@ -679,24 +517,19 @@ table.mat-mdc-table {
   .mat-mdc-dialog-surface {
     background: var(--app-card) !important;
     color: var(--app-text) !important;
-
     border: 1px solid var(--app-border);
     border-radius: 10px !important;
-
     overflow: hidden;
   }
-
 }
 
 .ws-visor-backdrop {
   background: rgba(15, 23, 42, .35) !important;
 }
 
-
 /* =========================================
    WORKSTOCK - PALETA DE NAVEGACIÓN
-   ========================================= */
-
+========================================= */
 :root,
 html[data-color-theme="mc"] {
   --ws-header: #dd4b39;
@@ -735,17 +568,179 @@ html[data-color-theme="dark"] {
   --ws-sidebar-expanded: #343a40;
 }
 
-/* ============================================
-   WORKSTOCK ORIGINAL - BLANCO
-============================================ */
-
 html[data-color-theme="original"] {
   --ws-header: #ffffff;
   --ws-sidebar: #ffffff;
   --ws-sidebar-active: #e8f1fc;
   --ws-sidebar-expanded: #f8fafc;
-
   --ws-sidebar-hover: #f1f5f9;
   --ws-sidebar-text: #334155;
   --ws-sidebar-muted: #64748b;
+}
+
+@keyframes workstock-update-spin-global {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mat-mdc-menu-panel .update-spinning {
+  animation: workstock-update-spin-global 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat-mdc-menu-panel .update-spinning {
+    animation: none;
+  }
+}
+
+/* =====================================================
+   WORKSTOCK - NOTIFICACIONES GLOBALES
+   MATSNACKBAR / ANGULAR MATERIAL
+===================================================== */
+
+/* CONTENEDOR GENERAL */
+.mat-mdc-snack-bar-container.workstock-snackbar {
+  --ws-notify-accent: #075db0;
+  --ws-notify-bg: #f1f7ff;
+  --ws-notify-text: #25354a;
+  --mdc-snackbar-container-color: var(--ws-notify-bg);
+  --mdc-snackbar-supporting-text-color: var(--ws-notify-text);
+  --mat-snack-bar-button-color: var(--ws-notify-accent);
+
+  width: auto;
+  min-width: 0;
+  max-width: min(520px, calc(100vw - 24px));
+  margin: 12px !important;
+}
+
+/* SUPERFICIE DE NOTIFICACIÓN */
+.mat-mdc-snack-bar-container.workstock-snackbar .mdc-snackbar__surface {
+  display: flex;
+  align-items: center;
+  min-width: 0 !important;
+  max-width: 100%;
+  padding: 3px 5px !important;
+  border: 1px solid var(--app-border);
+  border-left: 5px solid var(--ws-notify-accent);
+  border-radius: 11px !important;
+  background: var(--ws-notify-bg) !important;
+  color: var(--ws-notify-text) !important;
+  box-shadow: 0 10px 28px rgba(16, 35, 65, .18) !important;
+}
+
+/* TEXTO Y MENSAJE */
+.mat-mdc-snack-bar-container.workstock-snackbar .mdc-snackbar__label {
+  min-width: 0;
+  padding: 12px !important;
+  color: var(--ws-notify-text) !important;
+  font-family: inherit;
+  font-size: 12px !important;
+  font-weight: 500;
+  line-height: 1.55;
+  white-space: pre-line !important;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* BOTÓN CERRAR */
+.mat-mdc-snack-bar-container.workstock-snackbar .mat-mdc-snack-bar-action {
+  flex-shrink: 0;
+  color: var(--ws-notify-accent) !important;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ÉXITO */
+.mat-mdc-snack-bar-container.workstock-snackbar.snackbar-success {
+  --ws-notify-accent: #168451;
+  --ws-notify-bg: #f2fbf6;
+  --ws-notify-text: #194d34;
+}
+
+/* ERROR */
+.mat-mdc-snack-bar-container.workstock-snackbar.snackbar-error {
+  --ws-notify-accent: #c62828;
+  --ws-notify-bg: #fff5f5;
+  --ws-notify-text: #7f1d1d;
+}
+
+/* ADVERTENCIA */
+.mat-mdc-snack-bar-container.workstock-snackbar.snackbar-warning {
+  --ws-notify-accent: #bc8500;
+  --ws-notify-bg: #fffbeb;
+  --ws-notify-text: #785400;
+}
+
+/* INFORMACIÓN */
+.mat-mdc-snack-bar-container.workstock-snackbar.snackbar-info {
+  --ws-notify-accent: #075db0;
+  --ws-notify-bg: #f1f7ff;
+  --ws-notify-text: #164776;
+}
+
+/* =====================================================
+   NOTIFICACIONES EN MODO OSCURO
+===================================================== */
+:root[data-workstock-theme='dark'] .mat-mdc-snack-bar-container.workstock-snackbar {
+  --ws-notify-accent: #93c5fd;
+  --ws-notify-bg: #1e293b;
+  --ws-notify-text: #f1f5f9;
+}
+
+:root[data-workstock-theme='dark'] .mat-mdc-snack-bar-container.workstock-snackbar.snackbar-success {
+  --ws-notify-accent: #86efac;
+  --ws-notify-bg: #153e32;
+  --ws-notify-text: #dcfce7;
+}
+
+:root[data-workstock-theme='dark'] .mat-mdc-snack-bar-container.workstock-snackbar.snackbar-error {
+  --ws-notify-accent: #fca5a5;
+  --ws-notify-bg: #51272d;
+  --ws-notify-text: #fee2e2;
+}
+
+:root[data-workstock-theme='dark'] .mat-mdc-snack-bar-container.workstock-snackbar.snackbar-warning {
+  --ws-notify-accent: #fcd34d;
+  --ws-notify-bg: #453719;
+  --ws-notify-text: #fef3c7;
+}
+
+:root[data-workstock-theme='dark'] .mat-mdc-snack-bar-container.workstock-snackbar.snackbar-info {
+  --ws-notify-accent: #93c5fd;
+  --ws-notify-bg: #223d60;
+  --ws-notify-text: #dbeafe;
+}
+
+/* =====================================================
+   RESPONSIVE DE NOTIFICACIONES
+===================================================== */
+@media (max-width: 600px) {
+  .mat-mdc-snack-bar-container.workstock-snackbar {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px !important;
+  }
+
+  .mat-mdc-snack-bar-container.workstock-snackbar .mdc-snackbar__surface {
+    width: 100%;
+    max-width: 100%;
+    padding: 2px !important;
+  }
+
+  .mat-mdc-snack-bar-container.workstock-snackbar .mdc-snackbar__label {
+    font-size: 11px !important;
+    padding: 10px !important;
+  }
+
+  .mat-mdc-snack-bar-container.workstock-snackbar .mat-mdc-snack-bar-action {
+    font-size: 10px;
+  }
+}
+
+/* DESACTIVAR TRANSICIONES SI EL USUARIO LO SOLICITA */
+@media (prefers-reduced-motion: reduce) {
+  .mat-mdc-snack-bar-container.workstock-snackbar {
+    transition: none !important;
+  }
 }

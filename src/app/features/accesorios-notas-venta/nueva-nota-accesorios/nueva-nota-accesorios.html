@@ -1,29 +1,29 @@
+<!-- =====================================================
+     WORKSTOCK - NOTA DE VENTA DE ACCESORIOS
+===================================================== -->
 
 <div class="page-header">
-
   <div>
     <h1>Nueva nota de venta de accesorios</h1>
     <p>Registro de venta de accesorios</p>
   </div>
-
 </div>
 
 @if (cargando()) {
-  <mat-progress-bar mode="indeterminate" />
+<mat-progress-bar mode="indeterminate" />
 }
 
 <div class="invoice-layout">
 
   <div class="main-column">
 
-    <!-- ==================================================
+    <!-- ================================================
          CLIENTE
-    =================================================== -->
+    ================================================= -->
 
     <div class="card form-card">
 
       <div class="section-header">
-
         <div class="section-icon">
           <mat-icon>person</mat-icon>
         </div>
@@ -32,76 +32,64 @@
           <h2>Cliente</h2>
           <p>Seleccione el cliente para la nota de venta</p>
         </div>
-
       </div>
 
       <div class="client-selector">
 
-        <mat-form-field
-          appearance="outline"
-          class="autocomplete-field"
-          subscriptSizing="dynamic">
+        <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
 
-          <input
-            matInput
-            [formControl]="clienteTexto"
-            [matAutocomplete]="autoCliente"
-            placeholder="Cédula, RUC o nombre..."
-            autocomplete="off">
+          <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
+            placeholder="Cédula, RUC o nombre..." autocomplete="off">
 
           <mat-icon matSuffix>search</mat-icon>
 
-          <mat-autocomplete
-            #autoCliente="matAutocomplete"
-            [displayWith]="mostrarCliente"
+          <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="mostrarCliente"
             (optionSelected)="seleccionarCliente($event.option.value)">
 
             @for (cliente of clientesFiltrados(); track cliente.id) {
 
-              <mat-option [value]="cliente">
+            <mat-option [value]="cliente">
+              <div class="option-main">
+                {{ cliente.nombreCliente }}
+              </div>
 
-                <div class="option-main">
-                  {{ cliente.nombreCliente }}
-                </div>
-
-                <div class="option-secondary">
-                  {{ cliente.identificacion }}
-                </div>
-
-              </mat-option>
+              <div class="option-secondary">
+                {{ cliente.identificacion }}
+              </div>
+            </mat-option>
 
             }
 
             @if (buscandoClientes()) {
 
-              <mat-option disabled>
-                Buscando clientes...
-              </mat-option>
+            <mat-option disabled>
+              Buscando clientes...
+            </mat-option>
 
             } @else if (errorBusquedaClientes()) {
 
-              <mat-option disabled>
-                No fue posible realizar la búsqueda
-              </mat-option>
+            <mat-option disabled>
+              No fue posible realizar la búsqueda
+            </mat-option>
 
             } @else if (
-              clientesFiltrados().length === 0 &&
-              busquedaCliente().length >= 2 &&
-              !clienteSeleccionado()
+            clientesFiltrados().length === 0 &&
+            busquedaCliente().length >= 2 &&
+            !clienteSeleccionado()
             ) {
 
-              <mat-option disabled>
-                Cliente no encontrado
-              </mat-option>
+            <mat-option disabled>
+              Cliente no encontrado
+            </mat-option>
 
             } @else if (
-              busquedaCliente().length === 1 &&
-              !clienteSeleccionado()
+            busquedaCliente().length === 1 &&
+            !clienteSeleccionado()
             ) {
 
-              <mat-option disabled>
-                Escriba al menos 2 caracteres
-              </mat-option>
+            <mat-option disabled>
+              Escriba al menos 2 caracteres
+            </mat-option>
 
             }
 
@@ -111,47 +99,36 @@
 
         @if (puedeRegistrarCliente()) {
 
-          <button
-            mat-stroked-button
-            class="new-client-btn"
-            type="button"
-            (click)="registrarCliente()">
+        <button mat-stroked-button class="new-client-btn" type="button" (click)="registrarCliente()">
 
-            <mat-icon>person_add</mat-icon>
-            Registrar cliente
+          <mat-icon>person_add</mat-icon>
+          Registrar cliente
 
-          </button>
+        </button>
 
         }
 
         @if (clienteSeleccionado()) {
 
-          <button
-            mat-stroked-button
-            class="edit-client-btn"
-            type="button"
-            (click)="actualizarCliente()">
+        <button mat-stroked-button class="edit-client-btn" type="button" (click)="actualizarCliente()">
 
-            <mat-icon>edit</mat-icon>
-            Actualizar cliente
+          <mat-icon>edit</mat-icon>
+          Actualizar cliente
 
-          </button>
+        </button>
 
         }
 
       </div>
-
     </div>
 
-    <!-- ==================================================
+    <!-- ================================================
          AGREGAR ACCESORIO
-         AUTOCOMPLETE REMOTO
-    =================================================== -->
+    ================================================= -->
 
     <div class="card form-card">
 
       <div class="section-header">
-
         <div class="section-icon">
           <mat-icon>headphones</mat-icon>
         </div>
@@ -160,85 +137,71 @@
           <h2>Agregar accesorio</h2>
           <p>Solo se muestran accesorios con stock disponible</p>
         </div>
-
       </div>
 
-      <mat-form-field
-        appearance="outline"
-        class="autocomplete-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
 
-        <input
-          matInput
-          [formControl]="productoTexto"
-          [matAutocomplete]="autoProducto"
-          placeholder="Buscar categoría, marca, accesorio o calidad..."
-          autocomplete="off">
+        <input matInput [formControl]="productoTexto" [matAutocomplete]="autoProducto"
+          placeholder="Buscar categoría, marca, accesorio o calidad..." autocomplete="off">
 
         <mat-icon matSuffix>search</mat-icon>
 
-        <mat-autocomplete
-          #autoProducto="matAutocomplete"
-          [displayWith]="mostrarAccesorio"
+        <mat-autocomplete #autoProducto="matAutocomplete" [displayWith]="mostrarAccesorio"
           (optionSelected)="seleccionarAccesorio($event.option.value)">
 
           @for (
-            producto of accesoriosFiltrados();
-            track producto.id
+          producto of accesoriosFiltrados();
+          track producto.id
           ) {
 
-            <mat-option [value]="producto">
+          <mat-option [value]="producto">
 
-              <div class="option-main">
-                {{ producto.accesorio }}
-              </div>
+            <div class="option-main">
+              {{ producto.accesorio }}
+            </div>
 
-              <div class="option-secondary">
+            <div class="option-secondary">
+              {{ producto.calidad }}
+              · Stock: {{ producto.cantidadStock }}
+              · PVP:
+              {{
+              producto.pvp2
+              | currency:'USD':'symbol':'1.2-2'
+              }}
+            </div>
 
-                {{ producto.calidad }}
-
-                · Stock: {{ producto.cantidadStock }}
-
-                · PVP:
-                {{
-                  producto.pvp2
-                    | currency:'USD':'symbol':'1.2-2'
-                }}
-
-              </div>
-
-            </mat-option>
+          </mat-option>
 
           }
 
           @if (buscandoAccesorios()) {
 
-            <mat-option disabled>
-              Buscando accesorios disponibles...
-            </mat-option>
+          <mat-option disabled>
+            Buscando accesorios disponibles...
+          </mat-option>
 
           } @else if (errorBusquedaAccesorios()) {
 
-            <mat-option disabled>
-              No fue posible consultar los accesorios
-            </mat-option>
+          <mat-option disabled>
+            No fue posible consultar los accesorios
+          </mat-option>
 
           } @else if (
-            accesoriosFiltrados().length === 0 &&
-            busquedaAccesorio().length >= 2
+          accesoriosFiltrados().length === 0 &&
+          busquedaAccesorio().length >= 2
           ) {
 
-            <mat-option disabled>
-              No se encontraron accesorios disponibles
-            </mat-option>
+          <mat-option disabled>
+            No se encontraron accesorios disponibles
+          </mat-option>
 
           } @else if (
-            busquedaAccesorio().length === 1
+          busquedaAccesorio().length === 1
           ) {
 
-            <mat-option disabled>
-              Escriba al menos 2 caracteres
-            </mat-option>
+          <mat-option disabled>
+            Escriba al menos 2 caracteres
+          </mat-option>
 
           }
 
@@ -248,11 +211,11 @@
 
     </div>
 
-    <!-- ==================================================
-         DETALLE DE VENTA
-    =================================================== -->
+    <!-- ================================================
+         DETALLE DE NOTA DE VENTA
+    ================================================= -->
 
-    <div class="card">
+    <div class="card sale-card">
 
       <div class="toolbar">
 
@@ -266,34 +229,25 @@
 
       </div>
 
-      <div class="table-wrapper">
+      <!-- CONTENEDOR CON SCROLL HORIZONTAL -->
 
-        <table
-          mat-table
-          [dataSource]="detalle()"
-          class="sale-table">
+      <div class="table-wrapper" role="region" aria-label="Detalle de nota de venta de accesorios" tabindex="0">
 
-          <!-- ==================================================
-               PRODUCTO
-          =================================================== -->
+        <table mat-table class="sale-table" [dataSource]="detalle()">
+
+          <!-- ========================================
+               ACCESORIO
+          ========================================= -->
 
           <ng-container matColumnDef="producto">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-product">
+            <th mat-header-cell *matHeaderCellDef class="col-product">
               Accesorio
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-product">
+            <td mat-cell *matCellDef="let x" class="col-product">
 
-              <div
-                class="product-name"
-                [matTooltip]="x.accesorio">
+              <div class="product-name" [matTooltip]="x.accesorio">
 
                 {{ x.accesorio }}
 
@@ -307,23 +261,17 @@
 
           </ng-container>
 
-          <!-- ==================================================
+          <!-- ========================================
                STOCK
-          =================================================== -->
+          ========================================= -->
 
-          <ng-container matColumnDef="stock">
+          <!-- <ng-container matColumnDef="stock">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-stock">
+            <th mat-header-cell *matHeaderCellDef class="col-stock">
               Stock
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-stock">
+            <td mat-cell *matCellDef="let x" class="col-stock">
 
               <span class="stock-badge">
                 {{ x.cantidadStock }}
@@ -331,98 +279,74 @@
 
             </td>
 
-          </ng-container>
+          </ng-container> -->
 
-          <!-- ==================================================
-               COSTO - SOLO ADMINISTRADOR
-          =================================================== -->
+          <!-- ========================================
+               COSTO
+               SOLO ADMINISTRADOR
+          ========================================= -->
 
           <ng-container matColumnDef="costo">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-money">
+            <th mat-header-cell *matHeaderCellDef class="col-money">
               Costo
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-money">
+            <td mat-cell *matCellDef="let x" class="col-money">
 
               {{
-                x.precioCosto
-                  | currency:'USD':'symbol':'1.2-2'
+              x.precioCosto
+              | currency:'USD':'symbol':'1.2-2'
               }}
 
             </td>
 
           </ng-container>
 
-          <!-- ==================================================
-               PVP1
-          =================================================== -->
+          <!-- ========================================
+               PVP 1
+          ========================================= -->
 
           <ng-container matColumnDef="pvp1">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-money">
+            <th mat-header-cell *matHeaderCellDef class="col-money">
               (Locales)
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-money">
+            <td mat-cell *matCellDef="let x" class="col-money">
 
               {{
-                x.pvp1
-                  | currency:'USD':'symbol':'1.2-2'
+              x.pvp1
+              | currency:'USD':'symbol':'1.2-2'
               }}
 
             </td>
 
           </ng-container>
 
-          <!-- ==================================================
+          <!-- ========================================
                CANTIDAD
-          =================================================== -->
+          ========================================= -->
 
           <ng-container matColumnDef="cantidad">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-quantity">
+            <th mat-header-cell *matHeaderCellDef class="col-quantity">
               Cant.
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-quantity">
+            <td mat-cell *matCellDef="let x" class="col-quantity">
 
-              <div
-                class="quantity-input"
-                [class.invalid-quantity]="
+              <div class="quantity-input" [class.invalid-quantity]="
                   x.cantidad <= 0 ||
                   x.cantidad > x.cantidadStock
                 ">
 
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  [max]="x.cantidadStock"
-                  [value]="x.cantidad"
-                  (blur)="actualizarCantidad(
+                <input type="number" min="1" step="1" [max]="x.cantidadStock" [value]="x.cantidad" (blur)="actualizarCantidad(
                     x.id,
                     $any($event.target).value
-                  )"
-                  (keydown.enter)="$any($event.target).blur()">
+                  )" (keydown.enter)="
+                    $any($event.target).blur()
+                  ">
 
               </div>
 
@@ -430,44 +354,32 @@
 
           </ng-container>
 
-          <!-- ==================================================
-               PRECIO
-          =================================================== -->
+          <!-- ========================================
+               PRECIO DE VENTA
+          ========================================= -->
 
           <ng-container matColumnDef="precio">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-price">
+            <th mat-header-cell *matHeaderCellDef class="col-price">
               Precio
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-price">
+            <td mat-cell *matCellDef="let x" class="col-price">
 
               <div class="price-input">
 
                 <span>$</span>
 
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  [value]="x.precioUnitario"
-                  [class.warning-price]="
+                <input type="number" min="0" step="0.01" [value]="x.precioUnitario" [class.warning-price]="
                     nivelPrecio(x) === 'warning'
-                  "
-                  [class.invalid-price]="
+                  " [class.invalid-price]="
                     nivelPrecio(x) === 'danger'
-                  "
-                  (blur)="actualizarPrecio(
+                  " (blur)="actualizarPrecio(
                     x.id,
                     $any($event.target).value
-                  )"
-                  (keydown.enter)="$any($event.target).blur()">
+                  )" (keydown.enter)="
+                    $any($event.target).blur()
+                  ">
 
               </div>
 
@@ -475,60 +387,43 @@
 
           </ng-container>
 
-          <!-- ==================================================
+          <!-- ========================================
                TOTAL
-          =================================================== -->
+          ========================================= -->
 
           <ng-container matColumnDef="total">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-total">
+            <th mat-header-cell *matHeaderCellDef class="col-total">
               Total
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-total">
+            <td mat-cell *matCellDef="let x" class="col-total">
 
               <strong class="total-line">
-
                 {{
-                  totalProducto(x)
-                    | currency:'USD':'symbol':'1.2-2'
+                totalProducto(x)
+                | currency:'USD':'symbol':'1.2-2'
                 }}
-
               </strong>
 
             </td>
 
           </ng-container>
 
-          <!-- ==================================================
+          <!-- ========================================
                ACCIONES
-          =================================================== -->
+          ========================================= -->
 
           <ng-container matColumnDef="acciones">
 
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="col-actions">
+            <th mat-header-cell *matHeaderCellDef class="col-actions" aria-label="Acciones">
+              Acciones
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let x"
-              class="col-actions">
+            <td mat-cell *matCellDef="let x" class="col-actions">
 
-              <button
-                mat-icon-button
-                type="button"
-                class="action delete"
-                matTooltip="Quitar"
-                (click)="eliminarProducto(x)">
+              <button mat-icon-button type="button" class="action delete" matTooltip="Quitar"
+                aria-label="Quitar accesorio" (click)="eliminarProducto(x)">
 
                 <mat-icon>delete_outline</mat-icon>
 
@@ -538,27 +433,30 @@
 
           </ng-container>
 
-          <!-- ==================================================
+          <!-- ========================================
                FILAS
-          =================================================== -->
+          ========================================= -->
 
-          <tr
-            mat-header-row
-            *matHeaderRowDef="displayedColumns()">
+          <tr mat-header-row *matHeaderRowDef="displayedColumns()">
           </tr>
 
-          <tr
-            mat-row
-            *matRowDef="let row; columns: displayedColumns()"
-            [class.row-warning]="nivelPrecio(row) === 'warning'"
-            [class.row-danger]="nivelPrecio(row) === 'danger'">
+          <tr mat-row *matRowDef="
+              let row;
+              columns: displayedColumns()
+            " [class.row-warning]="
+              nivelPrecio(row) === 'warning'
+            " [class.row-danger]="
+              nivelPrecio(row) === 'danger'
+            ">
           </tr>
+
+          <!-- ========================================
+               SIN DATOS
+          ========================================= -->
 
           <tr *matNoDataRow>
 
-            <td
-              class="no-data"
-              [attr.colspan]="displayedColumns().length">
+            <td class="no-data" [attr.colspan]="displayedColumns().length">
 
               <mat-icon>shopping_cart</mat-icon>
               Agregue accesorios a la nota de venta
@@ -576,7 +474,7 @@
   </div>
 
   <!-- ==================================================
-       RESUMEN
+       RESUMEN LATERAL
   =================================================== -->
 
   <div class="summary-column">
@@ -614,28 +512,28 @@
 
         <strong>
           {{
-            total()
-              | currency:'USD':'symbol':'1.2-2'
+          total()
+          | currency:'USD':'symbol':'1.2-2'
           }}
         </strong>
 
       </div>
 
-      <button
-        mat-flat-button
-        type="button"
-        class="invoice-btn"
-        [disabled]="!puedeGenerar() || guardando()"
+      <button mat-flat-button type="button" class="invoice-btn" [disabled]="!puedeGenerar() || guardando()"
         (click)="generar()">
 
         <mat-icon>
-          {{ guardando() ? 'hourglass_top' : 'receipt_long' }}
+          {{
+          guardando()
+          ? 'hourglass_top'
+          : 'receipt_long'
+          }}
         </mat-icon>
 
         {{
-          guardando()
-            ? 'Generando...'
-            : 'Generar nota de venta'
+        guardando()
+        ? 'Generando...'
+        : 'Generar nota de venta'
         }}
 
       </button>

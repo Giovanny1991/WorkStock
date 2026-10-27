@@ -1,198 +1,154 @@
+<!-- =====================================================
+     WORKSTOCK - HISTORIAL DE NOTAS DE VENTA
+     DISEÑO COMPACTO Y RESPONSIVE
+===================================================== -->
+
 <div class="page">
 
-  <!-- =====================================================
-       ENCABEZADO
-  ====================================================== -->
+  <!-- ENCABEZADO -->
 
   <div class="page-header">
 
     <div>
-
-      <h1>
-        Historial de notas de venta
-      </h1>
+      <h1>Historial de notas de venta</h1>
 
       <p>
         Consulta y administración de notas de venta registradas
       </p>
-
     </div>
 
   </div>
 
-
-  <!-- =====================================================
-       CONTENEDOR
-  ====================================================== -->
+  <!-- CONTENEDOR PRINCIPAL -->
 
   <div class="card">
 
-    <!-- =================================================
-         CARGANDO
-    ================================================== -->
-
     @if (cargando()) {
-
-    <mat-progress-bar mode="indeterminate">
-    </mat-progress-bar>
-
+    <mat-progress-bar mode="indeterminate" />
     }
 
-
-    <!-- =================================================
-         TOOLBAR
-    ================================================== -->
+    <!-- ===============================================
+         BARRA DE FILTROS
+    ================================================ -->
 
     <div class="toolbar">
 
-      <!-- ===============================================
-           BÚSQUEDA
-      ================================================ -->
+      <!-- BUSCADOR -->
 
-      <mat-form-field appearance="outline" class="search-field ws-search" subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
 
-        <input matInput type="text" placeholder="Nota, cliente, identificación, vendedor..."
-          aria-label="Buscar nota de venta" autocomplete="off" [formControl]="buscarControl">
+        <mat-icon matPrefix>search</mat-icon>
 
+        <input matInput type="text" [formControl]="buscarControl" placeholder="Nota, cliente, identificación..."
+          autocomplete="off" aria-label="Buscar notas de venta">
 
         @if (buscarControl.value) {
 
         <button mat-icon-button matSuffix type="button" class="clear-search" matTooltip="Limpiar búsqueda"
           aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()">
 
-          <mat-icon>
-            close
-          </mat-icon>
+          <mat-icon>close</mat-icon>
 
         </button>
-
-        } @else {
-
-        <mat-icon matSuffix>
-          search
-        </mat-icon>
 
         }
 
       </mat-form-field>
 
+      <!-- FECHA INICIAL -->
 
-      <!-- ===============================================
-           FILTROS
-      ================================================ -->
+      <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
 
-      <div class="toolbar-right">
+        <mat-label>Desde</mat-label>
 
-        <div class="document-filters" role="group" aria-label="Filtrar notas de venta">
+        <input matInput readonly [matDatepicker]="pickerInicial" [formControl]="fechaInicialControl" [max]="fechaMaxima"
+          placeholder="DD/MM/AAAA" (click)="pickerInicial.open()" aria-label="Fecha inicial">
 
-          <!-- TODOS -->
+        <mat-datepicker-toggle matIconSuffix [for]="pickerInicial">
+        </mat-datepicker-toggle>
 
-          <button type="button" class="filter-chip" [class.selected]="
-              filtroEstado() === 'TODOS'
-            " [attr.aria-pressed]="
-              filtroEstado() === 'TODOS'
-            " (click)="
-              cambiarFiltroEstado('TODOS')
-            ">
+        <mat-datepicker #pickerInicial></mat-datepicker>
 
-            Todos
+      </mat-form-field>
 
-          </button>
+      <!-- FECHA FINAL -->
 
+      <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
 
-          <!-- FACTURADOS -->
+        <mat-label>Hasta</mat-label>
 
-          <button type="button" class="filter-chip" [class.selected]="
-              filtroEstado() === 'FACTURADO'
-            " [attr.aria-pressed]="
-              filtroEstado() === 'FACTURADO'
-            " (click)="
-              cambiarFiltroEstado('FACTURADO')
-            ">
+        <input matInput readonly [matDatepicker]="pickerFinal" [formControl]="fechaFinalControl"
+          [min]="fechaInicialControl.value" [max]="fechaMaxima" placeholder="DD/MM/AAAA" (click)="pickerFinal.open()"
+          aria-label="Fecha final">
 
-            <mat-icon>
-              task_alt
-            </mat-icon>
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFinal">
+        </mat-datepicker-toggle>
 
-            Facturados
+        <mat-datepicker #pickerFinal></mat-datepicker>
 
-          </button>
+      </mat-form-field>
 
+      <!-- CONSULTAR Y LIMPIAR -->
 
-          <!-- ANULADOS -->
+      <div class="date-filter-actions">
 
-          <button type="button" class="filter-chip" [class.selected]="
-              filtroEstado() === 'ANULADA'
-            " [attr.aria-pressed]="
-              filtroEstado() === 'ANULADA'
-            " (click)="
-              cambiarFiltroEstado('ANULADA')
-            ">
+        <button mat-flat-button type="button" class="btn-apply-filters" [disabled]="cargando()"
+          matTooltip="Consultar período seleccionado" (click)="aplicarFechas()">
 
-            <mat-icon>
-              cancel
-            </mat-icon>
+          <mat-icon>search</mat-icon>
+          Consultar
 
-            Anulados
+        </button>
 
-          </button>
+        <button mat-stroked-button type="button" class="btn-clear-filters" [disabled]="cargando()"
+          matTooltip="Restablecer todos los filtros" (click)="limpiarFiltros()">
 
-        </div>
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar
 
+        </button>
 
-        <!-- ===============================================
-             CONTADOR REAL
-        ================================================ -->
+      </div>
 
-        <span class="records">
+      <!-- FILTROS POR ESTADO -->
 
-          @if (
-          totalRegistros() > 0
-          ) {
+      <div class="document-filters" role="group" aria-label="Filtrar notas de venta por estado">
 
-          {{
-          registroDesde()
-          }}
+        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'TODOS'"
+          [attr.aria-pressed]="filtroEstado() === 'TODOS'" (click)="cambiarFiltroEstado('TODOS')">
 
-          -
+          Todos
 
-          {{
-          registroHasta()
-          }}
+        </button>
 
-          de
+        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'FACTURADO'"
+          [attr.aria-pressed]="filtroEstado() === 'FACTURADO'" (click)="cambiarFiltroEstado('FACTURADO')">
 
-          {{
-          totalRegistros()
-          }}
+          Facturados
 
-          registros
+        </button>
 
-          } @else {
+        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'ANULADA'"
+          [attr.aria-pressed]="filtroEstado() === 'ANULADA'" (click)="cambiarFiltroEstado('ANULADA')">
 
-          0 registros
+          Anulados
 
-          }
-
-        </span>
+        </button>
 
       </div>
 
     </div>
 
-
-    <!-- =================================================
-         TABLA
-    ================================================== -->
+    <!-- ===============================================
+         TABLA DE NOTAS DE VENTA
+    ================================================ -->
 
     <div class="table-wrapper">
 
       <table mat-table [dataSource]="notas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
-        <!-- =============================================
-             NÚMERO
-        ============================================== -->
+        <!-- NÚMERO Y FECHA -->
 
         <ng-container matColumnDef="numero">
 
@@ -202,33 +158,24 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota">
 
             <span class="invoice-number">
-
               #{{ nota.numeroNV }}
-
             </span>
 
-
-            <small>
-
+            <small class="document-description">
               {{
               nota.fechaNotaVenta
               | date:'dd/MM/yyyy HH:mm'
               }}
-
             </small>
 
           </td>
 
         </ng-container>
 
-
-        <!-- =============================================
-             CLIENTE
-        ============================================== -->
+        <!-- CLIENTE -->
 
         <ng-container matColumnDef="cliente">
 
@@ -238,24 +185,21 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota">
 
             <span class="client-name">
-
               {{ nota.nombreCliente }}
-
             </span>
+
             <small>
-              {{ nota.identificacion }}</small>
+              {{ nota.identificacion }}
+            </small>
+
           </td>
 
         </ng-container>
 
-
-        <!-- =============================================
-             IDENTIFICACIÓN
-        ============================================== -->
+        <!-- IDENTIFICACIÓN -->
 
         <ng-container matColumnDef="identificacion">
 
@@ -265,19 +209,17 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota">
 
-            {{ nota.identificacion }}
+            <span class="identification-value">
+              {{ nota.identificacion }}
+            </span>
 
           </td>
 
         </ng-container>
 
-
-        <!-- =============================================
-             TOTAL
-        ============================================== -->
+        <!-- TOTAL -->
 
         <ng-container matColumnDef="total">
 
@@ -287,26 +229,20 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota" class="money-column">
 
             <span class="total-value">
-
               {{
               nota.totalVenta
               | currency:'USD':'symbol':'1.2-2'
               }}
-
             </span>
 
           </td>
 
         </ng-container>
 
-
-        <!-- =============================================
-             ESTADO
-        ============================================== -->
+        <!-- ESTADO -->
 
         <ng-container matColumnDef="estado">
 
@@ -316,14 +252,10 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota" class="status-column">
 
-            <span class="status" [class.active]="
-                nota.estado === 'FACTURADO'
-              " [class.cancelled]="
-                nota.estado === 'ANULADA'
-              ">
+            <span class="status" [class.active]="nota.estado === 'FACTURADO'"
+              [class.cancelled]="nota.estado === 'ANULADA'">
 
               {{ nota.estado }}
 
@@ -333,9 +265,7 @@
 
         </ng-container>
 
-        <!-- =============================================
-             VENDEDOR
-        ============================================== -->
+        <!-- VENDEDOR -->
 
         <ng-container matColumnDef="vendedor">
 
@@ -345,18 +275,17 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota">
 
-            {{ nota.vendedor }}
+            <span class="seller-name">
+              {{ nota.vendedor }}
+            </span>
 
           </td>
 
         </ng-container>
 
-        <!-- =============================================
-             ACCIONES
-        ============================================== -->
+        <!-- ACCIONES -->
 
         <ng-container matColumnDef="acciones">
 
@@ -366,106 +295,87 @@
 
           </th>
 
-
           <td mat-cell *matCellDef="let nota" class="actions-cell">
 
-            <!-- =========================================
-                 VISUALIZAR
+            <div class="actions-container">
 
-                 FACTURADO ✅
-                 ANULADA   ✅
-            ========================================== -->
+              <!-- VISUALIZAR -->
 
-            <button mat-icon-button type="button" class="view-btn" matTooltip="Visualizar nota"
-              (click)="visualizar(nota)">
+              <button mat-icon-button type="button" class="action view" matTooltip="Visualizar nota de venta"
+                aria-label="Visualizar nota de venta" (click)="visualizar(nota)">
 
-              <mat-icon>
-                visibility
-              </mat-icon>
+                <mat-icon>visibility</mat-icon>
 
-            </button>
+              </button>
 
+              <!-- ANULAR -->
 
-            <!-- =========================================
-                 ANULAR
+              @if (
+              esAdministrador() &&
+              nota.estado === 'FACTURADO'
+              ) {
 
-                 ADMINISTRADOR + FACTURADO
-            ========================================== -->
+              <button mat-icon-button type="button" class="action cancel" matTooltip="Anular nota de venta"
+                aria-label="Anular nota de venta" [disabled]="anulando() === nota.id" (click)="anular(nota)">
 
-            @if (
-            esAdministrador()
-            &&
-            nota.estado === 'FACTURADO'
-            ) {
-
-            <button mat-icon-button type="button" class="delete-btn" matTooltip="Anular nota" [disabled]="
+                <mat-icon>
+                  {{
                   anulando() === nota.id
-                " (click)="anular(nota)">
+                  ? 'hourglass_top'
+                  : 'cancel'
+                  }}
+                </mat-icon>
 
-              <mat-icon>
+              </button>
 
-                {{
-                anulando() === nota.id
-                ? 'hourglass_top'
-                : 'cancel'
-                }}
+              }
 
-              </mat-icon>
-
-            </button>
-
-            }
+            </div>
 
           </td>
 
         </ng-container>
 
+        <!-- ENCABEZADO -->
 
-        <!-- =============================================
-             FILAS
-        ============================================== -->
-
-        <tr mat-header-row *matHeaderRowDef="
-            displayedColumns
-          ">
+        <tr mat-header-row *matHeaderRowDef="displayedColumns">
         </tr>
 
+        <!-- FILAS -->
 
-        <tr mat-row *matRowDef="
-            let row;
-            columns: displayedColumns
-          " [class.row-cancelled]="
-            row.estado === 'ANULADA'
-          ">
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="row.estado === 'ANULADA'">
         </tr>
 
-
-        <!-- =============================================
-             SIN DATOS
-        ============================================== -->
+        <!-- SIN RESULTADOS -->
 
         <tr *matNoDataRow>
 
-          <td class="no-data" [attr.colspan]="
-              displayedColumns.length
-            ">
+          <td class="no-data" [attr.colspan]="displayedColumns.length">
 
-            <mat-icon>
-              receipt_long
-            </mat-icon>
+            <mat-icon>receipt_long</mat-icon>
 
+            @if (cargando()) {
 
-            @if (
-            busqueda()
-            ||
+            <span>
+              Consultando notas de venta...
+            </span>
+
+            } @else if (
+            busqueda() ||
             filtroEstado() !== 'TODOS'
             ) {
 
-            No existen notas que coincidan con los filtros aplicados
+            <span>
+              No existen notas que coincidan
+              con los filtros aplicados.
+            </span>
 
             } @else {
 
-            No existen notas de venta para mostrar
+            <span>
+              No existen notas de venta
+              para el período seleccionado.
+            </span>
 
             }
 
@@ -477,10 +387,7 @@
 
     </div>
 
-
-    <!-- =================================================
-         PAGINADOR
-    ================================================== -->
+    <!-- PAGINACIÓN -->
 
     <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
       [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)">

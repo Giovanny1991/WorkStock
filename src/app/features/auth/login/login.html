@@ -1,27 +1,32 @@
 <div class="login-shell">
-
   <!-- PANEL INFORMATIVO -->
   <aside class="showcase">
     <div class="showcase-overlay"></div>
     <div class="showcase-shape showcase-shape-1"></div>
     <div class="showcase-shape showcase-shape-2"></div>
-
     <div class="showcase-content">
+      <!-- MARCA WORKSTOCK -->
+      @if (!mostrarLogoEmpresa()) {
+      <div class="workstock-brand">
+        <img src="/logo.png" alt="WorkStock" class="workstock-brand-logo">
+      </div>
+      }@else {
+      <div class="workstock-brand">
+        <img class="workstock-brand-logo" [src]="urlLogoEmpresa()" [alt]="'Logo de ' + nombreEmpresa()"
+          (error)="errorLogo()">
+      </div>
+      }
 
       <div class="showcase-main">
-
         <div class="showcase-kicker">
           <span class="kicker-line"></span>
           <span>PLATAFORMA EMPRESARIAL</span>
         </div>
-
-        <h1 class="showcase-title">
-          Todo tu negocio,
-          <strong>mejor organizado.</strong>
-        </h1>
+        <h1 class="showcase-title">Todo tu negocio, <strong>mejor organizado.</strong></h1>
+        <p class="showcase-description">Controla tus operaciones con información centralizada, segura y siempre
+          disponible.</p>
 
         <div class="benefits">
-
           <article class="benefit-card">
             <div class="benefit-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -30,13 +35,11 @@
                 <path d="M8 8h8M8 12h8M8 16h5" />
               </svg>
             </div>
-
             <div class="benefit-copy">
               <h3>Gestión centralizada</h3>
               <p>Inventario, clientes, ventas y operaciones.</p>
             </div>
           </article>
-
           <article class="benefit-card">
             <div class="benefit-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -44,13 +47,11 @@
                 <path d="M5 18V10M10 18V6M15 18v-4M20 18V8" />
               </svg>
             </div>
-
             <div class="benefit-copy">
               <h3>Información clara</h3>
               <p>Datos organizados para tomar mejores decisiones.</p>
             </div>
           </article>
-
           <article class="benefit-card">
             <div class="benefit-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -59,48 +60,35 @@
                 <path d="m9 12 2 2 4-4" />
               </svg>
             </div>
-
             <div class="benefit-copy">
               <h3>Acceso seguro</h3>
               <p>Usuarios y permisos para proteger tu información.</p>
             </div>
           </article>
-
         </div>
       </div>
 
       <footer class="showcase-footer">
-        <div class="status">
-          <span class="status-dot"></span>
-          <span>Plataforma WorkStock</span>
-        </div>
+        <div class="status"><span class="status-dot"></span><span>Plataforma WorkStock</span></div>
         <span class="product-name">Gestión empresarial</span>
       </footer>
-
     </div>
   </aside>
 
-
-  <!-- PANEL DE ACCESO -->
+  <!-- PANEL DE AUTENTICACIÓN -->
   <main class="access-panel">
-
     <div class="access-wrap">
-
-      <!-- EMPRESA Y LOGO -->
       <header class="access-top">
-
         <div class="company-summary">
-          <span class="company-caption">EMPRESA</span>
-          <h2 class="company-name">
-            {{ nombreEmpresa() }}
-          </h2>
+          <span class="company-caption">BIENVENIDO A</span>
+          <h2 class="company-name">{{ nombreEmpresa() }}</h2>
         </div>
-
+        @if (mostrarLogoEmpresa()) {
         <div class="company-logo-area">
-          @if (mostrarLogoEmpresa()) {
-          <img class="company-logo" [src]="urlLogoEmpresa()" [alt]="'Logo de ' + nombreEmpresa()"
-            (error)="errorLogo()" />
-          } @else {
+          <img class="company-logo" [src]="urlLogoEmpresa()" [alt]="'Logo de ' + nombreEmpresa()" (error)="errorLogo()">
+        </div>
+        } @else {
+        <div class="company-logo-area">
           <div class="company-logo-fallback" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
               stroke-linejoin="round">
@@ -108,89 +96,50 @@
               <path d="M8 9h8M8 13h8M8 17h5" />
             </svg>
           </div>
-          }
         </div>
-
+        }
       </header>
 
-
-      <!-- TÍTULO -->
       <section class="access-intro">
-        <p>Ingresa tus credenciales para continuar.</p>
+        <p>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
       </section>
 
-
-      <!-- FORMULARIO -->
       <section class="login-card">
-
         <form class="login-form" [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
-
           <!-- USUARIO -->
           <div class="field">
             <label for="login">Usuario</label>
-
-            <div class="control" [class.is-invalid]="
-                form.controls.login.invalid &&
-                form.controls.login.touched
-              ">
-
+            <div class="control" [class.is-invalid]="form.controls.login.invalid && form.controls.login.touched">
               <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 21a8 8 0 0 1 16 0" />
               </svg>
-
               <input id="login" type="text" formControlName="login" placeholder="Ingresa tu usuario"
-                autocomplete="username" [attr.aria-invalid]="
-                  form.controls.login.invalid &&
-                  form.controls.login.touched
-                " />
-
+                autocomplete="username"
+                [attr.aria-invalid]="form.controls.login.invalid && form.controls.login.touched">
             </div>
-
-            @if (
-            form.controls.login.invalid &&
-            form.controls.login.touched
-            ) {
-            <small class="field-error">
-              Ingresa tu usuario.
-            </small>
+            @if (form.controls.login.invalid && form.controls.login.touched) {
+            <small class="field-error">Ingresa tu usuario.</small>
             }
-
           </div>
-
 
           <!-- CONTRASEÑA -->
           <div class="field">
             <label for="password">Contraseña</label>
-
-            <div class="control" [class.is-invalid]="
-                form.controls.password.invalid &&
-                form.controls.password.touched
-              ">
-
+            <div class="control" [class.is-invalid]="form.controls.password.invalid && form.controls.password.touched">
               <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="5" y="10" width="14" height="11" rx="2" />
                 <path d="M8 10V7a4 4 0 0 1 8 0v3" />
               </svg>
-
               <input id="password" [type]="mostrarPassword() ? 'text' : 'password'" formControlName="password"
-                placeholder="Ingresa tu contraseña" autocomplete="current-password" [attr.aria-invalid]="
-                  form.controls.password.invalid &&
-                  form.controls.password.touched
-                " />
-
-              <button class="toggle" type="button" [attr.aria-label]="
-                  mostrarPassword()
-                    ? 'Ocultar contraseña'
-                    : 'Mostrar contraseña'
-                " [attr.aria-pressed]="mostrarPassword()" (click)="
-                  mostrarPassword.set(!mostrarPassword())
-                ">
-
+                placeholder="Ingresa tu contraseña" autocomplete="current-password"
+                [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched">
+              <button class="toggle" type="button"
+                [attr.aria-label]="mostrarPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                [attr.aria-pressed]="mostrarPassword()" (click)="mostrarPassword.set(!mostrarPassword())">
                 @if (mostrarPassword()) {
-
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M3 3l18 18" />
@@ -198,92 +147,56 @@
                   <path
                     d="M9.9 5.1A10.5 10.5 0 0 1 12 5c5.5 0 9 7 9 7a15 15 0 0 1-3.1 4M6.3 6.3C4 7.7 3 12 3 12s3.5 7 9 7a9.3 9.3 0 0 0 3.7-.8" />
                 </svg>
-
                 } @else {
-
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-
                 }
-
               </button>
-
             </div>
-
-            @if (
-            form.controls.password.invalid &&
-            form.controls.password.touched
-            ) {
-            <small class="field-error">
-              Ingresa tu contraseña.
-            </small>
+            @if (form.controls.password.invalid && form.controls.password.touched) {
+            <small class="field-error">Ingresa tu contraseña.</small>
             }
-
           </div>
 
-
-          <!-- ERROR DE AUTENTICACIÓN -->
+          <!-- MENSAJE DE ERROR -->
           @if (mensajeError()) {
-
           <div class="auth-error" role="alert">
-
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
               stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10" />
               <path d="M12 7v6m0 4h.01" />
             </svg>
-
             <span>{{ mensajeError() }}</span>
-
           </div>
-
           }
-
 
           <!-- BOTÓN -->
           <button class="submit" type="submit" [disabled]="cargando()">
-
             @if (cargando()) {
-
-            <span class="spinner" aria-hidden="true"></span>
-            <span>Ingresando...</span>
-
+            <span class="spinner" aria-hidden="true"></span><span>Ingresando...</span>
             } @else {
-
             <span>Iniciar sesión</span>
-
             <svg class="submit-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14" />
               <path d="m13 6 6 6-6 6" />
             </svg>
-
             }
-
           </button>
-
         </form>
-
       </section>
 
-
-      <!-- SEGURIDAD -->
       <p class="panel-foot">
-
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
           stroke-linejoin="round" aria-hidden="true">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
           <path d="m9 12 2 2 4-4" />
         </svg>
-
         Acceso exclusivo para usuarios autorizados
-
       </p>
-
     </div>
   </main>
-
 </div>

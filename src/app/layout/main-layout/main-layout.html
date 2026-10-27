@@ -1,20 +1,31 @@
+
 <!-- ================================================
      WORKSTOCK - LAYOUT PRINCIPAL
 ================================================ -->
 
-<mat-sidenav-container class="layout-container" [attr.data-workstock-theme]="tema" [attr.data-workstock-palette]="paleta">
+<mat-sidenav-container
+  class="layout-container"
+  [attr.data-workstock-theme]="tema"
+  [attr.data-workstock-palette]="paleta"
+>
 
   <!-- ============================================
        MENÚ LATERAL
   ============================================= -->
 
-  <mat-sidenav class="sidebar" [mode]="isMobile ? 'over' : 'side'" [opened]="sidebarOpened"
-    (openedChange)="sidebarOpened = $event" [autoFocus]="false">
+  <mat-sidenav
+    class="sidebar"
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="sidebarOpened"
+    (openedChange)="sidebarOpened = $event"
+    [autoFocus]="false"
+  >
 
-    <app-sidebar (navegar)="cerrarMenuEnMovil()" />
+    <app-sidebar
+      (navegar)="cerrarMenuEnMovil()"
+    />
 
   </mat-sidenav>
-
 
   <!-- ============================================
        CONTENIDO PRINCIPAL
@@ -22,13 +33,48 @@
 
   <mat-sidenav-content class="main-column">
 
-    <!-- HEADER -->
+    <!-- ========================================
+         HEADER
+    ======================================== -->
 
-    <app-header (menuClick)="toggleMenu()" [tema]="tema" (cambiarTema)="alternarTema()" [paleta]="paleta" (cambiarPaleta)="cambiarPaleta($event)" />
+    <app-header
+      (menuClick)="toggleMenu()"
+      [tema]="tema"
+      (cambiarTema)="alternarTema()"
+      [paleta]="paleta"
+      (cambiarPaleta)="cambiarPaleta($event)"
+    />
 
-    <!-- CONTENIDO DE CADA MÓDULO -->
+    <!-- ========================================
+         INDICADOR DE CAMBIO DE PANTALLA
 
-    <main class="content" id="contenido-principal">
+         Se muestra cuando la navegación
+         de Angular tarda más de 180 ms.
+    ======================================== -->
+
+    @if (navegacionCargando()) {
+
+      <div
+        class="navigation-progress"
+        role="progressbar"
+        aria-label="Cargando pantalla"
+        aria-valuetext="Cargando pantalla"
+      >
+
+        <div class="navigation-progress-bar"></div>
+
+      </div>
+
+    }
+
+    <!-- ========================================
+         CONTENIDO DE CADA MÓDULO
+    ======================================== -->
+
+    <main
+      class="content"
+      id="contenido-principal"
+    >
 
       <router-outlet />
 
@@ -38,12 +84,13 @@
 
 </mat-sidenav-container>
 
-
 <!-- ================================================
-     INDICADOR GLOBAL DE CARGA
+     INDICADOR GLOBAL HTTP
 
-     FUERA DEL MAT-SIDENAV-CONTAINER
-     PARA CUBRIR TODA LA PANTALLA
+     Se mantiene fuera del mat-sidenav-container
+     para cubrir toda la pantalla.
+
+     Sigue funcionando con loadingInterceptor.
 ================================================ -->
 
 <app-global-loading />

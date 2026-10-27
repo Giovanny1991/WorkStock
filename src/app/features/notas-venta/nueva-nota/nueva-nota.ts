@@ -163,10 +163,6 @@ export class NuevaNotaVenta implements OnInit {
   readonly displayedColumns = computed(() => {
     const columnas = ['producto', 'imei'];
 
-    if (this.esAdministrador()) {
-      columnas.push('costo');
-    }
-
     columnas.push('precio', 'acciones');
     return columnas;
   });

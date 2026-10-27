@@ -1,183 +1,128 @@
-<div class="page-header">
+<!-- =====================================================
+     WORKSTOCK - HISTORIAL DE NOTAS DE ACCESORIOS
+     DISEÑO COMPACTO Y RESPONSIVE
+===================================================== -->
 
-  <div>
+<div class="page">
 
-    <h1>
-      Historial de notas de accesorios
-    </h1>
+  <!-- ENCABEZADO -->
 
-    <p>
-      Consulta las ventas de accesorios registradas
-    </p>
-
+  <div class="page-header">
+    <div>
+      <h1>Historial de notas de accesorios</h1>
+      <p>Consulta las ventas de accesorios registradas</p>
+    </div>
   </div>
 
+  <!-- CONTENEDOR PRINCIPAL -->
 
-  <button
-    mat-stroked-button
-    type="button"
-    (click)="cargar()"
-    [disabled]="cargando()"
-  >
+  <div class="card">
 
-    <mat-icon>
-      refresh
-    </mat-icon>
+    @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" />
+    }
 
-    Actualizar
+    <!-- FILTROS -->
 
-  </button>
+    <div class="toolbar">
 
-</div>
+      <!-- BUSCADOR -->
 
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
 
-<div class="card">
+        <mat-icon matPrefix>search</mat-icon>
 
-  <!-- =====================================================
-       CARGANDO
-  ====================================================== -->
+        <input matInput type="text" [formControl]="buscarControl" placeholder="Nota, cliente, identificación..."
+          autocomplete="off" aria-label="Buscar notas de accesorios">
 
-  @if (cargando()) {
+        @if (buscarControl.value) {
 
-    <mat-progress-bar
-      mode="indeterminate"
-    >
-    </mat-progress-bar>
+        <button mat-icon-button matSuffix type="button" class="clear-search" matTooltip="Limpiar búsqueda"
+          aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()">
 
-  }
-
-
-  <!-- =====================================================
-       TOOLBAR
-  ====================================================== -->
-
-  <div class="toolbar">
-
-    <!-- =================================================
-         BÚSQUEDA
-    ================================================== -->
-
-    <mat-form-field
-      appearance="outline"
-      class="search-field"
-      subscriptSizing="dynamic"
-    >
-
-      <input
-        matInput
-        type="text"
-        [formControl]="buscarControl"
-        placeholder="Nota, cliente, identificación, vendedor..."
-        autocomplete="off"
-      >
-
-
-      @if (buscarControl.value) {
-
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          class="clear-search"
-          matTooltip="Limpiar búsqueda"
-          aria-label="Limpiar búsqueda"
-          (click)="limpiarBusqueda()"
-        >
-
-          <mat-icon>
-            close
-          </mat-icon>
+          <mat-icon>close</mat-icon>
 
         </button>
 
-      } @else {
+        }
 
-        <mat-icon matSuffix>
-          search
-        </mat-icon>
+      </mat-form-field>
 
-      }
+      <!-- FECHA INICIAL -->
 
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
 
+        <mat-label>Desde</mat-label>
 
-    <!-- =================================================
-         FILTROS
-    ================================================== -->
+        <input matInput readonly [matDatepicker]="pickerInicial" [formControl]="fechaInicialControl" [max]="fechaMaxima"
+          placeholder="DD/MM/AAAA" (click)="pickerInicial.open()" aria-label="Fecha inicial de venta de accesorios">
 
-    <div class="toolbar-right">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerInicial">
+        </mat-datepicker-toggle>
 
-      <div
-        class="document-filters"
-        role="group"
-        aria-label="Filtrar notas de accesorios"
-      >
+        <mat-datepicker #pickerInicial></mat-datepicker>
 
-        <!-- TODOS -->
+      </mat-form-field>
 
-        <button
-          type="button"
-          class="filter-chip"
-          [class.selected]="
-            filtroEstado() === 'TODOS'
-          "
-          [attr.aria-pressed]="
-            filtroEstado() === 'TODOS'
-          "
-          (click)="
-            cambiarFiltroEstado('TODOS')
-          "
-        >
+      <!-- FECHA FINAL -->
+
+      <mat-form-field appearance="outline" class="date-field" subscriptSizing="dynamic">
+
+        <mat-label>Hasta</mat-label>
+
+        <input matInput readonly [matDatepicker]="pickerFinal" [formControl]="fechaFinalControl"
+          [min]="fechaInicialControl.value" [max]="fechaMaxima" placeholder="DD/MM/AAAA" (click)="pickerFinal.open()"
+          aria-label="Fecha final de venta de accesorios">
+
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFinal">
+        </mat-datepicker-toggle>
+
+        <mat-datepicker #pickerFinal></mat-datepicker>
+
+      </mat-form-field>
+
+      <!-- CONSULTAR / LIMPIAR -->
+
+      <div class="date-filter-actions">
+
+        <button mat-flat-button type="button" class="btn-apply-filters" [disabled]="cargando()"
+          matTooltip="Consultar período" (click)="aplicarFechas()">
+
+          <mat-icon>search</mat-icon>
+          Consultar
+
+        </button>
+
+        <button mat-stroked-button type="button" class="btn-clear-filters" [disabled]="cargando()"
+          matTooltip="Restablecer filtros" (click)="limpiarFiltros()">
+
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar
+
+        </button>
+
+      </div>
+
+      <!-- FILTROS DE ESTADO -->
+
+      <div class="document-filters" role="group" aria-label="Filtrar notas de accesorios por estado">
+
+        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'TODOS'"
+          [attr.aria-pressed]="filtroEstado() === 'TODOS'" (click)="cambiarFiltroEstado('TODOS')">
 
           Todos
 
         </button>
 
-
-        <!-- FACTURADOS -->
-
-        <button
-          type="button"
-          class="filter-chip"
-          [class.selected]="
-            filtroEstado() === 'FACTURADO'
-          "
-          [attr.aria-pressed]="
-            filtroEstado() === 'FACTURADO'
-          "
-          (click)="
-            cambiarFiltroEstado('FACTURADO')
-          "
-        >
-
-          <mat-icon>
-            task_alt
-          </mat-icon>
+        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'FACTURADO'"
+          [attr.aria-pressed]="filtroEstado() === 'FACTURADO'" (click)="cambiarFiltroEstado('FACTURADO')">
 
           Facturados
 
         </button>
 
-
-        <!-- ANULADOS -->
-
-        <button
-          type="button"
-          class="filter-chip"
-          [class.selected]="
-            filtroEstado() === 'ANULADA'
-          "
-          [attr.aria-pressed]="
-            filtroEstado() === 'ANULADA'
-          "
-          (click)="
-            cambiarFiltroEstado('ANULADA')
-          "
-        >
-
-          <mat-icon>
-            cancel
-          </mat-icon>
+        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'ANULADA'"
+          [attr.aria-pressed]="filtroEstado() === 'ANULADA'" (click)="cambiarFiltroEstado('ANULADA')">
 
           Anulados
 
@@ -185,438 +130,238 @@
 
       </div>
 
-
-      <!-- =================================================
-           TOTAL REAL EN SQL
-      ================================================== -->
-
-      <span class="records">
-
-        @if (
-          totalRegistros() > 0
-        ) {
-
-          {{
-            registroDesde()
-          }}
-
-          -
-
-          {{
-            registroHasta()
-          }}
-
-          de
-
-          {{
-            totalRegistros()
-          }}
-
-          registros
-
-        } @else {
-
-          0 registros
-
-        }
-
-      </span>
-
     </div>
 
-  </div>
+    <!-- TABLA -->
 
+    <div class="table-wrapper">
 
-  <!-- =====================================================
-       TABLA
-  ====================================================== -->
+      <table mat-table [dataSource]="registros()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+        [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
-  <div class="table-wrapper">
+        <!-- NÚMERO Y FECHA -->
 
-    <table
-      mat-table
-      [dataSource]="registros()"
-      matSort
-      matSortDisableClear
-      [matSortActive]="columnaOrden()"
-      [matSortDirection]="direccionOrden()"
-      (matSortChange)="cambiarOrden($event)"
-    >
+        <ng-container matColumnDef="numeroNV">
 
-      <!-- =================================================
-           NÚMERO DE NOTA
-      ================================================== -->
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="numero">
 
-      <ng-container
-        matColumnDef="numeroNV"
-      >
+            N.º Nota
 
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="numero"
-        >
+          </th>
 
-          Nota
+          <td mat-cell *matCellDef="let nota">
 
-        </th>
+            <span class="invoice-number">
+              #{{ nota.numeroNV }}
+            </span>
 
-
-        <td
-          mat-cell
-          *matCellDef="let x"
-        >
-
-          <span class="invoice-number">
-
-            #{{ x.numeroNV }}
-
-          </span>
-
-
-          <small>
-
-            {{
-              x.fechaNotaVenta
+            <small class="document-description">
+              {{
+              nota.fechaNotaVenta
               | date:'dd/MM/yyyy HH:mm'
-            }}
+              }}
+            </small>
 
-          </small>
+          </td>
 
-        </td>
+        </ng-container>
 
-      </ng-container>
+        <!-- CLIENTE -->
 
+        <ng-container matColumnDef="cliente">
 
-      <!-- =================================================
-           CLIENTE
-      ================================================== -->
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="cliente">
 
-      <ng-container
-        matColumnDef="cliente"
-      >
+            Cliente
 
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="cliente"
-        >
+          </th>
 
-          Cliente
+          <td mat-cell *matCellDef="let nota">
 
-        </th>
+            <span class="client-name">
+              {{ nota.nombreCliente }}
+            </span>
 
+            <small>
+              {{ nota.identificacion }}
+            </small>
 
-        <td
-          mat-cell
-          *matCellDef="let x"
-        >
+          </td>
 
-          <span class="client-name">
+        </ng-container>
 
-            {{ x.nombreCliente }}
+        <!-- TOTAL -->
 
-          </span>
+        <ng-container matColumnDef="total">
 
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="total" class="money-column">
 
-          <small>
+            Total
 
-            {{ x.identificacion }}
+          </th>
 
-          </small>
+          <td mat-cell *matCellDef="let nota" class="money-column">
 
-        </td>
-
-      </ng-container>
-
-
-      <!-- =================================================
-           VENDEDOR
-      ================================================== -->
-
-      <ng-container
-        matColumnDef="vendedor"
-      >
-
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="vendedor"
-        >
-
-          Vendedor
-
-        </th>
-
-
-        <td
-          mat-cell
-          *matCellDef="let x"
-        >
-
-          {{ x.vendedor }}
-
-        </td>
-
-      </ng-container>
-
-
-      <!-- =================================================
-           TOTAL
-      ================================================== -->
-
-      <ng-container
-        matColumnDef="total"
-      >
-
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="total"
-          class="money-column"
-        >
-
-          Total
-
-        </th>
-
-
-        <td
-          mat-cell
-          *matCellDef="let x"
-          class="money-column"
-        >
-
-          <span class="total-value">
-
-            {{
-              x.totalVenta
+            <span class="total-value">
+              {{
+              nota.totalVenta
               | currency:'USD':'symbol':'1.2-2'
-            }}
+              }}
+            </span>
 
-          </span>
+          </td>
 
-        </td>
+        </ng-container>
 
-      </ng-container>
+        <!-- ESTADO -->
 
+        <ng-container matColumnDef="estado">
 
-      <!-- =================================================
-           ESTADO
-      ================================================== -->
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
 
-      <ng-container
-        matColumnDef="estado"
-      >
+            Estado
 
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="estado"
-          class="status-column"
-        >
+          </th>
 
-          Estado
+          <td mat-cell *matCellDef="let nota" class="status-column">
 
-        </th>
+            <span class="status" [class.active]="nota.estado === 'FACTURADO'"
+              [class.cancelled]="nota.estado === 'ANULADA'">
 
+              {{ nota.estado }}
 
-        <td
-          mat-cell
-          *matCellDef="let x"
-          class="status-column"
-        >
+            </span>
 
-          <span
-            class="status"
-            [class.active]="
-              x.estado === 'FACTURADO'
-            "
-            [class.cancelled]="
-              x.estado === 'ANULADA'
-            "
-          >
+          </td>
 
-            {{ x.estado }}
+        </ng-container>
 
-          </span>
+        <!-- VENDEDOR -->
 
-        </td>
+        <ng-container matColumnDef="vendedor">
 
-      </ng-container>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="vendedor">
 
+            Vendedor
 
-      <!-- =================================================
-           ACCIONES
-      ================================================== -->
+          </th>
 
-      <ng-container
-        matColumnDef="acciones"
-      >
+          <td mat-cell *matCellDef="let nota">
 
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          class="actions-header"
-        >
+            <span class="seller-name">
+              {{ nota.vendedor }}
+            </span>
 
-          Acciones
+          </td>
 
-        </th>
+        </ng-container>
 
+        <!-- ACCIONES -->
 
-        <td
-          mat-cell
-          *matCellDef="let nota"
-          class="actions-cell"
-        >
+        <ng-container matColumnDef="acciones">
 
-          <!-- =============================================
-               VISUALIZAR
+          <th mat-header-cell *matHeaderCellDef class="actions-header">
 
-               FACTURADO ✅
-               ANULADA ✅
-          ============================================== -->
+            Acciones
 
-          <button
-            mat-icon-button
-            type="button"
-            matTooltip="Visualizar"
-            class="view-btn"
-            (click)="visualizar(nota)"
-          >
+          </th>
 
-            <mat-icon>
-              visibility
-            </mat-icon>
+          <td mat-cell *matCellDef="let nota" class="actions-cell">
 
-          </button>
+            <div class="actions-container">
 
+              <!-- VISUALIZAR -->
 
-          <!-- =============================================
-               ANULAR
+              <button mat-icon-button type="button" class="action view" matTooltip="Visualizar nota de accesorios"
+                aria-label="Visualizar nota de accesorios" (click)="visualizar(nota)">
 
-               ADMINISTRADOR + FACTURADO
-          ============================================== -->
+                <mat-icon>visibility</mat-icon>
 
-          @if (
-            esAdministrador()
-            &&
-            nota.estado === 'FACTURADO'
-          ) {
+              </button>
 
-            <button
-              mat-icon-button
-              type="button"
-              matTooltip="Anular nota"
-              class="delete-btn"
-              [disabled]="
-                anulando() === nota.id
-              "
-              (click)="anular(nota)"
-            >
+              <!-- ANULAR -->
 
-              <mat-icon>
+              @if (
+              esAdministrador() &&
+              nota.estado === 'FACTURADO'
+              ) {
 
-                {{
+              <button mat-icon-button type="button" class="action cancel" matTooltip="Anular nota"
+                aria-label="Anular nota de accesorios" [disabled]="anulando() === nota.id" (click)="anular(nota)">
+
+                <mat-icon>
+                  {{
                   anulando() === nota.id
                   ? 'hourglass_top'
                   : 'cancel'
-                }}
+                  }}
+                </mat-icon>
 
-              </mat-icon>
+              </button>
 
-            </button>
+              }
 
-          }
+            </div>
 
-        </td>
+          </td>
 
-      </ng-container>
+        </ng-container>
 
+        <!-- FILAS -->
 
-      <!-- =================================================
-           FILAS
-      ================================================== -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns">
+        </tr>
 
-      <tr
-        mat-header-row
-        *matHeaderRowDef="
-          displayedColumns
-        "
-      >
-      </tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-cancelled]="row.estado === 'ANULADA'">
+        </tr>
 
+        <!-- SIN RESULTADOS -->
 
-      <tr
-        mat-row
-        *matRowDef="
-          let row;
-          columns: displayedColumns
-        "
-        [class.row-cancelled]="
-          row.estado === 'ANULADA'
-        "
-      >
-      </tr>
+        <tr *matNoDataRow>
 
+          <td class="no-data" [attr.colspan]="displayedColumns.length">
 
-      <!-- =================================================
-           SIN DATOS
-      ================================================== -->
+            <mat-icon>receipt_long</mat-icon>
 
-      <tr
-        *matNoDataRow
-        class="no-data-row"
-      >
+            @if (cargando()) {
 
-        <td
-          class="no-data"
-          [attr.colspan]="
-            displayedColumns.length
-          "
-        >
+            <span>
+              Consultando notas de accesorios...
+            </span>
 
-          <mat-icon>
-            receipt_long
-          </mat-icon>
-
-
-          @if (
-            busqueda()
-            ||
+            } @else if (
+            busqueda() ||
             filtroEstado() !== 'TODOS'
-          ) {
+            ) {
 
-            No existen notas que coincidan con los filtros aplicados
+            <span>
+              No existen notas que coincidan
+              con los filtros aplicados.
+            </span>
 
-          } @else {
+            } @else {
 
-            No existen notas de accesorios para mostrar
+            <span>
+              No existen notas de accesorios
+              para el período seleccionado.
+            </span>
 
-          }
+            }
 
-        </td>
+          </td>
 
-      </tr>
+        </tr>
 
-    </table>
+      </table>
+
+    </div>
+
+    <!-- PAGINACIÓN REMOTA -->
+
+    <mat-paginator [length]="totalRegistros()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+      [pageSizeOptions]="opcionesPagina" showFirstLastButtons (page)="cambiarPagina($event)">
+    </mat-paginator>
 
   </div>
-
-
-  <!-- =====================================================
-       PAGINADOR REMOTO
-  ====================================================== -->
-
-  <mat-paginator
-    [length]="totalRegistros()"
-    [pageIndex]="pageIndex()"
-    [pageSize]="pageSize()"
-    [pageSizeOptions]="opcionesPagina"
-    showFirstLastButtons
-    (page)="cambiarPagina($event)"
-  >
-  </mat-paginator>
 
 </div>

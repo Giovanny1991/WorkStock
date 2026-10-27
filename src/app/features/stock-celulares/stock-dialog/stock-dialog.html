@@ -2,8 +2,6 @@
      WORKSTOCK - NUEVO / EDITAR EQUIPO
 ===================================================== -->
 
-<!-- ENCABEZADO -->
-
 <div class="dialog-header">
 
   <div class="header-identity">
@@ -17,14 +15,14 @@
     <div class="header-text">
 
       <h2>
-        {{ esEdicion ? 'Editar equipo' : 'Nuevo equipo' }}
+        {{ esEdicion ? 'Editar equipo' : 'Ingreso de celulares' }}
       </h2>
 
       <p>
         {{
         esEdicion
         ? 'Actualiza la información del dispositivo.'
-        : 'Registra un nuevo dispositivo en el inventario.'
+        : 'Registra uno o varios equipos con las mismas características.'
         }}
       </p>
 
@@ -41,283 +39,455 @@
 
 </div>
 
-<!-- CONTENIDO -->
-
 <mat-dialog-content class="dialog-content">
 
-  <form [formGroup]="form" class="form-grid">
+  <form [formGroup]="form" class="form-layout">
 
-    <!-- PROVEEDOR -->
+    <!-- ===============================================
+         DATOS COMUNES
+    ================================================ -->
 
-    <div class="field-group">
+    <div class="common-grid">
 
-      <label for="equipo-proveedor">
-        Proveedor
-      </label>
+      <!-- PROVEEDOR -->
 
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+      <div class="field-group">
 
-        <input id="equipo-proveedor" matInput type="text" placeholder="Buscar proveedor..."
-          aria-label="Buscar proveedor" autocomplete="off" [formControl]="proveedorTexto"
-          [matAutocomplete]="autoProveedor" [readonly]="cargandoSeleccionInicial()">
+        <label for="equipo-proveedor">
+          Proveedor
+        </label>
 
-        <mat-icon matSuffix class="suffix-icon">
-          search
-        </mat-icon>
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
-        <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="mostrarProveedor"
-          (optionSelected)="seleccionarProveedor($event.option.value)">
+          <input id="equipo-proveedor" [class.ws-input-invalid]="proveedorConError()" matInput type="text"
+            placeholder="Buscar proveedor..." aria-label="Buscar proveedor" autocomplete="off"
+            [formControl]="proveedorTexto" [matAutocomplete]="autoProveedor" [readonly]="cargandoSeleccionInicial()">
 
-          @for (x of proveedoresFiltrados(); track x.id) {
+          <mat-icon matSuffix class="suffix-icon">
+            search
+          </mat-icon>
 
-          <mat-option [value]="x">
-            {{ x.nombreProveedor }}
-          </mat-option>
+          <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="mostrarProveedor"
+            (optionSelected)="seleccionarProveedor($event.option.value)">
 
-          }
+            @for (x of proveedoresFiltrados(); track x.id) {
 
-          @if (buscandoProveedores()) {
+            <mat-option [value]="x">
+              {{ x.nombreProveedor }}
+            </mat-option>
 
-          <mat-option disabled>
-            Buscando proveedores...
-          </mat-option>
+            }
 
-          } @else if (errorBusquedaProveedores()) {
+            @if (buscandoProveedores()) {
 
-          <mat-option disabled>
-            No fue posible buscar proveedores
-          </mat-option>
+            <mat-option disabled>
+              Buscando proveedores...
+            </mat-option>
 
-          } @else if (
-          proveedoresFiltrados().length === 0 &&
-          !proveedorSeleccionado()
+            } @else if (errorBusquedaProveedores()) {
+
+            <mat-option disabled>
+              No fue posible buscar proveedores
+            </mat-option>
+
+            } @else if (
+            proveedoresFiltrados().length === 0 &&
+            !proveedorSeleccionado()
+            ) {
+
+            <mat-option disabled>
+              Escriba al menos 2 caracteres para buscar
+            </mat-option>
+
+            }
+
+          </mat-autocomplete>
+
+        </mat-form-field>
+        @if (proveedorConError()) { <span class="ws-field-error" role="alert">Seleccione un proveedor de la
+          lista.</span> }
+
+      </div>
+
+      <!-- MODELO -->
+
+      <div class="field-group">
+
+        <label for="equipo-modelo">
+          Modelo
+        </label>
+
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+          <input id="equipo-modelo" [class.ws-input-invalid]="modeloConError()" matInput type="text"
+            placeholder="Buscar marca o modelo..." aria-label="Buscar modelo" autocomplete="off"
+            [formControl]="modeloTexto" [matAutocomplete]="autoModelo" [readonly]="cargandoSeleccionInicial()">
+
+          <mat-icon matSuffix class="suffix-icon">
+            search
+          </mat-icon>
+
+          <mat-autocomplete #autoModelo="matAutocomplete" [displayWith]="mostrarModelo"
+            (optionSelected)="seleccionarModelo($event.option.value)">
+
+            @for (x of modelosFiltrados(); track x.id) {
+
+            <mat-option [value]="x">
+              {{ descripcionModelo(x) }}
+            </mat-option>
+
+            }
+
+            @if (buscandoModelos()) {
+
+            <mat-option disabled>
+              Buscando modelos...
+            </mat-option>
+
+            } @else if (errorBusquedaModelos()) {
+
+            <mat-option disabled>
+              No fue posible buscar modelos
+            </mat-option>
+
+            } @else if (
+            modelosFiltrados().length === 0 &&
+            !modeloSeleccionado()
+            ) {
+
+            <mat-option disabled>
+              Escriba al menos 2 caracteres para buscar
+            </mat-option>
+
+            }
+
+          </mat-autocomplete>
+
+        </mat-form-field>
+        @if (modeloConError()) { <span class="ws-field-error" role="alert">Seleccione un modelo de la lista.</span> }
+
+      </div>
+
+      <!-- PRECIO COSTO -->
+
+      <div class="field-group">
+
+        <label for="equipo-costo">
+          Precio costo
+        </label>
+
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+          <span matTextPrefix>
+            $&nbsp;
+          </span>
+
+          <input id="equipo-costo" [class.ws-input-invalid]="campoConError('precioCosto')" matInput type="number"
+            min="0" step="0.01" placeholder="0.00" formControlName="precioCosto">
+
+        </mat-form-field>
+        @if (campoConError('precioCosto')) { <span class="ws-field-error" role="alert">Ingrese un costo mayor a
+          cero.</span> }
+
+      </div>
+
+      <!-- PRECIO VENTA -->
+
+      <div class="field-group">
+
+        <label for="equipo-venta">
+          Precio de venta al público
+        </label>
+
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+          <span matTextPrefix>
+            $&nbsp;
+          </span>
+
+          <input id="equipo-venta" [class.ws-input-invalid]="campoConError('precioVenta') || precioVentaInsuficiente()"
+            matInput type="number" min="0" step="0.01" placeholder="0.00" formControlName="precioVenta">
+
+        </mat-form-field>
+        @if (campoConError('precioVenta') || precioVentaInsuficiente()) { <span class="ws-field-error" role="alert">El
+          precio de venta debe ser mayor al costo y mayor a cero.</span> }
+
+      </div>
+
+      <!-- DOCUMENTO -->
+
+      <div class="field-group">
+
+        <label for="equipo-documento">
+          Documento
+        </label>
+
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+          <mat-select id="equipo-documento" [class.ws-input-invalid]="campoConError('factura')"
+            formControlName="factura" placeholder="Seleccionar documento">
+
+            <mat-option value="SI">
+              Factura
+            </mat-option>
+
+            <mat-option value="NO">
+              Nota de venta
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+        @if (campoConError('factura')) { <span class="ws-field-error" role="alert">Seleccione Factura o Nota de
+          venta.</span> }
+
+      </div>
+
+      <!-- ESTADO -->
+
+      <div class="field-group">
+
+        <label for="equipo-estado">
+          Estado del equipo
+        </label>
+
+        <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+          <mat-select id="equipo-estado" [class.ws-input-invalid]="campoConError('estadoCelular')"
+            formControlName="estadoCelular" placeholder="Seleccionar estado">
+
+            <mat-option value="NUEVO">
+              Nuevo
+            </mat-option>
+
+            <mat-option value="USADO">
+              Usado
+            </mat-option>
+
+          </mat-select>
+
+          @if (
+          form.controls.estadoCelular.invalid &&
+          form.controls.estadoCelular.touched
           ) {
 
-          <mat-option disabled>
-            Escriba al menos 2 caracteres para buscar
-          </mat-option>
+          <mat-error>
+            Seleccione el estado del equipo
+          </mat-error>
 
           }
 
-        </mat-autocomplete>
+        </mat-form-field>
+        @if (campoConError('estadoCelular')) { <span class="ws-field-error" role="alert">Seleccione el estado del
+          celular.</span> }
 
-      </mat-form-field>
+      </div>
 
     </div>
 
-    <!-- MODELO -->
+    <!-- ===============================================
+         EQUIPOS / IMEI
+    ================================================ -->
 
-    <div class="field-group">
+    <section class="imei-section">
 
-      <label for="equipo-modelo">
-        Modelo
-      </label>
+      <div class="imei-section-header">
 
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+        <div>
 
-        <input id="equipo-modelo" matInput type="text" placeholder="Buscar marca o modelo..." aria-label="Buscar modelo"
-          autocomplete="off" [formControl]="modeloTexto" [matAutocomplete]="autoModelo"
-          [readonly]="cargandoSeleccionInicial()">
+          <h3>
+            {{ esEdicion ? 'Identificación del equipo' : 'Equipos / IMEI' }}
+          </h3>
 
-        <mat-icon matSuffix class="suffix-icon">
-          search
-        </mat-icon>
+          <p>
+            {{
+            esEdicion
+            ? 'Modifica los IMEI del equipo seleccionado.'
+            : 'Agrega un par de IMEI por cada celular que deseas ingresar.'
+            }}
+          </p>
 
-        <mat-autocomplete #autoModelo="matAutocomplete" [displayWith]="mostrarModelo"
-          (optionSelected)="seleccionarModelo($event.option.value)">
+        </div>
 
-          @for (x of modelosFiltrados(); track x.id) {
+        @if (!esEdicion) {
 
-          <mat-option [value]="x">
-            {{ descripcionModelo(x) }}
-          </mat-option>
-
-          }
-
-          @if (buscandoModelos()) {
-
-          <mat-option disabled>
-            Buscando modelos...
-          </mat-option>
-
-          } @else if (errorBusquedaModelos()) {
-
-          <mat-option disabled>
-            No fue posible buscar modelos
-          </mat-option>
-
-          } @else if (
-          modelosFiltrados().length === 0 &&
-          !modeloSeleccionado()
-          ) {
-
-          <mat-option disabled>
-            Escriba al menos 2 caracteres para buscar
-          </mat-option>
-
-          }
-
-        </mat-autocomplete>
-
-      </mat-form-field>
-
-    </div>
-
-    <!-- IMEI 1 -->
-
-    <div class="field-group">
-
-      <label for="equipo-imei1">
-        IMEI 1
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <input id="equipo-imei1" matInput type="text" formControlName="imei1" maxlength="15" inputmode="numeric"
-          placeholder="Ingrese 15 dígitos" autocomplete="off">
-
-        @if (
-        form.controls.imei1.invalid &&
-        form.controls.imei1.touched
-        ) {
-
-        <mat-error>
-          Debe contener 15 dígitos
-        </mat-error>
+        <span class="equipment-count">
+          {{ cantidadEquipos }}
+          {{ cantidadEquipos === 1 ? 'equipo' : 'equipos' }}
+        </span>
 
         }
 
-      </mat-form-field>
+      </div>
 
-    </div>
+      <div formArrayName="equipos" class="imei-list">
 
-    <!-- IMEI 2 -->
-
-    <div class="field-group">
-
-      <label for="equipo-imei2">
-        IMEI 2
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <input id="equipo-imei2" matInput type="text" formControlName="imei2" maxlength="15" inputmode="numeric"
-          placeholder="IMEI secundario" autocomplete="off">
-
-      </mat-form-field>
-
-    </div>
-
-    <!-- PRECIO COSTO -->
-
-    <div class="field-group">
-
-      <label for="equipo-costo">
-        Precio costo
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <span matTextPrefix>
-          $&nbsp;
-        </span>
-
-        <input id="equipo-costo" matInput type="number" min="0" step="0.01" placeholder="0.00"
-          formControlName="precioCosto">
-
-      </mat-form-field>
-
-    </div>
-
-    <!-- PRECIO VENTA -->
-
-    <div class="field-group">
-
-      <label for="equipo-venta">
-        Precio de venta al público
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <span matTextPrefix>
-          $&nbsp;
-        </span>
-
-        <input id="equipo-venta" matInput type="number" min="0" step="0.01" placeholder="0.00"
-          formControlName="precioVenta">
-
-      </mat-form-field>
-
-    </div>
-
-    <!-- DOCUMENTO -->
-
-    <div class="field-group">
-
-      <label for="equipo-documento">
-        Documento
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <mat-select id="equipo-documento" formControlName="factura" placeholder="Seleccionar documento">
-
-          <mat-option value="SI">
-            Factura
-          </mat-option>
-
-          <mat-option value="NO">
-            Nota de venta
-          </mat-option>
-
-        </mat-select>
-
-      </mat-form-field>
-
-    </div>
-
-    <!-- ESTADO DEL EQUIPO -->
-
-    <div class="field-group">
-
-      <label for="equipo-estado">
-        Estado del equipo
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <mat-select id="equipo-estado" formControlName="estadoCelular" placeholder="Seleccionar estado">
-
-          <mat-option value="NUEVO">
-            Nuevo
-          </mat-option>
-
-          <mat-option value="USADO">
-            Usado
-          </mat-option>
-
-        </mat-select>
-
-        @if (
-        form.controls.estadoCelular.invalid &&
-        form.controls.estadoCelular.touched
+        @for (
+        equipo of equipos.controls;
+        track equipo;
+        let i = $index
         ) {
 
-        <mat-error>
-          Seleccione el estado del equipo
-        </mat-error>
+        <div class="imei-card" [class.ws-card-invalid]="equipoConError(i)" [formGroupName]="i">
+
+          <div class="imei-card-header">
+
+            <div class="imei-card-title">
+
+              <mat-icon>
+                smartphone
+              </mat-icon>
+
+              <span>
+                {{ esEdicion ? 'Equipo' : 'Equipo ' + (i + 1) }}
+              </span>
+
+            </div>
+
+            @if (
+            !esEdicion &&
+            cantidadEquipos > 1
+            ) {
+
+            <button mat-icon-button type="button" class="remove-equipment-btn" [disabled]="guardando()"
+              [attr.aria-label]="'Eliminar equipo ' + (i + 1)" (click)="eliminarEquipo(i)">
+
+              <mat-icon>
+                delete_outline
+              </mat-icon>
+
+            </button>
+
+            }
+
+          </div>
+
+          <div class="imei-grid">
+
+            <!-- IMEI 1 -->
+
+            <div class="field-group">
+
+              <label [for]="'equipo-imei1-' + i">
+                IMEI 1
+              </label>
+
+              <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+                <input [id]="'equipo-imei1-' + i" [class.ws-input-invalid]="imeiConError(i, 'imei1')" matInput
+                  type="text" formControlName="imei1" maxlength="15" inputmode="numeric"
+                  placeholder="Ingrese 15 dígitos" autocomplete="off">
+
+                @if (
+                equipo.controls.imei1.invalid &&
+                equipo.controls.imei1.touched
+                ) {
+
+                <mat-error>
+                  Debe contener 15 dígitos
+                </mat-error>
+
+                } @else if (
+                imeiDuplicado(i, 'imei1')
+                ) {
+
+                <mat-error>
+                  IMEI repetido en otro equipo
+                </mat-error>
+
+                }
+
+              </mat-form-field>
+              @if (imeiConError(i, 'imei1')) {
+              <span class="ws-field-error" role="alert">{{ imeiDuplicado(i, 'imei1') ? 'IMEI repetido en otro equipo.' :
+                'Debe contener exactamente 15 dígitos.' }}</span>
+              }
+
+            </div>
+
+            <!-- IMEI 2 -->
+
+            <div class="field-group">
+
+              <label [for]="'equipo-imei2-' + i">
+                IMEI 2
+                <span class="optional-text">
+                  (opcional)
+                </span>
+              </label>
+
+              <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+
+                <input [id]="'equipo-imei2-' + i" [class.ws-input-invalid]="imeiConError(i, 'imei2')" matInput
+                  type="text" formControlName="imei2" maxlength="15" inputmode="numeric" placeholder="IMEI secundario"
+                  autocomplete="off">
+
+                @if (
+                equipo.controls.imei2.invalid &&
+                equipo.controls.imei2.touched
+                ) {
+
+                <mat-error>
+                  Debe contener 15 dígitos
+                </mat-error>
+
+                } @else if (
+                imeiDuplicado(i, 'imei2')
+                ) {
+
+                <mat-error>
+                  IMEI repetido en otro equipo
+                </mat-error>
+
+                }
+
+              </mat-form-field>
+              @if (imeiConError(i, 'imei2')) {
+              <span class="ws-field-error" role="alert">{{ imeiDuplicado(i, 'imei2') ? 'IMEI repetido en otro equipo.' :
+                'Debe contener exactamente 15 dígitos.' }}</span>
+              }
+
+            </div>
+
+          </div>
+
+        </div>
 
         }
 
-      </mat-form-field>
+      </div>
 
+      @if (!esEdicion) {
+
+      <button mat-stroked-button type="button" class="add-equipment-btn"
+        [disabled]="guardando() || cantidadEquipos >= 200" (click)="agregarEquipo()">
+
+        <mat-icon>
+          add
+        </mat-icon>
+
+        Agregar otro equipo
+
+      </button>
+
+      }
+
+    </section>
+
+    <!-- VALIDACIONES VISIBLES -->
+    @if (!guardando() && (form.dirty || mostrarErrores()) && erroresFormulario().length > 0) {
+    <div class="form-validation-summary" role="status" aria-live="polite">
+      <strong>Para guardar, revise lo siguiente:</strong>
+      <ul>
+        @for (mensaje of erroresFormulario(); track mensaje) {
+        <li>{{ mensaje }}</li>
+        }
+      </ul>
     </div>
-
+    }
   </form>
 
 </mat-dialog-content>
-
-<!-- ACCIONES INFERIORES -->
 
 <mat-dialog-actions class="dialog-actions" align="end">
 
@@ -327,13 +497,8 @@
 
   </button>
 
-  <button mat-flat-button type="button" class="save-btn" [disabled]="
-      form.invalid ||
-      !proveedorSeleccionado() ||
-      !modeloSeleccionado() ||
-      cargandoSeleccionInicial() ||
-      guardando()
-    " (click)="guardar()">
+  <button mat-flat-button type="button" class="save-btn" [disabled]="cargandoSeleccionInicial() || guardando()"
+    (click)="guardar()">
 
     <mat-icon>
       {{ guardando() ? 'hourglass_top' : 'save' }}
@@ -347,7 +512,9 @@
       ? 'Cargando...'
       : esEdicion
       ? 'Actualizar equipo'
-      : 'Guardar equipo'
+      : cantidadEquipos === 1
+      ? 'Guardar equipo'
+      : 'Guardar ' + cantidadEquipos + ' equipos'
       }}
     </span>
 

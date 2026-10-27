@@ -160,31 +160,42 @@ export class AccesoriosStockService {
 
   }
 
+
   // ===================================================
-  // NUEVO: BÚSQUEDA REMOTA PARA AUTOCOMPLETE
+  // BÚSQUEDA REMOTA PARA ÓRDENES DE TRABAJO
   //
-  // Consulta 25 accesorios por solicitud.
-  // El filtrado ocurre en SQL Server.
-  // No descarga todo el inventario.
+  // - Solo accesorios disponibles
+  // - 25 resultados por petición
+  // - Paginación desde SQL Server
   // ===================================================
 
   buscarParaAutocomplete(
     texto: string
   ): Observable<AccesoriosStockListadoResponse> {
 
+    const busqueda = texto
+      .trim()
+      .replace(/\s+/g, ' ')
+      .slice(0, 100);
+
     return this.listarPaginado({
+
       page: 1,
+
       pageSize: 25,
-      filtro: 'disponibles',
-      busqueda: texto
-        .trim()
-        .replace(/\s+/g, ' ')
-        .slice(0, 100),
+
+      filtro: 'disponible',
+
+      busqueda,
+
       sortBy: 'accesorio',
+
       sortDir: 'asc'
+
     });
 
   }
+
 
   // ===================================================
   // OBTENER

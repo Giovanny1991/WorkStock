@@ -1,99 +1,73 @@
 /* =====================================================
    WORKSTOCK - HEADER
-   ESTILOS DEPURADOS Y UNIFICADOS
-
-   Compatible con:
-   - WorkStock original (blanco)
-   - M&C clásico
-   - Azul WorkStock
-   - Verde
-   - Morado
-   - Grafito
-
-   Conserva el modo claro / oscuro
+   Diseño compacto, responsive y multi-tema
+   Incluye verificación de actualizaciones PWA
 ===================================================== */
 
-/* =====================================================
-   HOST
-===================================================== */
-
+/* VARIABLES DEL ENCABEZADO */
 :host {
   display: block;
   min-width: 0;
-
-  /*
-   * Colores predeterminados para paletas oscuras.
-   * El tema original los sobrescribe más abajo.
-   */
-
   --header-text: #ffffff;
-  --header-text-muted: rgba(255, 255, 255, 0.85);
-
-  --header-button-bg: rgba(255, 255, 255, 0.15);
-  --header-button-hover: rgba(255, 255, 255, 0.25);
-
+  --header-text-muted: rgba(255, 255, 255, .85);
+  --header-button-bg: rgba(255, 255, 255, .15);
+  --header-button-hover: rgba(255, 255, 255, .25);
   --header-profile-bg: transparent;
-  --header-profile-hover: rgba(255, 255, 255, 0.13);
-
-  --header-avatar-bg: rgba(255, 255, 255, 0.18);
-  --header-border: rgba(0, 0, 0, 0.12);
+  --header-profile-hover: rgba(255, 255, 255, .13);
+  --header-avatar-bg: rgba(255, 255, 255, .18);
+  --header-border: rgba(0, 0, 0, .12);
+  --header-update-color: #075db0;
 }
 
 /* =====================================================
-   HEADER PRINCIPAL
+   ENCABEZADO PRINCIPAL
 ===================================================== */
-
 .header {
-  display: flex;
-  align-items: center;
-
-  height: 60px;
-  min-height: 60px;
-
-  box-sizing: border-box;
-
-  padding: 0 18px;
-  gap: 10px;
-
   position: relative;
   z-index: 10;
-
-  background: var(--ws-header-bg,
-      var(--ws-surface, #ffffff));
-
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 60px;
+  min-height: 60px;
+  padding: 0 18px;
+  box-sizing: border-box;
+  background: var(--ws-header-bg, var(--ws-surface, #ffffff));
   color: var(--header-text);
-
   border-bottom: 1px solid var(--header-border);
 }
 
 /* =====================================================
-   BOTÓN MENÚ
+   BOTÓN DEL MENÚ LATERAL
 ===================================================== */
-
 .menu-button {
-  flex: 0 0 auto;
-
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 36px;
   width: 36px;
   height: 36px;
-
   color: var(--header-text) !important;
 
   mat-icon {
     color: inherit;
+  }
+
+  &:hover {
+    border-radius: 9px;
+    background: var(--header-button-hover);
   }
 }
 
 /* =====================================================
    IDENTIDAD WORKSTOCK
 ===================================================== */
-
 .workstock-brand {
   display: flex;
   align-items: center;
-
   gap: 9px;
   min-width: 0;
-
   color: var(--header-text);
 }
 
@@ -101,24 +75,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
+  flex: 0 0 30px;
   width: 30px;
   height: 30px;
-
-  flex: 0 0 30px;
-
   border-radius: 7px;
-
   background: var(--header-button-bg);
   color: var(--header-text);
 
   mat-icon {
     width: 18px;
     height: 18px;
-
     font-size: 18px;
     line-height: 18px;
-
     color: inherit;
   }
 }
@@ -127,65 +95,50 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   gap: 1px;
-
   min-width: 0;
   line-height: 1.15;
 
   strong {
     display: block;
-
     color: var(--header-text);
-
     font-size: 13px;
     font-weight: 700;
     line-height: 15px;
-
     white-space: nowrap;
   }
 
   small {
     display: block;
-
     color: var(--header-text-muted);
-
     font-size: 9px;
     font-weight: 400;
     line-height: 12px;
-
     white-space: nowrap;
   }
 }
 
-/* =====================================================
-   ESPACIADOR
-===================================================== */
-
+/* ESPACIADOR */
 .spacer {
   flex: 1 1 auto;
   min-width: 8px;
 }
 
 /* =====================================================
-   SELECTOR DE PALETAS Y MODO OSCURO
+   BOTONES DE PALETA Y MODO OSCURO
 ===================================================== */
-
 .palette-toggle,
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 36px;
-
   width: 36px;
   height: 36px;
-
   border-radius: 10px;
-
   color: var(--header-text) !important;
   background: var(--header-button-bg) !important;
-
-  transition:
-    background-color 0.18s ease,
-    color 0.18s ease;
+  transition: background-color .18s ease, color .18s ease;
 
   &:hover:not(:disabled) {
     background: var(--header-button-hover) !important;
@@ -194,37 +147,27 @@
   mat-icon {
     width: 19px;
     height: 19px;
-
     font-size: 19px;
     line-height: 19px;
-
     color: inherit;
   }
 }
 
 /* =====================================================
-   BOTÓN DE USUARIO
+   BOTÓN DEL USUARIO
 ===================================================== */
-
 .user-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   flex: 0 0 auto;
-
   height: 40px;
-
   min-width: 0;
   max-width: 218px;
-
   padding: 0 8px !important;
-
   border-radius: 10px;
-
   background: var(--header-profile-bg);
   color: var(--header-text) !important;
-
   line-height: normal;
   text-align: left;
 
@@ -233,149 +176,128 @@
   }
 }
 
-/* =====================================================
-   CONTENIDO DEL PERFIL
-===================================================== */
-
+/* CONTENIDO DEL PERFIL */
 .profile-content {
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex-wrap: nowrap;
   justify-content: flex-start;
-
+  flex-wrap: nowrap;
   gap: 9px;
-
   width: 100%;
   min-width: 0;
   height: 40px;
-
   vertical-align: middle;
   text-transform: none;
 }
 
-/* =====================================================
-   AVATAR
-===================================================== */
-
+/* AVATAR */
 .avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
+  flex: 0 0 30px;
   width: 30px;
   height: 30px;
-
-  flex: 0 0 30px;
-
   border-radius: 50%;
-
   background: var(--header-avatar-bg);
   color: var(--header-text);
 
   mat-icon {
     display: block;
-
     width: 18px;
     height: 18px;
-
     font-size: 18px;
     line-height: 18px;
-
     color: inherit;
   }
 }
 
-/* =====================================================
-   INFORMACIÓN DEL USUARIO
-===================================================== */
-
+/* NOMBRE Y ROL */
 .user-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   gap: 2px;
-
   flex: 0 1 auto;
-
   min-width: 0;
   max-width: 140px;
-
   text-align: left;
   line-height: normal;
 
   .name {
     display: block;
-
     overflow: hidden;
-
     color: var(--header-text);
-
     font-size: 11px;
     font-weight: 650;
     line-height: 14px;
-
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
   .role {
     display: block;
-
     overflow: hidden;
-
     color: var(--header-text-muted);
-
     font-size: 9px;
     line-height: 12px;
-
     white-space: nowrap;
     text-overflow: ellipsis;
-
     text-transform: capitalize;
   }
 }
 
-/* =====================================================
-   FLECHA DEL PERFIL
-===================================================== */
-
+/* FLECHA DEL PERFIL */
 .arrow {
   display: block;
-
+  flex: 0 0 17px;
   width: 17px;
   height: 17px;
-
-  flex: 0 0 17px;
-
   color: var(--header-text);
-
   font-size: 17px;
   line-height: 17px;
 }
 
 /* =====================================================
-   WORKSTOCK ORIGINAL
-   HEADER BLANCO - TEXTOS OSCUROS
+   BOTÓN BUSCAR ACTUALIZACIONES PWA
 ===================================================== */
+.menu-update-item {
+  cursor: pointer;
 
+  mat-icon {
+    color: var(--header-update-color);
+  }
+
+  &:disabled {
+    opacity: .65;
+    cursor: wait;
+  }
+}
+
+/* ÍCONO DE VERIFICACIÓN EN CURSO */
+.update-spinning {
+  display: inline-block;
+  animation: workstock-update-spin 1s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes workstock-update-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================================================
+   PALETA ORIGINAL - ENCABEZADO BLANCO
+===================================================== */
 :host-context(.layout-container[data-workstock-palette='original']) {
-
-  /*
-   * Sustituye solamente los colores.
-   * No modifica estructura ni dimensiones.
-   */
-
   --header-text: #172b4d;
   --header-text-muted: #64748b;
-
   --header-button-bg: #edf3fa;
   --header-button-hover: #e2eaf5;
-
   --header-profile-bg: #edf3fa;
   --header-profile-hover: #e2eaf5;
-
   --header-avatar-bg: #e8f1fc;
   --header-border: #e2e8f0;
 
@@ -385,26 +307,28 @@
 }
 
 /* =====================================================
-   MODO OSCURO + WORKSTOCK ORIGINAL
-
-   Esta regla solo se aplica cuando el layout utiliza
-   la clase .dark-theme o .dark.
-
-   Si el modo oscuro de tu aplicación utiliza otro
-   selector, se debe adaptar a ese selector real.
+   MODO OSCURO - TODAS LAS PALETAS
 ===================================================== */
-
-:host-context(.layout-container.dark-theme [data-workstock-palette='original']) {
+:host-context(.layout-container.dark-theme) {
   --header-text: #f1f5f9;
   --header-text-muted: #cbd5e1;
+  --header-button-bg: rgba(255, 255, 255, .10);
+  --header-button-hover: rgba(255, 255, 255, .18);
+  --header-profile-bg: rgba(255, 255, 255, .08);
+  --header-profile-hover: rgba(255, 255, 255, .14);
+  --header-avatar-bg: rgba(255, 255, 255, .12);
+  --header-border: #334155;
+}
 
-  --header-button-bg: rgba(255, 255, 255, 0.10);
-  --header-button-hover: rgba(255, 255, 255, 0.18);
-
-  --header-profile-bg: rgba(255, 255, 255, 0.08);
-  --header-profile-hover: rgba(255, 255, 255, 0.14);
-
-  --header-avatar-bg: rgba(255, 255, 255, 0.12);
+/* MODO OSCURO + PALETA ORIGINAL */
+:host-context(.layout-container.dark-theme[data-workstock-palette='original']) {
+  --header-text: #f1f5f9;
+  --header-text-muted: #cbd5e1;
+  --header-button-bg: rgba(255, 255, 255, .10);
+  --header-button-hover: rgba(255, 255, 255, .18);
+  --header-profile-bg: rgba(255, 255, 255, .08);
+  --header-profile-hover: rgba(255, 255, 255, .14);
+  --header-avatar-bg: rgba(255, 255, 255, .12);
   --header-border: #334155;
 
   .header {
@@ -413,18 +337,64 @@
 }
 
 /* =====================================================
-   RESPONSIVE
+   RESPONSIVE - TABLET
 ===================================================== */
-
-@media (max-width: 520px) {
-
+@media (max-width: 900px) {
   .header {
+    padding: 0 13px;
+    gap: 8px;
+  }
+
+  .user-button {
+    max-width: 175px;
+  }
+
+  .user-info {
+    max-width: 100px;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE - CELULARES
+===================================================== */
+@media (max-width: 600px) {
+  .header {
+    height: 56px;
+    min-height: 56px;
     padding: 0 10px;
     gap: 6px;
   }
 
+  .menu-button {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .workstock-brand {
+    gap: 6px;
+  }
+
+  .workstock-mark {
+    flex-basis: 27px;
+    width: 27px;
+    height: 27px;
+  }
+
+  .workstock-text strong {
+    font-size: 12px;
+  }
+
   .workstock-text small {
     display: none;
+  }
+
+  .palette-toggle,
+  .theme-toggle {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
   }
 
   .user-info,
@@ -433,47 +403,57 @@
   }
 
   .user-button {
+    height: 36px;
     padding: 0 5px !important;
   }
 
   .profile-content {
+    height: 36px;
     gap: 0;
+  }
+
+  .avatar {
+    flex-basis: 28px;
+    width: 28px;
+    height: 28px;
   }
 }
 
-
 /* =====================================================
-   HEADER - MODO OSCURO
+   CELULARES MUY PEQUEÑOS
 ===================================================== */
+@media (max-width: 390px) {
+  .header {
+    padding: 0 7px;
+    gap: 4px;
+  }
 
-:host-context(
-  .layout-container.dark-theme
-) {
-  --header-text: #f1f5f9;
-  --header-text-muted: #cbd5e1;
+  .workstock-text strong {
+    font-size: 11px;
+  }
 
-  --header-button-bg: rgba(255, 255, 255, 0.10);
-  --header-button-hover: rgba(255, 255, 255, 0.18);
+  .spacer {
+    min-width: 2px;
+  }
 
-  --header-profile-bg: rgba(255, 255, 255, 0.08);
-  --header-profile-hover: rgba(255, 255, 255, 0.14);
-
-  --header-avatar-bg: rgba(255, 255, 255, 0.12);
-  --header-border: #334155;
+  .palette-toggle,
+  .theme-toggle {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
 }
 
-/* Prioridad cuando la paleta seleccionada sea original */
-:host-context(
-  .layout-container.dark-theme[data-workstock-palette='original']
-) {
-  --header-text: #f1f5f9;
-  --header-text-muted: #cbd5e1;
+/* =====================================================
+   ACCESIBILIDAD
+===================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .update-spinning {
+    animation: none;
+  }
 
-  --header-button-bg: rgba(255, 255, 255, 0.10);
-  --header-button-hover: rgba(255, 255, 255, 0.18);
-
-  --header-profile-bg: rgba(255, 255, 255, 0.08);
-  --header-profile-hover: rgba(255, 255, 255, 0.14);
-
-  --header-avatar-bg: rgba(255, 255, 255, 0.12);
+  .palette-toggle,
+  .theme-toggle {
+    transition: none;
+  }
 }

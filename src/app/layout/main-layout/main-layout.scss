@@ -1,4 +1,11 @@
-/* Tokens compartidos por header, sidebar y contenido. */
+/* ============================================
+   WORKSTOCK - LAYOUT PRINCIPAL
+============================================ */
+
+/* ============================================
+   TOKENS COMPARTIDOS
+============================================ */
+
 .layout-container {
   --ws-canvas: #f5f7fb;
   --ws-surface: #ffffff;
@@ -14,8 +21,13 @@
   --ws-brand-soft: #eaf3fd;
   --ws-brand: #1b67a6;
   --ws-scroll: #d4deeb;
+
   color-scheme: light;
 }
+
+/* ============================================
+   MODO OSCURO
+============================================ */
 
 .layout-container[data-workstock-theme='dark'] {
   --ws-canvas: #101827;
@@ -32,74 +44,126 @@
   --ws-brand-soft: #203d5c;
   --ws-brand: #9ac6f6;
   --ws-scroll: #3e4e62;
+
   color-scheme: dark;
-  /* Colores MDC para que los componentes internos hereden correctamente. */
+
   --mdc-theme-surface: var(--ws-surface);
   --mdc-theme-on-surface: var(--ws-text);
-  --mat-expansion-container-background-color: var(--ws-surface);
-  --mat-expansion-container-text-color: var(--ws-text);
-  --mat-expansion-header-text-color: var(--ws-text);
-  --mat-sidenav-container-background-color: var(--ws-canvas);
-  --mat-sidenav-content-background-color: var(--ws-canvas);
-  --mat-sidenav-container-text-color: var(--ws-text);
+
+  --mat-expansion-container-background-color:
+    var(--ws-surface);
+
+  --mat-expansion-container-text-color:
+    var(--ws-text);
+
+  --mat-expansion-header-text-color:
+    var(--ws-text);
+
+  --mat-sidenav-container-background-color:
+    var(--ws-canvas);
+
+  --mat-sidenav-content-background-color:
+    var(--ws-canvas);
+
+  --mat-sidenav-container-text-color:
+    var(--ws-text);
 }
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+============================================ */
 
 .layout-container {
-    height: 100dvh;
-    background: var(--ws-canvas);
+  height: 100dvh;
+  background: var(--ws-canvas);
 }
 
+/* ============================================
+   SIDEBAR
+============================================ */
+
 .sidebar {
-    width: 264px;
-    max-width: calc(100vw - 45px);
-    border-right: 1px solid var(--ws-border);
-    background: var(--ws-surface);
+  width: 240px;
+  max-width: calc(100vw - 45px);
+  border-right: 1px solid var(--ws-border);
+  background: var(--ws-surface);
 }
 
 .sidebar.mat-drawer {
-    border-radius: 0 !important;
+  border-radius: 0 !important;
 }
 
+/* ============================================
+   CONTENIDO PRINCIPAL
+============================================ */
+
 .main-column {
-    height: 100%;
-    background: var(--ws-canvas);
+  position: relative;
+  height: 100%;
+  background: var(--ws-canvas);
 }
 
 .content {
-    box-sizing: border-box;
-    min-height: calc(100dvh - 60px);
-    padding: 18px 22px 30px;
+  box-sizing: border-box;
+  min-height: calc(100dvh - 60px);
+  padding: 18px 22px 30px;
 }
 
+/* ============================================
+   RESPONSIVE
+============================================ */
+
 @media (max-width: 900px) {
-    .content {
-        padding: 15px;
-    }
+
+  .content {
+    padding: 15px;
+  }
+
 }
 
 @media (max-width: 520px) {
-    .content {
-        padding: 12px;
-    }
+
+  .content {
+    padding: 12px;
+  }
+
 }
 
-/* El contenedor padre transmite todos los tokens CSS al Header y Sidebar. */
+/* ============================================
+   TOKENS MATERIAL - MODO OSCURO
+============================================ */
+
 .layout-container[data-workstock-theme='dark'] {
-  --mat-sidenav-container-background-color: var(--ws-canvas);
-  --mat-sidenav-content-background-color: var(--ws-canvas);
-  --mat-expansion-container-background-color: var(--ws-surface-muted);
-  --mat-expansion-header-text-color: var(--ws-text);
-  --mdc-list-list-item-label-text-color: var(--ws-text);
-  --mdc-list-list-item-leading-icon-color: var(--ws-icon);
+  --mat-sidenav-container-background-color:
+    var(--ws-canvas);
+
+  --mat-sidenav-content-background-color:
+    var(--ws-canvas);
+
+  --mat-expansion-container-background-color:
+    var(--ws-surface-muted);
+
+  --mat-expansion-header-text-color:
+    var(--ws-text);
+
+  --mdc-list-list-item-label-text-color:
+    var(--ws-text);
+
+  --mdc-list-list-item-leading-icon-color:
+    var(--ws-icon);
 }
+
 .layout-container .main-column,
-.layout-container .sidebar { transition: background-color .2s ease, color .2s ease; }
+.layout-container .sidebar {
+  transition:
+    background-color .2s ease,
+    color .2s ease;
+}
 
+/* ============================================
+   PALETAS DE NAVEGACIÓN
+============================================ */
 
-/* =====================================================
-   PALETAS: SOLO ENCABEZADO Y NAVEGACIÓN
-   El modo claro/oscuro conserva sus propios tokens.
-   ===================================================== */
 .layout-container {
   --ws-header-bg: #dd4b39;
   --ws-side-bg: #222d32;
@@ -109,6 +173,11 @@
   --ws-side-muted: #b8c7ce;
   --ws-side-hover: #314249;
 }
+
+/* ============================================
+   PALETA AZUL
+============================================ */
+
 .layout-container[data-workstock-palette='azul'] {
   --ws-header-bg: #075db0;
   --ws-side-bg: #172b45;
@@ -116,6 +185,11 @@
   --ws-side-expanded: #263d59;
   --ws-side-hover: #304865;
 }
+
+/* ============================================
+   PALETA VERDE
+============================================ */
+
 .layout-container[data-workstock-palette='verde'] {
   --ws-header-bg: #198754;
   --ws-side-bg: #1c302d;
@@ -123,6 +197,11 @@
   --ws-side-expanded: #29433c;
   --ws-side-hover: #36564c;
 }
+
+/* ============================================
+   PALETA MORADO
+============================================ */
+
 .layout-container[data-workstock-palette='morado'] {
   --ws-header-bg: #6941c6;
   --ws-side-bg: #29243b;
@@ -130,6 +209,11 @@
   --ws-side-expanded: #39324f;
   --ws-side-hover: #483e60;
 }
+
+/* ============================================
+   PALETA GRAFITO
+============================================ */
+
 .layout-container[data-workstock-palette='grafito'] {
   --ws-header-bg: #343a40;
   --ws-side-bg: #212529;
@@ -137,18 +221,18 @@
   --ws-side-expanded: #343a40;
   --ws-side-hover: #424a52;
 }
+
+/* ============================================
+   APLICAR PALETA AL SIDEBAR
+============================================ */
+
 .layout-container .sidebar {
   background: var(--ws-side-bg);
   border-right-color: var(--ws-side-active);
 }
 
-
 /* ============================================
-   WORKSTOCK ORIGINAL - TEMA BLANCO
-============================================ */
-
-/* ============================================
-   WORKSTOCK ORIGINAL - TEMA BLANCO
+   WORKSTOCK ORIGINAL
 ============================================ */
 
 .layout-container[data-workstock-palette='original'] {
@@ -164,16 +248,9 @@
   --ws-side-muted: #64748b;
 }
 
-
-/* =====================================================
-   WORKSTOCK - MODO OSCURO INTEGRAL
-   Prioridad sobre las paletas de navegación
-   ===================================================== */
-
-/*
- * Ajustar .dark-theme al selector real de WorkStock.
- * Se supone que se aplica sobre .layout-container.
- */
+/* ============================================
+   MODO OSCURO INTEGRAL
+============================================ */
 
 .layout-container.dark-theme {
   --ws-header-bg: #1e293b;
@@ -190,7 +267,6 @@
   --ws-header-icon: #e2e8f0;
 }
 
-/* Recupera prioridad frente a los temas originales */
 .layout-container.dark-theme[data-workstock-palette] {
   --ws-header-bg: #1e293b;
 
@@ -201,4 +277,143 @@
 
   --ws-side-text: #f1f5f9;
   --ws-side-muted: #aab9c9;
+}
+
+/* ============================================
+   SIDEBAR RESPONSIVE
+============================================ */
+
+@media (max-width: 520px) {
+
+  .sidebar {
+    width: min(240px, calc(100vw - 45px));
+    min-width: 0;
+    max-width: calc(100vw - 45px);
+  }
+
+}
+
+/* ============================================
+   NUEVO - PROGRESO DE NAVEGACIÓN
+
+   Barra indeterminada que se muestra
+   cuando el Router está navegando.
+
+   No altera el contenido ni el layout.
+============================================ */
+
+.navigation-progress {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+
+  height: 3px;
+  z-index: 100;
+
+  overflow: hidden;
+  pointer-events: none;
+
+  background: transparent;
+
+  --ws-progress-color: var(--ws-header-bg, #075db0);
+}
+
+/* ============================================
+   BARRA ANIMADA
+============================================ */
+
+.navigation-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 35%;
+  height: 100%;
+
+  background: var(--ws-progress-color);
+
+  border-radius: 4px;
+
+  box-shadow:
+    0 0 8px var(--ws-progress-color);
+
+  animation:
+    ws-navigation-progress 1.15s ease-in-out infinite;
+}
+
+/* ============================================
+   ANIMACIÓN
+============================================ */
+
+@keyframes ws-navigation-progress {
+
+  0% {
+    left: -40%;
+    width: 30%;
+  }
+
+  50% {
+    left: 35%;
+    width: 45%;
+  }
+
+  100% {
+    left: 105%;
+    width: 30%;
+  }
+
+}
+
+/* ============================================
+   COLORES POR PALETA
+============================================ */
+
+.layout-container[data-workstock-palette='original'] {
+  --ws-progress-color: #075db0;
+}
+
+.layout-container[data-workstock-palette='mc'] {
+  --ws-progress-color: #dd4b39;
+}
+
+.layout-container[data-workstock-palette='azul'] {
+  --ws-progress-color: #087ace;
+}
+
+.layout-container[data-workstock-palette='verde'] {
+  --ws-progress-color: #198754;
+}
+
+.layout-container[data-workstock-palette='morado'] {
+  --ws-progress-color: #9461ed;
+}
+
+.layout-container[data-workstock-palette='grafito'] {
+  --ws-progress-color: #64748b;
+}
+
+/* ============================================
+   MODO OSCURO
+============================================ */
+
+.layout-container[data-workstock-theme='dark'] .navigation-progress {
+  filter: brightness(1.2);
+}
+
+/* ============================================
+   ACCESIBILIDAD
+
+   Respeta la preferencia de reducir
+   movimiento del sistema operativo.
+============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .navigation-progress-bar {
+    width: 100%;
+    left: 0;
+    animation: none;
+  }
+
 }

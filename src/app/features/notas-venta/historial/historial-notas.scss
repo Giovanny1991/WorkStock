@@ -1,201 +1,410 @@
+/* =====================================================
+   WORKSTOCK - HISTORIAL DE NOTAS DE VENTA
+   DISEÑO COMPACTO, UNIFICADO Y RESPONSIVE
+===================================================== */
 
 /* =====================================================
-   WORKSTOCK | HISTORIAL NOTAS DE VENTA
-
-   - Filtros remotos
-   - Búsqueda remota
-   - Paginación remota
-   - Ordenamiento remoto
-   - Ticket histórico
-   - Columnas centradas
-   - Claro / oscuro
+   1. VARIABLES
 ===================================================== */
 
 :host {
   display: block;
-  color: var(--app-text);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  --hist-primary: var(--app-primary, #075db0);
+  --hist-primary-soft: var(--app-primary-soft, #eaf3ff);
+
+  --hist-bg: var(--app-card, #ffffff);
+  --hist-bg-soft: var(--app-card-secondary, #f8fafc);
+
+  --hist-text: var(--app-text, #1f2937);
+  --hist-muted: var(--app-text-muted, #64748b);
+
+  --hist-border: var(--app-border, #e2e8f0);
+  --hist-hover: var(--app-hover, #f1f5f9);
+
+  --hist-success: var(--app-success, #15803d);
+  --hist-success-bg: var(--app-success-bg, #dcfce7);
+
+  --hist-danger: var(--app-danger, #dc2626);
+  --hist-danger-bg: var(--app-danger-bg, #fee2e2);
+
+  color: var(--hist-text);
+}
+
+:host,
+:host * {
+  box-sizing: border-box;
 }
 
 /* =====================================================
-   PÁGINA
+   2. PÁGINA
 ===================================================== */
 
 .page {
+  width: 100%;
   min-width: 0;
 }
 
 /* =====================================================
-   ENCABEZADO
+   3. ENCABEZADO
 ===================================================== */
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
+
+  gap: 12px;
+  margin-bottom: 14px;
 
   h1 {
     margin: 0;
-    color: var(--app-text);
-    font-size: 22px;
+
+    color: var(--hist-text);
+    font-size: 21px;
     font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
   }
 
   p {
-    margin: 3px 0 0;
-    color: var(--app-text-muted);
-    font-size: 13px;
+    margin: 4px 0 0;
+
+    color: var(--hist-muted);
+    font-size: 12px;
+    line-height: 1.5;
   }
 }
 
 /* =====================================================
-   TARJETA
+   4. TARJETA PRINCIPAL
 ===================================================== */
 
 .card {
   position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+
   overflow: hidden;
 
-  background: var(--app-card);
-
-  border: 1px solid var(--app-border);
+  background: var(--hist-bg);
+  border: 1px solid var(--hist-border);
   border-radius: 8px;
-
-  box-shadow:
-    0 1px 3px rgba(16, 24, 40, .05);
-
-  color: var(--app-text);
 }
 
 /* =====================================================
-   TOOLBAR
+   5. BARRA DE FILTROS
 ===================================================== */
 
 .toolbar {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
 
-  gap: 12px;
-  padding: 12px 14px;
+  column-gap: 7px;
+  row-gap: 9px;
 
-  background: var(--app-card);
+  width: 100%;
+  min-width: 0;
 
-  border-bottom:
-    1px solid var(--app-border);
+  padding: 11px 12px;
+
+  background: var(--hist-bg);
+  border-bottom: 1px solid var(--hist-border);
 }
 
 /* =====================================================
-   BUSCADOR
+   6. BUSCADOR
 ===================================================== */
 
 .search-field {
-  flex: 0 1 340px;
+  flex: 1 1 150px;
 
-  width: 340px;
-  min-width: 240px;
-  max-width: 100%;
+  width: 175px;
+  min-width: 125px;
+  max-width: 210px;
 
-  font-size: 13px;
-  color: var(--app-text);
+  margin: 0;
 
-  input {
-    color: var(--app-text);
-    caret-color: var(--app-primary);
-
-    &::placeholder {
-      color: var(--app-text-muted);
-      opacity: .8;
-    }
-  }
+  color: var(--hist-text);
+  font-size: 12px;
 }
+
+/* =====================================================
+   7. LIMPIAR BÚSQUEDA
+===================================================== */
 
 .clear-search {
   width: 32px;
   height: 32px;
 
-  color: var(--app-text-muted);
+  color: var(--hist-muted);
 
   mat-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    line-height: 18px;
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
+    line-height: 17px;
+  }
+
+  &:hover {
+    color: var(--hist-text);
   }
 }
 
 /* =====================================================
-   MATERIAL BUSCADOR
+   8. CAMPOS DE FECHA
 ===================================================== */
 
-:host ::ng-deep .search-field {
+.date-field {
+  flex: 0 0 135px;
 
-  .mat-mdc-form-field-subscript-wrapper {
+  width: 135px;
+  min-width: 135px;
+  max-width: 135px;
+
+  margin: 0;
+
+  color: var(--hist-text);
+  font-size: 12px;
+
+  input {
+    cursor: pointer;
+    color: var(--hist-text);
+  }
+}
+
+/* =====================================================
+   9. FORMULARIOS ANGULAR MATERIAL
+===================================================== */
+
+:host ::ng-deep {
+
+  .toolbar .mat-mdc-form-field {
+    margin-bottom: 0;
+  }
+
+  .toolbar .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }
 
-  .mat-mdc-text-field-wrapper {
-    height: 40px;
+  .toolbar .mat-mdc-text-field-wrapper {
+    height: 38px;
 
-    background:
-      var(--app-input-bg, var(--app-card));
+    background: var(--app-input-bg,
+        var(--hist-bg));
+
+    border-radius: 6px;
   }
 
-  .mat-mdc-form-field-flex {
-    height: 40px;
+  .toolbar .mat-mdc-form-field-flex {
+    height: 38px;
     align-items: center;
   }
 
-  .mat-mdc-form-field-infix {
+  .toolbar .mat-mdc-form-field-infix {
     display: flex;
     align-items: center;
 
-    height: 40px;
-    min-height: 40px;
+    height: 38px;
+    min-height: 38px;
 
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
   }
 
-  input.mat-mdc-input-element {
-    height: 100%;
+  .toolbar input.mat-mdc-input-element {
+    width: 100%;
+    min-width: 0;
+
     margin: 0;
+
+    color: var(--hist-text);
+
+    font-size: 11px;
+    font-weight: 500;
     line-height: normal;
+
+    caret-color: var(--hist-primary);
   }
 
-  .mat-mdc-form-field-icon-suffix {
+  .toolbar input.mat-mdc-input-element::placeholder {
+    color: var(--hist-muted);
+
+    font-size: 11px;
+    opacity: 0.8;
+  }
+
+  .toolbar .mdc-floating-label {
+    color: var(--hist-muted);
+    font-size: 11px;
+  }
+
+  .toolbar .mat-mdc-form-field-icon-prefix,
+  .toolbar .mat-mdc-form-field-icon-suffix {
     display: flex;
     align-items: center;
-    color: var(--app-text-muted);
+    justify-content: center;
+
+    color: var(--hist-muted);
+  }
+
+  .toolbar .mat-mdc-form-field-icon-prefix {
+    padding-left: 7px;
+    padding-right: 2px;
+  }
+
+  .toolbar .mat-mdc-form-field-icon-prefix mat-icon {
+    width: 17px;
+    height: 17px;
+
+    font-size: 17px;
+    line-height: 17px;
+  }
+
+  .toolbar .mat-datepicker-toggle {
+    color: var(--hist-muted);
+  }
+
+  .toolbar .mat-datepicker-toggle .mat-mdc-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+  }
+
+  .toolbar .mat-datepicker-toggle-default-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toolbar .mat-mdc-form-field-focus-overlay {
+    background: transparent;
   }
 }
 
 /* =====================================================
-   TOOLBAR DERECHA
+   10. BOTONES CONSULTAR Y LIMPIAR
 ===================================================== */
 
-.toolbar-right {
+.date-filter-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
 
-  gap: 12px;
-  min-width: 0;
+  flex: 0 0 auto;
+
+  gap: 5px;
+  min-width: max-content;
+
+  margin: 0;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    height: 36px;
+    min-height: 36px;
+    min-width: auto;
+
+    padding: 0 9px;
+
+    border-radius: 6px;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 650;
+    white-space: nowrap;
+
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+
+    margin-right: 3px;
+
+    font-size: 15px;
+    line-height: 15px;
+
+    flex-shrink: 0;
+  }
+}
+
+.btn-apply-filters {
+  background: var(--hist-primary) !important;
+  color: #ffffff !important;
+
+  border: 1px solid var(--hist-primary) !important;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-clear-filters {
+  background: var(--hist-bg) !important;
+  color: var(--hist-muted) !important;
+
+  border: 1px solid var(--hist-border) !important;
+
+  &:hover:not(:disabled) {
+    background: var(--hist-hover) !important;
+    color: var(--hist-text) !important;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
 }
 
 /* =====================================================
-   FILTROS
+   11. FILTROS DE ESTADO
 ===================================================== */
 
 .document-filters {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+
+  flex: 0 0 auto;
+
+  gap: 5px;
+
+  width: auto;
+  min-width: max-content;
+  max-width: 100%;
+
+  margin-left: auto;
 }
 
 .filter-chip {
@@ -203,306 +412,301 @@
   align-items: center;
   justify-content: center;
 
-  gap: 5px;
-  min-height: 34px;
-  padding: 6px 11px;
+  flex: 0 0 auto;
 
-  border: 1px solid var(--app-border);
-  border-radius: 7px;
+  min-height: 33px;
+  padding: 6px 8px;
 
-  background: var(--app-card);
-  color: var(--app-text-muted);
+  border: 1px solid var(--hist-border);
+  border-radius: 6px;
 
-  font: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.1;
+  background: var(--hist-bg);
+  color: var(--hist-muted);
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
 
   white-space: nowrap;
   cursor: pointer;
 
   transition:
-    background .15s,
-    border-color .15s,
-    color .15s;
-
-  mat-icon {
-    width: 15px;
-    height: 15px;
-    font-size: 15px;
-    line-height: 15px;
-  }
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 
   &:hover {
-    background: var(--app-hover);
-    color: var(--app-text);
+    background: var(--hist-hover);
+    color: var(--hist-text);
   }
 
   &.selected {
-    background: var(--app-primary-soft);
-    border-color: var(--app-primary);
-    color: var(--app-primary);
+    background: var(--hist-primary-soft);
+    border-color: var(--hist-primary);
+    color: var(--hist-primary);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--app-primary);
+    outline: 2px solid var(--hist-primary);
     outline-offset: 2px;
   }
 }
 
 /* =====================================================
-   CONTADOR
-===================================================== */
-
-.records {
-  color: var(--app-text-muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-/* =====================================================
-   TABLA
+   12. CONTENEDOR RESPONSIVE
 ===================================================== */
 
 .table-wrapper {
-  width: 100%;
-  overflow-x: auto;
+  display: block;
 
-  scrollbar-color:
-    var(--app-border) var(--app-card);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--hist-border) var(--hist-bg);
 }
+
+/* =====================================================
+   13. TABLA COMPACTA
+===================================================== */
 
 table.mat-mdc-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 920px;
 
-  background: var(--app-card);
-  color: var(--app-text);
+  table-layout: auto;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  background: var(--hist-bg);
+  color: var(--hist-text);
 }
+
+/* =====================================================
+   14. ENCABEZADOS
+===================================================== */
 
 .mat-mdc-header-row {
   height: 42px;
-  background: var(--app-card-secondary);
+
+  background: var(--hist-bg-soft);
 }
 
 .mat-mdc-header-cell {
   vertical-align: middle;
-  padding: 0 16px;
 
-  border-bottom:
-    1px solid var(--app-border);
+  padding: 0 8px;
 
   background: transparent;
+  color: var(--hist-muted);
 
-  color: var(--app-text-muted);
+  border-bottom: 1px solid var(--hist-border);
 
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
+
   text-transform: uppercase;
-  letter-spacing: .02em;
+  letter-spacing: 0.02em;
 
   white-space: nowrap;
 }
 
-.mat-mdc-row {
-  height: 48px;
-  background: var(--app-card);
+/* =====================================================
+   15. FILAS
+===================================================== */
 
-  transition:
-    background-color 150ms ease;
+.mat-mdc-row {
+  height: 47px;
+
+  background: var(--hist-bg);
+
+  transition: background-color 0.15s ease;
 
   &:hover {
-    background:
-      var(--app-hover, var(--app-card-secondary));
+    background: var(--hist-hover);
   }
 }
+
+/* =====================================================
+   16. CELDAS
+===================================================== */
 
 .mat-mdc-cell {
   vertical-align: middle;
-  padding: 10px 16px;
 
-  border-bottom:
-    1px solid var(
-      --app-border-soft,
-      var(--app-border)
-    );
+  padding: 8px;
 
   background: transparent;
+  color: var(--hist-text);
 
-  color: var(--app-text);
-  font-size: 13px;
-  line-height: 18px;
+  border-bottom: 1px solid var(--hist-border);
+
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 /* =====================================================
-   CENTRADO DE COLUMNAS
-   WORKSTOCK
+   17. ANCHOS DE COLUMNAS
 ===================================================== */
 
-/*
-   Centra únicamente las columnas numéricas,
-   monetarias, fechas, estados y acciones.
-
-   Los datos del cliente y descripciones
-   mantienen su alineación a la izquierda.
-*/
-
-.mat-mdc-header-cell,
-.mat-mdc-cell {
-
-  &.mat-column-cantidad,
-  &.mat-column-stock,
-  &.mat-column-costo,
-  &.mat-column-precio,
-  &.mat-column-precioVenta,
-  &.mat-column-valor,
-  &.mat-column-subtotal,
-  &.mat-column-iva,
-  &.mat-column-descuento,
-  &.mat-column-total,
-  &.mat-column-abono,
-  &.mat-column-saldo,
-  &.mat-column-fecha,
-  &.mat-column-fechaEmision,
-  &.mat-column-fechaVenta,
-  &.mat-column-estado,
-  &.mat-column-acciones {
-
-    text-align: center;
-    vertical-align: middle;
-  }
-}
-
-/* =====================================================
-   CENTRADO DE ENCABEZADOS ORDENABLES
-===================================================== */
-
-:host ::ng-deep {
-
-  .mat-column-cantidad .mat-sort-header-container,
-  .mat-column-stock .mat-sort-header-container,
-  .mat-column-costo .mat-sort-header-container,
-  .mat-column-precio .mat-sort-header-container,
-  .mat-column-precioVenta .mat-sort-header-container,
-  .mat-column-valor .mat-sort-header-container,
-  .mat-column-subtotal .mat-sort-header-container,
-  .mat-column-iva .mat-sort-header-container,
-  .mat-column-descuento .mat-sort-header-container,
-  .mat-column-total .mat-sort-header-container,
-  .mat-column-abono .mat-sort-header-container,
-  .mat-column-saldo .mat-sort-header-container,
-  .mat-column-fecha .mat-sort-header-container,
-  .mat-column-fechaEmision .mat-sort-header-container,
-  .mat-column-fechaVenta .mat-sort-header-container,
-  .mat-column-estado .mat-sort-header-container,
-  .mat-column-acciones .mat-sort-header-container,
-  .money-column .mat-sort-header-container,
-  .status-column .mat-sort-header-container,
-  .actions-header .mat-sort-header-container {
-
-    justify-content: center;
-  }
-}
-
-/* =====================================================
-   FILA ANULADA
-===================================================== */
-
-:host .mat-mdc-row.row-cancelled,
-:host .mat-mdc-row.row-cancelled:hover {
-
-  background-color:
-    var(
-      --app-danger-bg,
-      rgba(220, 38, 38, .10)
-    ) !important;
-}
-
-:host
-.mat-mdc-row.row-cancelled
-.mat-mdc-cell {
-
-  background-color: transparent !important;
-}
-
-:host
-.mat-mdc-row.row-cancelled
 .mat-column-numero {
-
-  box-shadow:
-    inset 3px 0 0
-    var(--app-danger, #dc2626);
+  min-width: 125px;
 }
 
-:host
-.mat-mdc-row.row-cancelled
-.invoice-number,
+.mat-column-cliente {
+  min-width: 155px;
+}
 
-:host
-.mat-mdc-row.row-cancelled
-.client-name,
+.mat-column-identificacion {
+  min-width: 125px;
+}
 
-:host
-.mat-mdc-row.row-cancelled
-.total-value {
+.mat-column-total {
+  min-width: 105px;
+}
 
-  color: var(--app-text-muted);
+.mat-column-estado {
+  min-width: 105px;
+}
+
+.mat-column-vendedor {
+  min-width: 125px;
+}
+
+.mat-column-acciones {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
 }
 
 /* =====================================================
-   NÚMERO DE NOTA
+   18. NÚMERO Y FECHA DE NOTA
 ===================================================== */
 
 .invoice-number {
-  color: var(--app-primary);
+  display: block;
+
+  color: var(--hist-primary);
+
+  font-size: 11px;
   font-weight: 700;
+  line-height: 1.4;
+
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.document-description {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--hist-muted);
+
+  font-size: 10px;
+  line-height: 1.4;
+
   white-space: nowrap;
 }
 
 /* =====================================================
-   CLIENTE
+   19. CLIENTE
 ===================================================== */
 
 .client-name {
   display: block;
 
-  color: var(--app-text);
-  font-weight: 600;
+  color: var(--hist-text);
+
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
 }
 
-td small {
+.mat-mdc-cell small {
   display: block;
-  margin-top: 2px;
 
-  color: var(--app-text-muted);
-  font-size: 11px;
+  margin-top: 3px;
+
+  color: var(--hist-muted);
+
+  font-size: 10px;
+  line-height: 1.4;
 }
 
 /* =====================================================
-   TOTAL / VALORES MONETARIOS
+   20. IDENTIFICACIÓN
+===================================================== */
+
+.identification-value {
+  display: inline-block;
+
+  color: var(--hist-text);
+
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  white-space: nowrap;
+
+  font-variant-numeric: tabular-nums;
+}
+
+/* =====================================================
+   21. TOTAL
 ===================================================== */
 
 .money-column {
-  width: 110px;
-
-  /* Antes estaba alineado a la derecha */
   text-align: center;
-
   white-space: nowrap;
+
+  font-variant-numeric: tabular-nums;
+}
+
+:host ::ng-deep {
+
+  .mat-column-total .mat-sort-header-container,
+  .mat-column-estado .mat-sort-header-container {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .total-value {
-  color: var(--app-success);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 7px;
+
+  border-radius: 20px;
+
+  background: var(--hist-success-bg);
+  color: var(--hist-success);
+
+  font-size: 10px;
   font-weight: 700;
+  line-height: 1.4;
+
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* =====================================================
-   ESTADO
+   22. ESTADO
 ===================================================== */
 
 .status-column {
-  width: 110px;
   text-align: center;
   white-space: nowrap;
 }
@@ -512,231 +716,403 @@ td small {
   align-items: center;
   justify-content: center;
 
-  min-width: 76px;
-  padding: 3px 9px;
+  min-width: 78px;
+
+  padding: 4px 7px;
 
   border-radius: 20px;
 
-  background: var(--app-card-secondary);
-  color: var(--app-text-muted);
+  background: var(--hist-bg-soft);
+  color: var(--hist-muted);
 
-  font-size: 11px;
-  font-weight: 700;
-}
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.4;
 
-.status.active {
-  background:
-    var(
-      --app-success-bg,
-      rgba(22, 163, 74, .10)
-    );
+  white-space: nowrap;
 
-  color:
-    var(
-      --app-success,
-      #16a34a
-    );
-}
+  &.active {
+    background: var(--hist-success-bg);
+    color: var(--hist-success);
+  }
 
-.status.cancelled {
-  background:
-    var(
-      --app-danger-bg,
-      rgba(220, 38, 38, .10)
-    );
-
-  color:
-    var(
-      --app-danger,
-      #dc2626
-    );
+  &.cancelled {
+    background: var(--hist-danger-bg);
+    color: var(--hist-danger);
+  }
 }
 
 /* =====================================================
-   ACCIONES
+   23. VENDEDOR
+===================================================== */
+
+.seller-name {
+  display: block;
+
+  color: var(--hist-text);
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   24. FILAS ANULADAS
+===================================================== */
+
+:host .mat-mdc-row.row-cancelled,
+:host .mat-mdc-row.row-cancelled:hover {
+  background: var(--hist-danger-bg);
+}
+
+:host .mat-mdc-row.row-cancelled .mat-mdc-cell {
+  background: transparent;
+}
+
+:host .mat-mdc-row.row-cancelled .mat-column-numero {
+  box-shadow: inset 3px 0 0 var(--hist-danger);
+}
+
+:host .mat-mdc-row.row-cancelled .invoice-number,
+:host .mat-mdc-row.row-cancelled .client-name {
+  color: var(--hist-muted);
+}
+
+:host .mat-mdc-row.row-cancelled .total-value {
+  background: var(--hist-bg-soft);
+  color: var(--hist-muted);
+}
+
+/* =====================================================
+   25. ACCIONES
 ===================================================== */
 
 .actions-header,
 .actions-cell {
-  width: 120px;
-  min-width: 120px;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 
   text-align: center;
   white-space: nowrap;
 }
 
-.actions-cell {
-  vertical-align: middle;
+.actions-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+
+  gap: 4px;
+
+  width: 100%;
+  min-width: 0;
 }
 
-.actions-cell button {
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 32px;
+
   width: 32px;
   height: 32px;
+
   min-width: 32px;
+  min-height: 32px;
 
+  margin: 0;
   padding: 0;
-  margin: 0 2px;
 
-  border-radius: 50%;
+  border-radius: 7px;
 
   transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    opacity 150ms ease;
+    background-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.15s ease;
 
   mat-icon {
     width: 18px;
     height: 18px;
+
+    margin: 0;
 
     font-size: 18px;
     line-height: 18px;
   }
 
   &:disabled {
-    opacity: .4;
+    opacity: 0.45;
     cursor: not-allowed;
   }
-}
 
-/* =====================================================
-   VISUALIZAR
-===================================================== */
-
-.view-btn {
-  color: var(--app-primary) !important;
-
-  &:hover:not(:disabled) {
-
-    background:
-      var(
-        --app-primary-soft,
-        rgba(37, 99, 235, .08)
-      ) !important;
+  &:active:not(:disabled) {
+    transform: scale(0.95);
   }
 }
 
 /* =====================================================
-   ANULAR
+   26. VISUALIZAR NOTA
 ===================================================== */
 
-.delete-btn {
-  color:
-    var(
-      --app-danger,
-      #dc2626
-    ) !important;
+.action.view {
+  color: var(--hist-primary);
+  background: rgba(7, 93, 176, 0.07);
 
   &:hover:not(:disabled) {
-
-    background:
-      var(
-        --app-danger-bg,
-        rgba(220, 38, 38, .08)
-      ) !important;
+    background: rgba(7, 93, 176, 0.14);
   }
 }
 
 /* =====================================================
-   SIN DATOS
+   27. ANULAR NOTA
+===================================================== */
+
+.action.cancel {
+  color: var(--hist-danger);
+  background: var(--hist-danger-bg);
+
+  &:hover:not(:disabled) {
+    background: rgba(220, 38, 38, 0.17);
+  }
+}
+
+/* =====================================================
+   28. SIN RESULTADOS
 ===================================================== */
 
 .no-data {
-  height: 120px;
+  height: 110px;
+  padding: 20px;
+
+  color: var(--hist-muted);
 
   text-align: center;
 
-  color: var(--app-text-muted);
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.5;
 
   mat-icon {
     display: block;
-    margin: 0 auto 5px;
-    color: var(--app-text-muted);
+
+    width: 26px;
+    height: 26px;
+
+    margin: 0 auto 8px;
+
+    color: var(--hist-muted);
+
+    font-size: 26px;
+    line-height: 26px;
+  }
+
+  span {
+    display: block;
   }
 }
 
 /* =====================================================
-   PAGINADOR
+   29. PAGINADOR
 ===================================================== */
 
 mat-paginator {
-  background: var(--app-card);
-  color: var(--app-text-muted);
+  display: block;
+  width: 100%;
 
-  border-top:
-    1px solid var(--app-border);
+  background: var(--hist-bg);
+  color: var(--hist-muted);
+
+  border-top: 1px solid var(--hist-border);
 }
 
-:host ::ng-deep .mat-mdc-paginator-container {
-  min-height: 48px !important;
-  font-size: 12px;
-}
+:host ::ng-deep {
 
-/* =====================================================
-   RESPONSIVE
-===================================================== */
+  .mat-mdc-paginator-container {
+    min-height: 45px !important;
 
-@media (max-width: 1100px) {
-
-  .toolbar {
-    align-items: stretch;
+    padding: 4px 12px;
+    font-size: 12px;
   }
 
-  .search-field {
-    flex: 1 1 280px;
-  }
-
-  .toolbar-right {
-    flex: 1 1 auto;
-    justify-content: space-between;
-  }
-}
-
-@media (max-width: 700px) {
-
-  .page {
-    padding: 0;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px 12px;
-  }
-
-  .search-field {
-    flex: none;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .toolbar-right {
-    width: 100%;
-    gap: 8px;
-  }
-
-  .document-filters {
-    width: 100%;
-  }
-
-  .filter-chip {
-    flex: 1 1 auto;
-  }
-
-  .records {
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--hist-muted);
     font-size: 11px;
   }
 }
 
-@media (max-width: 420px) {
+/* =====================================================
+   30. BARRA DE PROGRESO
+===================================================== */
+
+mat-progress-bar {
+  width: 100%;
+}
+
+/* =====================================================
+   31. RESPONSIVE - PANTALLAS MEDIANAS
+===================================================== */
+
+@media (max-width: 1250px) {
+
+  .search-field {
+    flex: 1 1 165px;
+
+    min-width: 125px;
+    max-width: 220px;
+  }
+
+  .date-field {
+    flex: 0 0 135px;
+
+    width: 135px;
+    min-width: 135px;
+    max-width: 135px;
+  }
+}
+
+/* =====================================================
+   32. RESPONSIVE - TABLETS
+===================================================== */
+
+@media (max-width: 850px) {
+
+  .search-field {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-field {
+    flex: 1 1 145px;
+
+    width: auto;
+    min-width: 130px;
+    max-width: none;
+  }
+
+  .document-filters {
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+}
+
+/* =====================================================
+   33. RESPONSIVE - MÓVILES
+===================================================== */
+
+@media (max-width: 560px) {
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    h1 {
+      font-size: 19px;
+    }
+
+    p {
+      font-size: 11px;
+    }
+  }
+
+  .toolbar {
+    padding: 10px;
+    column-gap: 8px;
+    row-gap: 9px;
+  }
+
+  .search-field {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-field {
+    flex: 1 1 calc(50% - 4px);
+
+    width: calc(50% - 4px);
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-filter-actions {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 8px;
+
+    button {
+      flex: 1 1 50%;
+
+      min-width: 0;
+      min-height: 39px;
+      height: 39px;
+    }
+  }
+
+  .document-filters {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+
+    justify-content: stretch;
+
+    gap: 6px;
+    margin-left: 0;
+  }
 
   .filter-chip {
-    padding: 6px 7px;
+    flex: 1 1 0;
+
+    min-width: 0;
+
+    padding: 7px 6px;
     font-size: 10px;
+  }
+
+  table.mat-mdc-table {
+    min-width: 920px;
+  }
+}
+
+/* =====================================================
+   34. RESPONSIVE - MÓVILES PEQUEÑOS
+===================================================== */
+
+@media (max-width: 350px) {
+
+  .date-field {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-filter-actions {
+    flex-wrap: wrap;
+
+    button {
+      padding: 0 6px;
+      font-size: 10px;
+    }
+  }
+
+  .document-filters {
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    flex: 1 1 auto;
   }
 }

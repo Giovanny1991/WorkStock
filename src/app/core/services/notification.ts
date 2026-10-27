@@ -5,28 +5,54 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   providedIn: 'root'
 })
 export class NotificationService {
-
   private readonly snack = inject(MatSnackBar);
 
   success(message: string): void {
-    this.show(message, 'success', 3000);
+    this.show(message, 'success', 4000);
   }
 
   error(message: string): void {
-    this.show(message, 'error', 5000);
+    this.show(message, 'error', 9000);
   }
 
   warning(message: string): void {
-    this.show(message, 'warning', 4000);
+    this.show(message, 'warning', 6500);
   }
 
-  private show(message: string, type: string, duration: number): void {
-    this.snack.open(message, 'Cerrar', {
+  info(message: string): void {
+    this.show(message, 'info', 4500);
+  }
+
+  private show(
+    message: string,
+    type: 'success' | 'error' | 'warning' | 'info',
+    duration: number
+  ): void {
+    const iconos = {
+      success: '✓',
+      error: '✕',
+      warning: '⚠',
+      info: 'ℹ'
+    };
+
+    const titulos = {
+      success: 'Operación exitosa',
+      error: 'No se pudo completar la operación',
+      warning: 'Advertencia',
+      info: 'Información'
+    };
+
+    const texto = `${iconos[type]}  ${titulos[type]}\n${message}`;
+
+    this.snack.open(texto, 'Cerrar', {
       duration,
       horizontalPosition: 'right',
       verticalPosition: 'top',
-      panelClass: [`snackbar-${type}`]
+      panelClass: [
+        'workstock-snackbar',
+        `snackbar-${type}`
+      ],
+      politeness: type === 'error' ? 'assertive' : 'polite'
     });
   }
-
 }

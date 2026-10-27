@@ -5,11 +5,18 @@ import {
   OnInit,
   OnDestroy,
   DestroyRef,
-  DOCUMENT
+  DOCUMENT,
+  signal
 } from '@angular/core';
 
 import {
-  RouterOutlet
+  Router,
+  RouterOutlet,
+  NavigationStart,
+  NavigationEnd,
+  NavigationCancel,
+  NavigationError,
+  NavigationSkipped
 } from '@angular/router';
 
 import {
@@ -36,31 +43,22 @@ import {
   GlobalLoading
 } from '../../shared/components/global-loading/global-loading';
 
-
 @Component({
-
   selector: 'app-main-layout',
 
   standalone: true,
 
   imports: [
-
     RouterOutlet,
-
     MatSidenavModule,
-
     Header,
-
     Sidebar,
-
     GlobalLoading
-
   ],
 
   templateUrl: './main-layout.html',
 
   styleUrl: './main-layout.scss'
-
 })
 export class MainLayout implements OnInit, OnDestroy {
 
@@ -77,13 +75,22 @@ export class MainLayout implements OnInit, OnDestroy {
   private readonly document =
     inject(DOCUMENT);
 
+  private readonly router =
+    inject(Router);
+
   // ============================================
   // TEMA
   // ============================================
 
   tema: 'light' | 'dark' = 'light';
 
-paleta:'original' | 'mc' | 'azul' |'verde' | 'morado' | 'grafito' = 'mc';
+  paleta:
+    | 'original'
+    | 'mc'
+    | 'azul'
+    | 'verde'
+    | 'morado'
+    | 'grafito' = 'mc';
 
   // ============================================
   // SIDEBAR RESPONSIVE
@@ -94,12 +101,27 @@ paleta:'original' | 'mc' | 'azul' |'verde' | 'morado' | 'grafito' = 'mc';
   sidebarOpened = true;
 
   // ============================================
+  // PROGRESO DE NAVEGACIÓN
+  // ============================================
+
+  readonly navegacionCargando = signal(false);
+
+  private readonly demoraIndicadorMs = 180;
+
+  private temporizadorNavegacion:
+    ReturnType<typeof setTimeout> | null = null;
+
+  private navegacionActivaId: number | null = null;
+
+  // ============================================
   // INICIALIZACIÓN
   // ============================================
 
   ngOnInit(): void {
 
-    // Recuperar preferencia guardada
+    // ==========================================
+    // RECUPERAR TEMA
+    // ==========================================
 
     try {
 
@@ -111,45 +133,53 @@ paleta:'original' | 'mc' | 'azul' |'verde' | 'morado' | 'grafito' = 'mc';
         guardado === 'light' ||
         guardado === 'dark'
       ) {
-
         this.tema = guardado;
-
       }
 
-    } catch {
-
-      // Almacenamiento no disponible
-
-    }
-
-    // Recuperar paleta de navegación independientemente del modo oscuro.
-    try {
-      const guardada = this.document.defaultView?.localStorage
-        .getItem('workstock-paleta');
-      if (guardada === 'original' || guardada === 'mc' || guardada === 'azul' ||
-          guardada === 'verde' || guardada === 'morado' ||
-          guardada === 'grafito') {
-        this.paleta = guardada;
-      }
     } catch {
       // Almacenamiento no disponible.
     }
 
-    // Aplicar tema al iniciar
+    // ==========================================
+    // RECUPERAR PALETA
+    // ==========================================
+
+    try {
+
+      const guardada =
+        this.document.defaultView?.localStorage
+          .getItem('workstock-paleta');
+
+      if (
+        guardada === 'original' ||
+        guardada === 'mc' ||
+        guardada === 'azul' ||
+        guardada === 'verde' ||
+        guardada === 'morado' ||
+        guardada === 'grafito'
+      ) {
+        this.paleta = guardada;
+      }
+
+    } catch {
+      // Almacenamiento no disponible.
+    }
+
+    // ==========================================
+    // APLICAR TEMA
+    // ==========================================
 
     this.aplicarTemaGlobal();
 
     // ==========================================
-    // NAVEGACIÓN RESPONSIVE
+    // SIDEBAR RESPONSIVE
     // ==========================================
 
     this.breakpoint
       .observe('(max-width: 900px)')
-
       .pipe(
         takeUntilDestroyed(this.destroyRef)
       )
-
       .subscribe(result => {
 
         if (this.isMobile !== result.matches) {
@@ -161,6 +191,122 @@ paleta:'original' | 'mc' | 'azul' |'verde' | 'morado' | 'grafito' = 'mc';
         }
 
       });
+
+    // ==========================================
+    // OBSERVAR CAMBIOS DE RUTA
+    // ==========================================
+
+    this.configurarProgresoNavegacion();
+
+  }
+
+  // ============================================
+  // PROGRESO DE NAVEGACIÓN ANGULAR
+  // ============================================
+
+  private configurarProgresoNavegacion(): void {
+
+    this.router.events
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(evento => {
+
+        // ======================================
+        // INICIO DE NAVEGACIÓN
+        // ======================================
+
+        if (evento instanceof NavigationStart) {
+
+          this.iniciarProgresoNavegacion(
+            evento.id
+          );
+
+          return;
+        }
+
+        // ======================================
+        // FINALIZACIÓN / CANCELACIÓN / ERROR
+        // ======================================
+
+        if (
+          evento instanceof NavigationEnd ||
+          evento instanceof NavigationCancel ||
+          evento instanceof NavigationError ||
+          evento instanceof NavigationSkipped
+        ) {
+
+          if (
+            this.navegacionActivaId === evento.id
+          ) {
+            this.finalizarProgresoNavegacion();
+          }
+
+        }
+
+      });
+
+  }
+
+  // ============================================
+  // INICIAR PROGRESO
+  // ============================================
+
+  private iniciarProgresoNavegacion(
+    idNavegacion: number
+  ): void {
+
+    this.limpiarTemporizadorNavegacion();
+
+    this.navegacionActivaId = idNavegacion;
+
+    // Ocultar el indicador de la navegación anterior.
+    this.navegacionCargando.set(false);
+
+    // Evitar mostrar la barra en navegaciones rápidas.
+    this.temporizadorNavegacion = setTimeout(() => {
+
+      if (
+        this.navegacionActivaId === idNavegacion
+      ) {
+        this.navegacionCargando.set(true);
+      }
+
+      this.temporizadorNavegacion = null;
+
+    }, this.demoraIndicadorMs);
+
+  }
+
+  // ============================================
+  // FINALIZAR PROGRESO
+  // ============================================
+
+  private finalizarProgresoNavegacion(): void {
+
+    this.limpiarTemporizadorNavegacion();
+
+    this.navegacionActivaId = null;
+
+    this.navegacionCargando.set(false);
+
+  }
+
+  // ============================================
+  // LIMPIAR TEMPORIZADOR
+  // ============================================
+
+  private limpiarTemporizadorNavegacion(): void {
+
+    if (this.temporizadorNavegacion !== null) {
+
+      clearTimeout(
+        this.temporizadorNavegacion
+      );
+
+      this.temporizadorNavegacion = null;
+
+    }
 
   }
 
@@ -186,29 +332,42 @@ paleta:'original' | 'mc' | 'azul' |'verde' | 'morado' | 'grafito' = 'mc';
         );
 
     } catch {
-
-      // Almacenamiento no disponible
-
+      // Almacenamiento no disponible.
     }
 
   }
 
   // ============================================
-  // CAMBIAR PALETA DEL HEADER Y SIDEBAR
+  // CAMBIAR PALETA
   // ============================================
 
   cambiarPaleta(valor: string): void {
-    if (valor !== 'original' && valor !== 'mc' && valor !== 'azul' && valor !== 'verde' &&
-        valor !== 'morado' && valor !== 'grafito') {
+
+    if (
+      valor !== 'original' &&
+      valor !== 'mc' &&
+      valor !== 'azul' &&
+      valor !== 'verde' &&
+      valor !== 'morado' &&
+      valor !== 'grafito'
+    ) {
       return;
     }
+
     this.paleta = valor;
+
     try {
+
       this.document.defaultView?.localStorage
-        .setItem('workstock-paleta', this.paleta);
+        .setItem(
+          'workstock-paleta',
+          this.paleta
+        );
+
     } catch {
       // Almacenamiento no disponible.
     }
+
   }
 
   // ============================================
@@ -242,18 +401,18 @@ paleta:'original' | 'mc' | 'azul' |'verde' | 'morado' | 'grafito' = 'mc';
   cerrarMenuEnMovil(): void {
 
     if (this.isMobile) {
-
       this.sidebarOpened = false;
-
     }
 
   }
 
   // ============================================
-  // DESTROY
+  // DESTRUCCIÓN DEL COMPONENTE
   // ============================================
 
   ngOnDestroy(): void {
+
+    this.finalizarProgresoNavegacion();
 
     this.document.documentElement.removeAttribute(
       'data-workstock-theme'

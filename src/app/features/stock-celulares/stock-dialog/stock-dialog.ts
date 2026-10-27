@@ -213,7 +213,14 @@ export class StockDialog implements OnInit {
   private versionBusquedaModelo = 0;
 
   // ===================================================
-  // FORMULARIO ORIGINAL
+  // FORMULARIO
+  //
+  // En creación:
+  // - características comunes una sola vez.
+  // - N pares IMEI 1 / IMEI 2.
+  //
+  // En edición:
+  // - se mantiene un solo par de IMEI.
   // ===================================================
 
   readonly form = this.fb.nonNullable.group({
@@ -229,21 +236,6 @@ export class StockDialog implements OnInit {
       this.data?.stock?.idModelo ?? 0,
       [
         Validators.min(1)
-      ]
-    ],
-
-    imei1: [
-      this.data?.stock?.imei1 ?? '',
-      [
-        Validators.required,
-        Validators.pattern(/^\d{15}$/)
-      ]
-    ],
-
-    imei2: [
-      this.data?.stock?.imei2 ?? '',
-      [
-        Validators.pattern(/^$|^\d{15}$/)
       ]
     ],
 
@@ -276,9 +268,205 @@ export class StockDialog implements OnInit {
         Validators.required,
         Validators.maxLength(10)
       ]
-    ]
+    ],
+
+    equipos: this.fb.array([
+      this.crearEquipoForm(
+        this.data?.stock?.imei1 ?? '',
+        this.data?.stock?.imei2 ?? ''
+      )
+    ])
 
   });
+
+  // ===================================================
+  // CREAR FILA IMEI
+  // ===================================================
+
+  private crearEquipoForm(
+    imei1 = '',
+    imei2 = ''
+  ) {
+
+    return this.fb.nonNullable.group({
+
+      imei1: [
+        imei1,
+        [
+          Validators.required,
+          Validators.pattern(/^\d{15}$/)
+        ]
+      ],
+
+      imei2: [
+        imei2,
+        [
+          Validators.pattern(/^$|^\d{15}$/)
+        ]
+      ]
+
+    });
+
+  }
+
+  // ===================================================
+  // ACCESO A FILAS IMEI
+  // ===================================================
+
+  get equipos() {
+    return this.form.controls.equipos;
+  }
+
+  get cantidadEquipos(): number {
+    return this.equipos.length;
+  }
+
+  // ===================================================
+  // AGREGAR EQUIPO
+  // ===================================================
+
+  agregarEquipo(): void {
+
+    if (
+      this.esEdicion ||
+      this.guardando()
+    ) {
+      return;
+    }
+
+    if (
+      this.equipos.length >= 200
+    ) {
+
+      this.notify.warning(
+        'El lote no puede superar 200 equipos'
+      );
+
+      return;
+
+    }
+
+    this.equipos.push(
+      this.crearEquipoForm()
+    );
+
+  }
+
+  // ===================================================
+  // ELIMINAR EQUIPO DEL LOTE
+  // ===================================================
+
+  eliminarEquipo(
+    index: number
+  ): void {
+
+    if (
+      this.esEdicion ||
+      this.guardando() ||
+      this.equipos.length <= 1
+    ) {
+      return;
+    }
+
+    this.equipos.removeAt(index);
+
+  }
+
+  // ===================================================
+  // VALIDAR IMEI REPETIDO ENTRE FILAS
+  //
+  // Se conserva el comportamiento actual:
+  // IMEI1 e IMEI2 iguales en la misma fila no se
+  // consideran duplicado.
+  // ===================================================
+
+  imeiDuplicado(
+    index: number,
+    campo: 'imei1' | 'imei2'
+  ): boolean {
+
+    const actual =
+      String(
+        this.equipos
+          .at(index)
+          .controls[campo]
+          .value ?? ''
+      ).trim();
+
+    if (!actual) {
+      return false;
+    }
+
+    return this.equipos.controls.some(
+      (equipo, posicion) => {
+
+        if (posicion === index) {
+          return false;
+        }
+
+        const imei1 =
+          String(
+            equipo.controls.imei1.value ?? ''
+          ).trim();
+
+        const imei2 =
+          String(
+            equipo.controls.imei2.value ?? ''
+          ).trim();
+
+        return (
+          imei1 === actual ||
+          imei2 === actual
+        );
+
+      }
+    );
+
+  }
+
+  // ===================================================
+  // EXISTEN IMEI REPETIDOS
+  // ===================================================
+
+  hayImeisDuplicados(): boolean {
+
+    const usados =
+      new Set<string>();
+
+    for (
+      const equipo of
+      this.equipos.controls
+    ) {
+
+      const imeisFila =
+        new Set(
+          [
+            String(
+              equipo.controls.imei1.value ?? ''
+            ).trim(),
+            String(
+              equipo.controls.imei2.value ?? ''
+            ).trim()
+          ].filter(Boolean)
+        );
+
+      for (
+        const imei of imeisFila
+      ) {
+
+        if (usados.has(imei)) {
+          return true;
+        }
+
+        usados.add(imei);
+
+      }
+
+    }
+
+    return false;
+
+  }
 
   // ===================================================
   // INICIALIZAR
@@ -878,32 +1066,82 @@ export class StockDialog implements OnInit {
   }
 
   // ===================================================
+  // ERRORES VISIBLES DEL FORMULARIO
+  // ===================================================
+  readonly mostrarErrores = signal(false);
+
+  campoConError(campo: keyof Pick<typeof this.form.controls, "factura" | "precioCosto" | "precioVenta" | "estadoCelular">): boolean {
+    const control = this.form.controls[campo];
+    return control.invalid && (control.dirty || control.touched || this.mostrarErrores());
+  }
+
+  equipoConError(indice: number): boolean {
+    return this.imeiConError(indice, "imei1") || this.imeiConError(indice, "imei2");
+  }
+
+  imeiConError(indice: number, campo: "imei1" | "imei2"): boolean {
+    const control = this.equipos.at(indice).controls[campo];
+    return (control.invalid && (control.dirty || control.touched || this.mostrarErrores())) || this.imeiDuplicado(indice, campo);
+  }
+
+  precioVentaInsuficiente(): boolean {
+    const costo = this.form.controls.precioCosto;
+    const venta = this.form.controls.precioVenta;
+    return costo.valid && venta.valid && Number(venta.value) <= Number(costo.value) && (venta.dirty || costo.dirty || this.mostrarErrores());
+  }
+
+  proveedorConError(): boolean {
+    return !this.proveedorSeleccionado() && (this.proveedorTexto.dirty || this.proveedorTexto.touched || this.mostrarErrores());
+  }
+
+  modeloConError(): boolean {
+    return !this.modeloSeleccionado() && (this.modeloTexto.dirty || this.modeloTexto.touched || this.mostrarErrores());
+  }
+
+  erroresFormulario(): string[] {
+    const errores: string[] = [];
+    const c = this.form.controls;
+    if (!this.proveedorSeleccionado() || Number(c.idProveedor.value) <= 0) errores.push('Seleccione un proveedor desde las sugerencias.');
+    if (!this.modeloSeleccionado() || Number(c.idModelo.value) <= 0) errores.push('Seleccione un modelo desde las sugerencias.');
+    if (!c.factura.value) errores.push('Seleccione Factura o Nota de venta.');
+    if (c.precioCosto.invalid) errores.push('Ingrese un precio de costo mayor a cero.');
+    if (c.precioVenta.invalid) errores.push('Ingrese un precio de venta mayor a cero.');
+    if (Number(c.precioVenta.value) <= Number(c.precioCosto.value) && !c.precioCosto.invalid && !c.precioVenta.invalid) errores.push('El precio de venta debe ser mayor al costo.');
+    if (c.estadoCelular.invalid) errores.push('Seleccione un estado válido del celular.');
+    this.equipos.controls.forEach((equipo, i) => {
+      if (equipo.controls.imei1.invalid) errores.push(`Equipo ${i + 1}: IMEI 1 debe tener exactamente 15 dígitos.`);
+      if (equipo.controls.imei2.invalid) errores.push(`Equipo ${i + 1}: IMEI 2 debe estar vacío o tener 15 dígitos.`);
+    });
+    if (this.hayImeisDuplicados()) errores.push('Hay IMEI repetidos entre diferentes equipos.');
+    return errores;
+  }
+
+  // ===================================================
   // GUARDAR
-  //
-  // Conserva el payload original y las validaciones.
   // ===================================================
 
   guardar(): void {
-
-    if (
-      this.form.invalid ||
-      this.guardando() ||
-      this.cargandoSeleccionInicial()
-    ) {
-
-      this.form.markAllAsTouched();
-
+    if (this.guardando() || this.cargandoSeleccionInicial()) return;
+    this.mostrarErrores.set(true);
+    this.form.markAllAsTouched();
+    this.proveedorTexto.markAsTouched();
+    this.modeloTexto.markAsTouched();
+    const errores = this.erroresFormulario();
+    if (this.form.invalid || errores.length) {
+      this.notify.warning(errores[0] ?? 'Revise los campos obligatorios del formulario.');
       return;
-
     }
 
-    const proveedor = this.proveedorSeleccionado();
+    const proveedor =
+      this.proveedorSeleccionado();
 
-    const modelo = this.modeloSeleccionado();
+    const modelo =
+      this.modeloSeleccionado();
 
     if (
       !proveedor ||
-      this.form.controls.idProveedor.value !== proveedor.id
+      this.form.controls.idProveedor.value !==
+      proveedor.id
     ) {
 
       this.notify.warning(
@@ -916,7 +1154,8 @@ export class StockDialog implements OnInit {
 
     if (
       !modelo ||
-      this.form.controls.idModelo.value !== modelo.id
+      this.form.controls.idModelo.value !==
+      modelo.id
     ) {
 
       this.notify.warning(
@@ -927,48 +1166,81 @@ export class StockDialog implements OnInit {
 
     }
 
-    const value = this.form.getRawValue();
+    const value =
+      this.form.getRawValue();
 
-    const data = {
+    const datosComunes = {
 
-      idProveedor: Number(value.idProveedor),
+      idProveedor:
+        Number(value.idProveedor),
 
-      idModelo: Number(value.idModelo),
+      idModelo:
+        Number(value.idModelo),
 
-      imei1: value.imei1.trim(),
+      factura:
+        value.factura,
 
-      imei2: value.imei2.trim(),
+      precioCosto:
+        Number(value.precioCosto),
 
-      factura: value.factura,
-
-      precioCosto: Number(value.precioCosto),
-
-      precioVenta: Number(value.precioVenta),
+      precioVenta:
+        Number(value.precioVenta),
 
       estadoCelular:
-        value.estadoCelular.trim().toUpperCase()
+        value.estadoCelular
+          .trim()
+          .toUpperCase()
 
     };
 
-    const request = this.data.stock
-      ? this.service.actualizar(
+    const equipos =
+      value.equipos.map(
+        equipo => ({
+          imei1:
+            equipo.imei1.trim(),
+          imei2:
+            equipo.imei2.trim()
+        })
+      );
+
+    const request =
+      this.data.stock
+        ? this.service.actualizar(
           this.data.stock.id,
-          data
+          {
+            ...datosComunes,
+            imei1:
+              equipos[0].imei1,
+            imei2:
+              equipos[0].imei2
+          }
         )
-      : this.service.crear(data);
+        : this.service.crear(
+          {
+            ...datosComunes,
+            equipos
+          }
+        );
 
     this.guardando.set(true);
 
     request
       .pipe(
-        finalize(() => this.guardando.set(false)),
-        takeUntilDestroyed(this.destroyRef)
+        finalize(
+          () =>
+            this.guardando.set(false)
+        ),
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe({
 
         next: response => {
 
-          this.notify.success(response.message);
+          this.notify.success(
+            response.message
+          );
 
           this.ref.close(true);
 
@@ -978,7 +1250,11 @@ export class StockDialog implements OnInit {
 
           this.notify.error(
             error?.error?.message ??
-            'No fue posible guardar el equipo'
+            (
+              this.esEdicion
+                ? 'No fue posible actualizar el equipo'
+                : 'No fue posible registrar los equipos'
+            )
           );
 
         }

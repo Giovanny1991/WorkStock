@@ -1,17 +1,17 @@
+<!-- =====================================================
+     WORKSTOCK - ADMINISTRACIÓN DE EMPRESAS
+     DISEÑO COMPACTO Y RESPONSIVE
+===================================================== -->
+
 <section class="empresas-admin">
 
-
-  <!-- =================================================
-       ENCABEZADO
-  ================================================== -->
+  <!-- ENCABEZADO -->
 
   <div class="section-header">
 
-    <div>
+    <div class="section-title">
 
-      <h2>
-        Empresas registradas
-      </h2>
+      <h2>Empresas registradas</h2>
 
       <p>
         Consulta, registra y administra las empresas de WorkStock.
@@ -19,29 +19,15 @@
 
     </div>
 
+    <button mat-flat-button type="button" class="primary-btn" [disabled]="guardando() || eliminandoId() !== null"
+      (click)="nueva()">
 
-    <button
-      mat-flat-button
-      type="button"
-      class="primary-btn"
-      [disabled]="
-        guardando()
-        ||
-        eliminandoId() !== null
-      "
-      (click)="nueva()"
-    >
-
-      <mat-icon>
-        add
-      </mat-icon>
-
+      <mat-icon>add</mat-icon>
       Nueva empresa
 
     </button>
 
   </div>
-
 
   <!-- =================================================
        RESUMEN GENERAL
@@ -49,45 +35,31 @@
 
   <div class="summary-strip">
 
-    <span>
+    <span class="summary-item">
 
-      <mat-icon>
-        business
-      </mat-icon>
+      <mat-icon>business</mat-icon>
 
-      <strong>
-        {{ totalEmpresas() }}
-      </strong>
+      <strong>{{ totalEmpresas() }}</strong>
 
       empresas
 
     </span>
 
+    <span class="summary-item">
 
-    <span>
+      <mat-icon>check_circle_outline</mat-icon>
 
-      <mat-icon>
-        check_circle_outline
-      </mat-icon>
-
-      <strong>
-        {{ empresasOperativas() }}
-      </strong>
+      <strong>{{ empresasOperativas() }}</strong>
 
       operativas
 
     </span>
 
+    <span class="summary-item">
 
-    <span>
+      <mat-icon>schedule</mat-icon>
 
-      <mat-icon>
-        schedule
-      </mat-icon>
-
-      <strong>
-        {{ empresasPendientes() }}
-      </strong>
+      <strong>{{ empresasPendientes() }}</strong>
 
       pendientes
 
@@ -95,97 +67,56 @@
 
   </div>
 
-
   <!-- =================================================
-       CARD
+       CONTENEDOR PRINCIPAL
   ================================================== -->
 
   <div class="card">
 
-
-    @if (
-      cargando()
-    ) {
-
-      <mat-progress-bar
-        mode="indeterminate"
-      />
-
+    @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" />
     }
 
-
-    <!-- ===============================================
-         BUSCADOR
-    ================================================= -->
+    <!-- BUSCADOR -->
 
     <div class="toolbar">
 
-      <mat-form-field
-        appearance="outline"
-        class="search-field"
-        subscriptSizing="dynamic"
-      >
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
 
-        <mat-label>
-          Buscar
-        </mat-label>
+        <mat-icon matPrefix>search</mat-icon>
 
+        <input matInput type="text" [formControl]="buscarControl" placeholder="Buscar empresa, código o RUC..."
+          autocomplete="off" aria-label="Buscar empresas">
 
-        <input
-          matInput
-          [formControl]="buscarControl"
-          placeholder="Buscar empresa, código o RUC..."
-          autocomplete="off"
-          aria-label="Buscar empresas"
-        >
+        @if (buscarControl.value) {
 
+        <button mat-icon-button matSuffix type="button" class="clear-search" matTooltip="Limpiar búsqueda"
+          aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()">
 
-        @if (
-          buscarControl.value
-        ) {
+          <mat-icon>close</mat-icon>
 
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            matTooltip="Limpiar búsqueda"
-            aria-label="Limpiar búsqueda"
-            (click)="limpiarBusqueda()"
-          >
-
-            <mat-icon>
-              close
-            </mat-icon>
-
-          </button>
-
-        } @else {
-
-          <mat-icon matSuffix>
-            search
-          </mat-icon>
+        </button>
 
         }
 
       </mat-form-field>
 
+      <!-- CONTADOR -->
 
       <span class="records">
 
-        @if (
-          totalRegistros() > 0
-        ) {
+        @if (totalRegistros() > 0) {
 
-          {{ registroDesde() }}
-          -
-          {{ registroHasta() }}
-          de
-          {{ totalRegistros() }}
-          registros
+        {{ registroDesde() }}
+        -
+        {{ registroHasta() }}
+        de
+        {{ totalRegistros() }}
+        registros
 
         } @else {
 
-          0 registros
+        0 registros
 
         }
 
@@ -193,71 +124,46 @@
 
     </div>
 
-
-    <!-- ===============================================
-         TABLA
-    ================================================= -->
+    <!-- =================================================
+         TABLA DE EMPRESAS
+    ================================================== -->
 
     <div class="table-wrapper">
 
-      <table
-        mat-table
-        [dataSource]="empresas()"
-        matSort
-        matSortDisableClear
-        [matSortActive]="columnaOrden()"
-        [matSortDirection]="direccionOrden()"
-        (matSortChange)="cambiarOrden($event)"
-        class="compact-table"
-      >
+      <table mat-table class="compact-table" [dataSource]="empresas()" matSort matSortDisableClear
+        [matSortActive]="columnaOrden()" [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
-
-        <!-- ===========================================
-             ID
-        ============================================ -->
+        <!-- ID -->
 
         <ng-container matColumnDef="id">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="id"
-            class="col-id"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="id" class="col-id">
+
             ID
+
           </th>
 
+          <td mat-cell *matCellDef="let empresa" class="col-id">
 
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-            class="col-id"
-          >
-            {{ empresa.id }}
+            <span class="id-value">
+              {{ empresa.id }}
+            </span>
+
           </td>
 
         </ng-container>
 
-
-        <!-- ===========================================
-             CÓDIGO
-        ============================================ -->
+        <!-- CÓDIGO -->
 
         <ng-container matColumnDef="codigo">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="codigo"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="codigo">
+
             Código
+
           </th>
 
-
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-          >
+          <td mat-cell *matCellDef="let empresa">
 
             <span class="code-tag">
               {{ empresa.codigo }}
@@ -267,116 +173,79 @@
 
         </ng-container>
 
-
-        <!-- ===========================================
-             EMPRESA
-        ============================================ -->
+        <!-- EMPRESA -->
 
         <ng-container matColumnDef="empresa">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="empresa"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="empresa">
+
             Empresa
+
           </th>
 
+          <td mat-cell *matCellDef="let empresa" [title]="empresa.nombreEmpresa">
 
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-            class="name-cell"
-            [title]="empresa.nombreEmpresa"
-          >
-
-            {{ empresa.nombreEmpresa }}
+            <span class="name-cell">
+              {{ empresa.nombreEmpresa }}
+            </span>
 
           </td>
 
         </ng-container>
 
-
-        <!-- ===========================================
-             RUC
-        ============================================ -->
+        <!-- RUC -->
 
         <ng-container matColumnDef="ruc">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="ruc"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="ruc">
+
             RUC
+
           </th>
 
+          <td mat-cell *matCellDef="let empresa">
 
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-          >
-
-            {{ empresa.ruc || '—' }}
+            <span class="ruc-value">
+              {{ empresa.ruc || '—' }}
+            </span>
 
           </td>
 
         </ng-container>
 
-
-        <!-- ===========================================
-             USUARIOS
-        ============================================ -->
+        <!-- USUARIOS -->
 
         <ng-container matColumnDef="usuarios">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="usuarios"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="usuarios" class="users-column">
+
             Usuarios
+
           </th>
 
+          <td mat-cell *matCellDef="let empresa" class="users-column">
 
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-          >
-
-            {{ empresa.totalUsuarios ?? 0 }}
+            <span class="users-count">
+              {{ empresa.totalUsuarios ?? 0 }}
+            </span>
 
           </td>
 
         </ng-container>
 
-
-        <!-- ===========================================
-             ESTADO
-        ============================================ -->
+        <!-- ESTADO -->
 
         <ng-container matColumnDef="estado">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="estado"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
+
             Estado
+
           </th>
 
+          <td mat-cell *matCellDef="let empresa" class="status-column">
 
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-          >
-
-            <span
-              class="status"
-              [class.active]="
-                empresa.estado === 'ACTIVA'
-              "
-            >
+            <span class="status" [class.active]="empresa.estado === 'ACTIVA'">
 
               {{ empresa.estado }}
 
@@ -386,43 +255,28 @@
 
         </ng-container>
 
-
-        <!-- ===========================================
-             OPERACIÓN
-        ============================================ -->
+        <!-- OPERACIÓN -->
 
         <ng-container matColumnDef="operacion">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="operacion"
-          >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="operacion" class="status-column">
+
             Operación
+
           </th>
 
+          <td mat-cell *matCellDef="let empresa" class="status-column">
 
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-          >
-
-            <span
-              class="status"
-              [class.active]="
-                empresa.operativaHabilitada
-              "
-              [matTooltip]="
+            <span class="status" [class.active]="empresa.operativaHabilitada" [matTooltip]="
                 empresa.operativaHabilitada
                   ? 'Operación comercial habilitada'
                   : 'Módulos comerciales pendientes de habilitación'
-              "
-            >
+              ">
 
               {{
-                empresa.operativaHabilitada
-                  ? 'HABILITADA'
-                  : 'PENDIENTE'
+              empresa.operativaHabilitada
+              ? 'HABILITADA'
+              : 'PENDIENTE'
               }}
 
             </span>
@@ -431,94 +285,52 @@
 
         </ng-container>
 
-
-        <!-- ===========================================
-             ACCIONES
-        ============================================ -->
+        <!-- ACCIONES -->
 
         <ng-container matColumnDef="acciones">
 
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            class="col-actions"
-          >
+          <th mat-header-cell *matHeaderCellDef class="col-actions">
 
             Acciones
 
           </th>
 
-
-          <td
-            mat-cell
-            *matCellDef="let empresa"
-            class="col-actions"
-          >
+          <td mat-cell *matCellDef="let empresa" class="col-actions">
 
             <div class="actions-group">
 
-
               <!-- EDITAR -->
 
-              <button
-                mat-icon-button
-                type="button"
-                class="action edit"
-                matTooltip="Editar empresa"
-                [disabled]="
-                  guardando()
-                  ||
-                  eliminandoId() !== null
-                "
-                (click)="editar(empresa)"
-              >
+              <button mat-icon-button type="button" class="action edit" matTooltip="Editar empresa"
+                aria-label="Editar empresa" [disabled]="guardando() || eliminandoId() !== null"
+                (click)="editar(empresa)">
 
-                <mat-icon>
-                  edit
-                </mat-icon>
+                <mat-icon>edit</mat-icon>
 
               </button>
 
+              <!-- ADMINISTRAR USUARIOS -->
 
-              <!-- USUARIOS -->
+              <button mat-icon-button type="button" class="action users" matTooltip="Administrar usuarios"
+                aria-label="Administrar usuarios de la empresa" [disabled]="guardando() || eliminandoId() !== null"
+                (click)="abrirUsuarios(empresa)">
 
-              <button
-                mat-icon-button
-                type="button"
-                class="action users"
-                matTooltip="Administrar usuarios"
-                [disabled]="
-                  guardando()
-                  ||
-                  eliminandoId() !== null
-                "
-                (click)="abrirUsuarios(empresa)"
-              >
-
-                <mat-icon>
-                  manage_accounts
-                </mat-icon>
+                <mat-icon>manage_accounts</mat-icon>
 
               </button>
-
 
               <!-- ELIMINAR -->
 
-              <button
-                mat-icon-button
-                type="button"
-                class="action delete"
-                matTooltip="Eliminar empresa"
-                [disabled]="
-                  guardando()
-                  ||
-                  eliminandoId() !== null
-                "
-                (click)="eliminar(empresa)"
-              >
+              <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar empresa"
+                aria-label="Eliminar empresa" [disabled]="guardando() || eliminandoId() !== null"
+                (click)="eliminar(empresa)">
 
                 <mat-icon>
-                  delete_outline
+                  {{
+                  eliminandoId() === empresa.id
+                  ? 'hourglass_top'
+                  : 'delete_outline'
+                  }}
                 </mat-icon>
 
               </button>
@@ -529,61 +341,38 @@
 
         </ng-container>
 
+        <!-- FILAS -->
 
-        <!-- ===========================================
-             FILAS
-        ============================================ -->
-
-        <tr
-          mat-header-row
-          *matHeaderRowDef="
-            displayedColumns
-          "
-        >
+        <tr mat-header-row *matHeaderRowDef="displayedColumns">
         </tr>
 
-
-        <tr
-          mat-row
-          *matRowDef="
-            let row;
-            columns: displayedColumns
-          "
-        >
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.row-inactive]="row.estado !== 'ACTIVA'"
+          [class.row-pending]="!row.operativaHabilitada">
         </tr>
 
-
-        <!-- ===========================================
-             SIN DATOS
-        ============================================ -->
+        <!-- SIN RESULTADOS -->
 
         <tr *matNoDataRow>
 
-          <td
-            class="no-data"
-            [attr.colspan]="
-              displayedColumns.length
-            "
-          >
+          <td class="no-data" [attr.colspan]="displayedColumns.length">
 
-            <mat-icon>
-              search_off
-            </mat-icon>
+            <mat-icon>search_off</mat-icon>
 
+            @if (cargando()) {
 
-            @if (
-              busqueda()
-            ) {
+            <span>Consultando empresas...</span>
 
-              <span>
-                No existen empresas que coincidan con la búsqueda
-              </span>
+            } @else if (busqueda()) {
+
+            <span>
+              No existen empresas que coincidan con la búsqueda.
+            </span>
 
             } @else {
 
-              <span>
-                No existen empresas para mostrar
-              </span>
+            <span>
+              No existen empresas para mostrar.
+            </span>
 
             }
 
@@ -595,34 +384,21 @@
 
     </div>
 
+    <!-- PAGINACIÓN REMOTA -->
 
-    <!-- ===============================================
-         PAGINADOR REMOTO
-    ================================================= -->
-
-    <mat-paginator
-      [length]="totalRegistros()"
-      [pageIndex]="paginaActual()"
-      [pageSize]="tamanioPagina()"
-      [pageSizeOptions]="opcionesPagina"
-      showFirstLastButtons
-      aria-label="Paginación de empresas"
-      (page)="cambiarPagina($event)"
-    >
+    <mat-paginator [length]="totalRegistros()" [pageIndex]="paginaActual()" [pageSize]="tamanioPagina()"
+      [pageSizeOptions]="opcionesPagina" showFirstLastButtons aria-label="Paginación de empresas"
+      (page)="cambiarPagina($event)">
     </mat-paginator>
 
-
-    <!-- ===============================================
-         NOTA
-    ================================================= -->
+    <!-- NOTA INFORMATIVA -->
 
     <p class="footnote">
 
-      <mat-icon>
-        info_outline
-      </mat-icon>
+      <mat-icon>info_outline</mat-icon>
 
-      Las empresas nuevas permanecen con operación pendiente hasta completar su habilitación comercial.
+      Las empresas nuevas permanecen con operación pendiente
+      hasta completar su habilitación comercial.
 
     </p>
 

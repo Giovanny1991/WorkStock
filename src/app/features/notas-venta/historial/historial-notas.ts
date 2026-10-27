@@ -1,3 +1,4 @@
+
 import {
   Component,
   computed,
@@ -35,6 +36,10 @@ import {
 import {
   MatButtonModule
 } from '@angular/material/button';
+
+import {
+  MatDatepickerModule
+} from '@angular/material/datepicker';
 
 import {
   MatDialog,
@@ -75,7 +80,6 @@ import {
   MatTooltipModule
 } from '@angular/material/tooltip';
 
-
 import {
   NotaVentaResumen
 } from '../nota-venta.model';
@@ -107,6 +111,14 @@ import {
   AuthService
 } from '../../../core/auth/auth.service';
 
+// =====================================================
+// INTERFAZ DEL RANGO APLICADO
+// =====================================================
+
+interface RangoFechasAplicado {
+  inicial: string;
+  final: string;
+}
 
 @Component({
   selector: 'app-historial-notas',
@@ -119,6 +131,7 @@ import {
     ReactiveFormsModule,
 
     MatButtonModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
@@ -130,91 +143,57 @@ import {
     MatTooltipModule
   ],
 
-  templateUrl:
-    './historial-notas.html',
+  templateUrl: './historial-notas.html',
 
-  styleUrl:
-    './historial-notas.scss'
+  styleUrl: './historial-notas.scss'
 })
-export class HistorialNotas
-  implements OnInit {
+export class HistorialNotas implements OnInit {
 
-  /* =====================================================
-     SERVICIOS
-  ===================================================== */
+  // ===================================================
+  // SERVICIOS
+  // ===================================================
 
   private readonly historialService =
-    inject(
-      NotasVentaHistorialService
-    );
+    inject(NotasVentaHistorialService);
 
-
-  /*
-   * Este servicio se conserva para:
-   * - anular
-   * - operaciones existentes
-   */
   private readonly notasVentaService =
-    inject(
-      NotasVentaService
-    );
-
+    inject(NotasVentaService);
 
   private readonly notify =
-    inject(
-      NotificationService
-    );
-
+    inject(NotificationService);
 
   private readonly dialog =
-    inject(
-      MatDialog
-    );
-
+    inject(MatDialog);
 
   private readonly authService =
-    inject(
-      AuthService
-    );
-
+    inject(AuthService);
 
   private readonly destroyRef =
-    inject(
-      DestroyRef
-    );
+    inject(DestroyRef);
 
-
-  /* =====================================================
-     CONTROL DE RECARGA
-  ===================================================== */
+  // ===================================================
+  // CONTROL DE RECARGA
+  // ===================================================
 
   private readonly recargar$ =
     new Subject<void>();
 
-
-  /* =====================================================
-     ESTADO
-  ===================================================== */
+  // ===================================================
+  // ESTADO GENERAL
+  // ===================================================
 
   readonly cargando =
     signal(false);
 
-
   readonly anulando =
-    signal<number | null>(
-      null
-    );
-
+    signal<number | null>(null);
 
   readonly notas =
-    signal<NotaVentaResumen[]>(
-      []
-    );
+    signal<NotaVentaResumen[]>([]);
 
-
-  /* =====================================================
-     USUARIO
-  ===================================================== */
+  // ===================================================
+  // USUARIO Y PERMISOS
+  // ===================================================
 
   readonly esAdministrador =
     computed(
@@ -222,50 +201,118 @@ export class HistorialNotas
         this.authService
           .usuario()
           ?.rol
-          ?.toUpperCase()
-        ===
-        'ADMINISTRADOR'
+          ?.toUpperCase() === 'ADMINISTRADOR'
     );
 
-
-  /* =====================================================
-     BÚSQUEDA
-  ===================================================== */
+  // ===================================================
+  // BÚSQUEDA
+  // ===================================================
 
   readonly buscarControl =
-    new FormControl(
-      '',
-      {
-        nonNullable: true
-      }
-    );
-
+    new FormControl('', {
+      nonNullable: true
+    });
 
   readonly busqueda =
     signal('');
 
-
-  /* =====================================================
-     FILTRO
-  ===================================================== */
+  // ===================================================
+  // FILTRO DE ESTADO
+  // ===================================================
 
   readonly filtroEstado =
-    signal<EstadoFiltroNotaVenta>(
-      'TODOS'
+    signal<EstadoFiltroNotaVenta>('TODOS');
+
+  // ===================================================
+  // FECHAS
+  //
+  // Por defecto:
+  // - Primer día del mes actual
+  // - Fecha actual
+  //
+  // Fecha visible:
+  // DD/MM/YYYY
+  //
+  // Fecha enviada al backend:
+  // YYYY-MM-DD
+  // ===================================================
+
+  readonly fechaMaxima =
+    new Date();
+
+  readonly fechaInicialControl =
+    new FormControl<Date | null>(
+      new Date(
+        this.fechaMaxima.getFullYear(),
+        this.fechaMaxima.getMonth(),
+        1
+      )
     );
 
+  readonly fechaFinalControl =
+    new FormControl<Date | null>(
+      new Date(
+        this.fechaMaxima.getFullYear(),
+        this.fechaMaxima.getMonth(),
+        this.fechaMaxima.getDate()
+      )
+    );
 
-  /* =====================================================
-     PAGINACIÓN
-  ===================================================== */
+  // ===================================================
+  // FECHAS EFECTIVAMENTE APLICADAS
+  //
+  // No se modifica el filtro SQL solamente por
+  // seleccionar una fecha en el calendario.
+  //
+  // Se modifica al pulsar Consultar.
+  // ===================================================
+
+  readonly fechasAplicadas =
+    signal<RangoFechasAplicado>({
+
+      inicial: this.formatearFechaSQL(
+        this.fechaInicialControl.value!
+      ),
+
+      final: this.formatearFechaSQL(
+        this.fechaFinalControl.value!
+      )
+
+    });
+
+  // ===================================================
+  // TEXTO INFORMATIVO DEL PERÍODO
+  // ===================================================
+
+  readonly periodoConsultado =
+    computed(() => {
+
+      const fechas =
+        this.fechasAplicadas();
+
+      const inicial =
+        this.formatearFechaVisual(
+          fechas.inicial
+        );
+
+      const final =
+        this.formatearFechaVisual(
+          fechas.final
+        );
+
+      return `${inicial} - ${final}`;
+
+    });
+
+  // ===================================================
+  // PAGINACIÓN
+  // ===================================================
 
   readonly paginaActual =
     signal(0);
 
-
   readonly tamanioPagina =
     signal(10);
-
 
   readonly opcionesPagina = [
     10,
@@ -274,70 +321,54 @@ export class HistorialNotas
     100
   ];
 
-
   readonly totalRegistros =
     signal(0);
-
 
   readonly totalPaginas =
     signal(0);
 
-
-  /* =====================================================
-     ORDENAMIENTO
-  ===================================================== */
+  // ===================================================
+  // ORDENAMIENTO
+  // ===================================================
 
   readonly columnaOrden =
-    signal<NotaVentaOrden>(
-      'numero'
-    );
-
+    signal<NotaVentaOrden>('numero');
 
   readonly direccionOrden =
-    signal<DireccionOrdenNotaVenta>(
-      'desc'
-    );
+    signal<DireccionOrdenNotaVenta>('desc');
 
-
-  /* =====================================================
-     COLUMNAS
-  ===================================================== */
+  // ===================================================
+  // COLUMNAS
+  //
+  // Se conservan las columnas existentes.
+  // ===================================================
 
   readonly displayedColumns = [
     'numero',
     'cliente',
-    // 'identificacion',
     'total',
     'estado',
     'vendedor',
     'acciones'
   ];
 
-
-  /* =====================================================
-     REGISTROS MOSTRADOS
-  ===================================================== */
+  // ===================================================
+  // REGISTROS MOSTRADOS
+  // ===================================================
 
   readonly registroDesde =
     computed(() => {
 
-      if (
-        this.totalRegistros() === 0
-      ) {
-
+      if (this.totalRegistros() === 0) {
         return 0;
-
       }
 
-
       return (
-        this.paginaActual()
-        *
+        this.paginaActual() *
         this.tamanioPagina()
       ) + 1;
 
     });
-
 
   readonly registroHasta =
     computed(() => {
@@ -345,10 +376,8 @@ export class HistorialNotas
       const hasta =
         (
           this.paginaActual() + 1
-        )
-        *
+        ) *
         this.tamanioPagina();
-
 
       return Math.min(
         hasta,
@@ -357,10 +386,9 @@ export class HistorialNotas
 
     });
 
-
-  /* =====================================================
-     INICIALIZAR
-  ===================================================== */
+  // ===================================================
+  // INICIALIZAR
+  // ===================================================
 
   ngOnInit(): void {
 
@@ -370,24 +398,323 @@ export class HistorialNotas
 
   }
 
+  // ===================================================
+  // FECHA LOCAL A FORMATO SQL
+  //
+  // Evitamos toISOString() porque puede cambiar
+  // el día dependiendo de la zona horaria.
+  // ===================================================
 
-  /* =====================================================
-     BÚSQUEDA
+  private formatearFechaSQL(
+    fecha: Date
+  ): string {
 
-     Espera 350ms antes de consultar.
-  ===================================================== */
+    const anio =
+      fecha.getFullYear();
 
-  private configurarBusqueda():
-    void {
+    const mes =
+      String(
+        fecha.getMonth() + 1
+      ).padStart(2, '0');
+
+    const dia =
+      String(
+        fecha.getDate()
+      ).padStart(2, '0');
+
+    return `${anio}-${mes}-${dia}`;
+
+  }
+
+  // ===================================================
+  // FECHA SQL A FORMATO VISUAL
+  // ===================================================
+
+  private formatearFechaVisual(
+    fecha: string
+  ): string {
+
+    const partes =
+      fecha.split('-');
+
+    if (partes.length !== 3) {
+      return fecha;
+    }
+
+    const [
+      anio,
+      mes,
+      dia
+    ] = partes;
+
+    return `${dia}/${mes}/${anio}`;
+
+  }
+
+  // ===================================================
+  // VALIDAR OBJETO FECHA
+  // ===================================================
+
+  private fechaEsValida(
+    fecha: Date | null
+  ): fecha is Date {
+
+    return (
+      fecha instanceof Date &&
+      !Number.isNaN(fecha.getTime())
+    );
+
+  }
+
+  // ===================================================
+  // APLICAR FILTRO DE FECHAS
+  // ===================================================
+
+  aplicarFechas(): void {
+
+    const fechaInicial =
+      this.fechaInicialControl.value;
+
+    const fechaFinal =
+      this.fechaFinalControl.value;
+
+    // -------------------------------------------------
+    // VALIDAR FECHAS OBLIGATORIAS
+    // -------------------------------------------------
+
+    if (
+      !this.fechaEsValida(fechaInicial) ||
+      !this.fechaEsValida(fechaFinal)
+    ) {
+
+      this.notify.warning(
+        'Selecciona una fecha inicial y una fecha final válidas'
+      );
+
+      return;
+
+    }
+
+    // -------------------------------------------------
+    // NORMALIZAR A FECHAS SIN HORA
+    // -------------------------------------------------
+
+    const inicial =
+      new Date(
+        fechaInicial.getFullYear(),
+        fechaInicial.getMonth(),
+        fechaInicial.getDate()
+      );
+
+    const final =
+      new Date(
+        fechaFinal.getFullYear(),
+        fechaFinal.getMonth(),
+        fechaFinal.getDate()
+      );
+
+    const hoy =
+      new Date(
+        this.fechaMaxima.getFullYear(),
+        this.fechaMaxima.getMonth(),
+        this.fechaMaxima.getDate()
+      );
+
+    // -------------------------------------------------
+    // VALIDAR ORDEN
+    // -------------------------------------------------
+
+    if (
+      inicial.getTime() >
+      final.getTime()
+    ) {
+
+      this.notify.warning(
+        'La fecha inicial no puede ser mayor a la fecha final'
+      );
+
+      return;
+
+    }
+
+    // -------------------------------------------------
+    // EVITAR FECHAS FUTURAS
+    // -------------------------------------------------
+
+    if (
+      inicial.getTime() >
+      hoy.getTime() ||
+      final.getTime() >
+      hoy.getTime()
+    ) {
+
+      this.notify.warning(
+        'No puedes consultar fechas posteriores al día actual'
+      );
+
+      return;
+
+    }
+
+    // -------------------------------------------------
+    // ACTUALIZAR PERÍODO APLICADO
+    // -------------------------------------------------
+
+    const nuevoRango: RangoFechasAplicado = {
+
+      inicial:
+        this.formatearFechaSQL(inicial),
+
+      final:
+        this.formatearFechaSQL(final)
+
+    };
+
+    this.fechasAplicadas.set(
+      nuevoRango
+    );
+
+    // -------------------------------------------------
+    // REGRESAR A PRIMERA PÁGINA
+    // -------------------------------------------------
+
+    this.paginaActual.set(0);
+
+    // -------------------------------------------------
+    // CONSULTAR SQL SERVER
+    // -------------------------------------------------
+
+    this.cargar();
+
+  }
+
+  // ===================================================
+  // LIMPIAR TODOS LOS FILTROS
+  //
+  // Se restablece:
+  // - Búsqueda
+  // - Estado
+  // - Fechas del mes actual
+  // - Página
+  // - Ordenamiento
+  // ===================================================
+
+  limpiarFiltros(): void {
+
+    const hoy =
+      new Date();
+
+    const primerDia =
+      new Date(
+        hoy.getFullYear(),
+        hoy.getMonth(),
+        1
+      );
+
+    const fechaActual =
+      new Date(
+        hoy.getFullYear(),
+        hoy.getMonth(),
+        hoy.getDate()
+      );
+
+    // -------------------------------------------------
+    // RESTABLECER FECHAS SIN DISPARAR CONSULTAS DOBLES
+    // -------------------------------------------------
+
+    this.fechaInicialControl.setValue(
+      primerDia,
+      {
+        emitEvent: false
+      }
+    );
+
+    this.fechaFinalControl.setValue(
+      fechaActual,
+      {
+        emitEvent: false
+      }
+    );
+
+    // -------------------------------------------------
+    // RESTABLECER BÚSQUEDA
+    // -------------------------------------------------
+
+    this.buscarControl.setValue(
+      '',
+      {
+        emitEvent: false
+      }
+    );
+
+    this.busqueda.set('');
+
+    // -------------------------------------------------
+    // RESTABLECER ESTADO
+    // -------------------------------------------------
+
+    this.filtroEstado.set(
+      'TODOS'
+    );
+
+    // -------------------------------------------------
+    // RESTABLECER ORDEN
+    // -------------------------------------------------
+
+    this.columnaOrden.set(
+      'numero'
+    );
+
+    this.direccionOrden.set(
+      'desc'
+    );
+
+    // -------------------------------------------------
+    // RESTABLECER PÁGINA
+    // -------------------------------------------------
+
+    this.paginaActual.set(0);
+
+    // -------------------------------------------------
+    // ACTUALIZAR FECHAS APLICADAS
+    // -------------------------------------------------
+
+    this.fechasAplicadas.set({
+
+      inicial:
+        this.formatearFechaSQL(
+          primerDia
+        ),
+
+      final:
+        this.formatearFechaSQL(
+          fechaActual
+        )
+
+    });
+
+    // -------------------------------------------------
+    // RECARGAR
+    // -------------------------------------------------
+
+    this.cargar();
+
+  }
+
+  // ===================================================
+  // CONFIGURAR BÚSQUEDA
+  //
+  // Mantiene debounce de 350 ms.
+  // ===================================================
+
+  private configurarBusqueda(): void {
 
     this.buscarControl
       .valueChanges
 
       .pipe(
 
-        debounceTime(
-          350
-        ),
+        debounceTime(350),
 
         map(
           valor =>
@@ -409,15 +736,9 @@ export class HistorialNotas
             valor
           );
 
-
-          /*
-           * Toda búsqueda nueva
-           * empieza en página 1.
-           */
           this.paginaActual.set(
             0
           );
-
 
           this.cargar();
 
@@ -426,95 +747,99 @@ export class HistorialNotas
 
   }
 
+  // ===================================================
+  // CONFIGURAR CARGA DESDE BACKEND
+  // ===================================================
 
-  /* =====================================================
-     CARGA DESDE BACKEND
-  ===================================================== */
-
-  private configurarCarga():
-    void {
+  private configurarCarga(): void {
 
     this.recargar$
 
       .pipe(
 
-        /*
-         * Ejecutar primera carga
-         * al entrar a la pantalla.
-         */
-        startWith(
-          undefined
-        ),
+        // Primera consulta al ingresar
 
-        /*
-         * Si el usuario:
-         * - escribe
-         * - cambia filtro
-         * - cambia página
-         * - cambia orden
-         *
-         * mientras existe una petición anterior,
-         * switchMap deja de utilizar la respuesta vieja.
-         */
-        switchMap(
-          () => {
+        startWith(undefined),
 
-            this.cargando.set(
-              true
-            );
+        // Cancelar utilización de respuestas anteriores
 
+        switchMap(() => {
 
-            return this.historialService
-              .listar({
+          this.cargando.set(
+            true
+          );
 
-                /*
-                 * Angular comienza en 0.
-                 * Backend comienza en 1.
-                 */
-                page:
-                  this.paginaActual()
-                  + 1,
+          const fechas =
+            this.fechasAplicadas();
 
-                pageSize:
-                  this.tamanioPagina(),
+          return this.historialService
+            .listar({
 
-                estado:
-                  this.filtroEstado(),
+              // -----------------------------------------
+              // PAGINACIÓN
+              // -----------------------------------------
 
-                busqueda:
-                  this.busqueda(),
+              page:
+                this.paginaActual() + 1,
 
-                sortBy:
-                  this.columnaOrden(),
+              pageSize:
+                this.tamanioPagina(),
 
-                sortDir:
-                  this.direccionOrden()
+              // -----------------------------------------
+              // ESTADO
+              // -----------------------------------------
+
+              estado:
+                this.filtroEstado(),
+
+              // -----------------------------------------
+              // BÚSQUEDA
+              // -----------------------------------------
+
+              busqueda:
+                this.busqueda(),
+
+              // -----------------------------------------
+              // ORDENAMIENTO
+              // -----------------------------------------
+
+              sortBy:
+                this.columnaOrden(),
+
+              sortDir:
+                this.direccionOrden(),
+
+              // -----------------------------------------
+              // FECHAS
+              // -----------------------------------------
+
+              fechaInicial:
+                fechas.inicial,
+
+              fechaFinal:
+                fechas.final
+
+            })
+
+            .pipe(
+
+              catchError(error => {
+
+                this.notify.error(
+
+                  error?.error?.message
+                  ??
+                  'No fue posible cargar las notas de venta'
+
+                );
+
+                return of(null);
 
               })
 
-              .pipe(
+            );
 
-                catchError(
-                  error => {
-
-                    this.notify.error(
-
-                      error?.error?.message
-                      ??
-                      'No fue posible cargar las notas de venta'
-
-                    );
-
-
-                    return of(null);
-
-                  }
-                )
-
-              );
-
-          }
-        ),
+        }),
 
         takeUntilDestroyed(
           this.destroyRef
@@ -522,103 +847,95 @@ export class HistorialNotas
 
       )
 
-      .subscribe(
-        response => {
+      .subscribe(response => {
 
-          this.cargando.set(
-            false
-          );
+        this.cargando.set(
+          false
+        );
 
+        // -------------------------------------------------
+        // ERROR DE CONSULTA
+        // -------------------------------------------------
 
-          if (!response) {
+        if (!response) {
 
-            return;
+          this.notas.set([]);
 
-          }
+          this.totalRegistros.set(0);
 
+          this.totalPaginas.set(0);
 
-          const data =
-            response.data
-            ?? [];
-
-
-          const pagination =
-            response.pagination;
-
-
-          const total =
-            Number(
-              pagination?.total
-              ?? 0
-            );
-
-
-          const totalPages =
-            Number(
-              pagination?.totalPages
-              ?? 0
-            );
-
-
-          const pageServidor =
-            Number(
-              pagination?.page
-              ?? 1
-            );
-
-
-          /* =================================================
-             VALIDAR PÁGINA
-
-             Puede pasar si estamos en una página alta
-             y, después de una anulación, deja de existir.
-          ================================================= */
-
-          if (
-            totalPages > 0
-            &&
-            pageServidor > totalPages
-          ) {
-
-            this.paginaActual.set(
-              totalPages - 1
-            );
-
-
-            this.cargar();
-
-            return;
-
-          }
-
-
-          /* =================================================
-             ACTUALIZAR TABLA
-          ================================================= */
-
-          this.notas.set(
-            data
-          );
-
-
-          this.totalRegistros.set(
-            total
-          );
-
-
-          this.totalPaginas.set(
-            totalPages
-          );
+          return;
 
         }
-      );
+
+        // -------------------------------------------------
+        // DATOS
+        // -------------------------------------------------
+
+        const data =
+          response.data ?? [];
+
+        const pagination =
+          response.pagination;
+
+        const total =
+          Number(
+            pagination?.total ?? 0
+          );
+
+        const totalPages =
+          Number(
+            pagination?.totalPages ?? 0
+          );
+
+        const pageServidor =
+          Number(
+            pagination?.page ?? 1
+          );
+
+        // -------------------------------------------------
+        // VALIDAR PÁGINA
+        // -------------------------------------------------
+
+        if (
+          totalPages > 0 &&
+          pageServidor > totalPages
+        ) {
+
+          this.paginaActual.set(
+            totalPages - 1
+          );
+
+          this.cargar();
+
+          return;
+
+        }
+
+        // -------------------------------------------------
+        // ACTUALIZAR TABLA
+        // -------------------------------------------------
+
+        this.notas.set(
+          data
+        );
+
+        this.totalRegistros.set(
+          total
+        );
+
+        this.totalPaginas.set(
+          totalPages
+        );
+
+      });
 
   }
 
-
-  /* =====================================================
-     RECARGAR
-  ===================================================== */
+  // ===================================================
+  // RECARGAR
+  // ===================================================
 
   cargar(): void {
 
@@ -626,43 +943,35 @@ export class HistorialNotas
 
   }
 
-
-  /* =====================================================
-     FILTRO
-  ===================================================== */
+  // ===================================================
+  // CAMBIAR FILTRO DE ESTADO
+  // ===================================================
 
   cambiarFiltroEstado(
     estado: EstadoFiltroNotaVenta
   ): void {
 
     if (
-      this.filtroEstado() ===
-      estado
+      this.filtroEstado() === estado
     ) {
-
       return;
-
     }
-
 
     this.filtroEstado.set(
       estado
     );
 
-
     this.paginaActual.set(
       0
     );
-
 
     this.cargar();
 
   }
 
-
-  /* =====================================================
-     CAMBIAR PÁGINA
-  ===================================================== */
+  // ===================================================
+  // CAMBIAR PÁGINA
+  // ===================================================
 
   cambiarPagina(
     event: PageEvent
@@ -672,23 +981,12 @@ export class HistorialNotas
       event.pageSize !==
       this.tamanioPagina();
 
-
     this.tamanioPagina.set(
       event.pageSize
     );
 
+    if (cambioTamanio) {
 
-    if (
-      cambioTamanio
-    ) {
-
-      /*
-       * Cambio:
-       *
-       * 25 → 50
-       *
-       * vuelve a primera página.
-       */
       this.paginaActual.set(
         0
       );
@@ -701,30 +999,24 @@ export class HistorialNotas
 
     }
 
-
     this.cargar();
 
   }
 
-
-  /* =====================================================
-     ORDENAMIENTO
-  ===================================================== */
+  // ===================================================
+  // ORDENAMIENTO
+  // ===================================================
 
   cambiarOrden(
     sort: Sort
   ): void {
 
     if (
-      sort.direction !== 'asc'
-      &&
+      sort.direction !== 'asc' &&
       sort.direction !== 'desc'
     ) {
-
       return;
-
     }
-
 
     const columnasPermitidas:
       NotaVentaOrden[] = [
@@ -739,85 +1031,57 @@ export class HistorialNotas
 
       ];
 
-
-    /*
-     * Evitamos utilizar un cast innecesario.
-     *
-     * find devuelve directamente:
-     * NotaVentaOrden | undefined
-     */
     const columna =
       columnasPermitidas.find(
         item =>
           item === sort.active
       );
 
-
     if (!columna) {
-
       return;
-
     }
-
-
-    const direccion =
-      sort.direction;
-
 
     this.columnaOrden.set(
       columna
     );
 
-
     this.direccionOrden.set(
-      direccion
+      sort.direction
     );
-
 
     this.paginaActual.set(
       0
     );
 
-
     this.cargar();
 
   }
 
+  // ===================================================
+  // LIMPIAR BÚSQUEDA
+  // ===================================================
 
-  /* =====================================================
-     LIMPIAR BÚSQUEDA
-  ===================================================== */
-
-  limpiarBusqueda():
-    void {
+  limpiarBusqueda(): void {
 
     if (
       !this.buscarControl.value
     ) {
-
       return;
-
     }
 
+    // El valueChanges ejecuta la consulta.
 
-    /*
-     * valueChanges realizará
-     * automáticamente la consulta.
-     */
     this.buscarControl.setValue(
       ''
     );
 
   }
 
-
-  /* =====================================================
-     VISUALIZAR TICKET
-
-     Siempre:
-     - FACTURADO
-     - ANULADA
-  ===================================================== */
+  // ===================================================
+  // VISUALIZAR NOTA DE VENTA
+  //
+  // Disponible para notas facturadas y anuladas.
+  // ===================================================
 
   visualizar(
     nota: NotaVentaResumen
@@ -827,26 +1091,18 @@ export class HistorialNotas
       NotaVentaDetalleComponent,
       {
 
-        width:
-          '430px',
+        width: '430px',
 
-        maxWidth:
-          '95vw',
+        maxWidth: '95vw',
 
-        maxHeight:
-          '95vh',
+        maxHeight: '95vh',
 
-        disableClose:
-          true,
+        disableClose: true,
 
-        autoFocus:
-          false,
+        autoFocus: false,
 
         data: {
-
-          idNotaVenta:
-            nota.id
-
+          idNotaVenta: nota.id
         }
 
       }
@@ -854,22 +1110,19 @@ export class HistorialNotas
 
   }
 
-
-  /* =====================================================
-     ANULAR
-  ===================================================== */
+  // ===================================================
+  // ANULAR NOTA DE VENTA
+  // ===================================================
 
   anular(
     nota: NotaVentaResumen
   ): void {
 
-    /* =================================================
-       SOLO ADMINISTRADOR
-    ================================================= */
+    // -------------------------------------------------
+    // PERMISOS
+    // -------------------------------------------------
 
-    if (
-      !this.esAdministrador()
-    ) {
+    if (!this.esAdministrador()) {
 
       this.notify.warning(
         'No tiene permisos para anular notas de venta'
@@ -879,10 +1132,9 @@ export class HistorialNotas
 
     }
 
-
-    /* =================================================
-       VALIDAR ESTADO
-    ================================================= */
+    // -------------------------------------------------
+    // VALIDAR ESTADO
+    // -------------------------------------------------
 
     const estado =
       String(
@@ -891,11 +1143,7 @@ export class HistorialNotas
         .trim()
         .toUpperCase();
 
-
-    if (
-      estado ===
-      'ANULADA'
-    ) {
+    if (estado === 'ANULADA') {
 
       this.notify.warning(
         'La nota de venta ya se encuentra anulada'
@@ -905,11 +1153,7 @@ export class HistorialNotas
 
     }
 
-
-    if (
-      estado !==
-      'FACTURADO'
-    ) {
+    if (estado !== 'FACTURADO') {
 
       this.notify.warning(
         'La nota de venta no se encuentra en un estado válido para anulación'
@@ -919,20 +1163,19 @@ export class HistorialNotas
 
     }
 
-
-    /* =================================================
-       EVITAR DOBLE CLIC
-    ================================================= */
+    // -------------------------------------------------
+    // EVITAR DOBLE CLIC
+    // -------------------------------------------------
 
     if (
-      this.anulando() !==
-      null
+      this.anulando() !== null
     ) {
-
       return;
-
     }
 
+    // -------------------------------------------------
+    // REFERENCIA
+    // -------------------------------------------------
 
     const referencia =
       nota.numeroNV
@@ -941,23 +1184,19 @@ export class HistorialNotas
 
         : `ID ${nota.id}`;
 
-
-    /* =================================================
-       CONFIRMAR
-    ================================================= */
+    // -------------------------------------------------
+    // CONFIRMAR ANULACIÓN
+    // -------------------------------------------------
 
     this.dialog.open(
       ConfirmDialog,
       {
 
-        width:
-          '430px',
+        width: '430px',
 
-        maxWidth:
-          '92vw',
+        maxWidth: '92vw',
 
-        disableClose:
-          true,
+        disableClose: true,
 
         data: {
 
@@ -978,29 +1217,29 @@ export class HistorialNotas
 
       .afterClosed()
 
-      .subscribe(
-        confirmado => {
+      .pipe(
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+      )
 
-          if (!confirmado) {
+      .subscribe(confirmado => {
 
-            return;
-
-          }
-
-
-          this.ejecutarAnulacion(
-            nota
-          );
-
+        if (!confirmado) {
+          return;
         }
-      );
+
+        this.ejecutarAnulacion(
+          nota
+        );
+
+      });
 
   }
 
-
-  /* =====================================================
-     EJECUTAR ANULACIÓN
-  ===================================================== */
+  // ===================================================
+  // EJECUTAR ANULACIÓN
+  // ===================================================
 
   private ejecutarAnulacion(
     nota: NotaVentaResumen
@@ -1010,10 +1249,15 @@ export class HistorialNotas
       nota.id
     );
 
-
     this.notasVentaService
       .anular(
         nota.id
+      )
+
+      .pipe(
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
 
       .subscribe({
@@ -1024,7 +1268,6 @@ export class HistorialNotas
             null
           );
 
-
           this.notify.success(
 
             response?.message
@@ -1033,27 +1276,22 @@ export class HistorialNotas
 
           );
 
+          // -------------------------------------------
+          // REFRESCAR CONSULTA
+          //
+          // Se conserva el rango de fechas y
+          // los demás filtros seleccionados.
+          // -------------------------------------------
 
-          /*
-           * Volvemos a consultar SQL Server.
-           *
-           * Se conserva:
-           * - búsqueda
-           * - estado
-           * - ordenamiento
-           * - página
-           */
           this.cargar();
 
         },
-
 
         error: error => {
 
           this.anulando.set(
             null
           );
-
 
           this.notify.error(
 

@@ -1,47 +1,25 @@
-
-/* ==========================================================
-   WORKSTOCK · LOGIN
-   DISEÑO RESPONSIVE
-   Desktop / Laptop / Tablet / Mobile
-========================================================== */
-
+/* =====================================================
+   WORKSTOCK - LOGIN UI/UX RESPONSIVE
+   Desktop / Laptop / Tablet / Android / iPhone
+===================================================== */
 :host {
   display: block;
   width: 100%;
   min-width: 0;
   min-height: 100vh;
   min-height: 100dvh;
-
   color-scheme: light;
-
-  --navy-950: #071326;
-  --navy-900: #0a1b35;
-  --navy-800: #15305a;
-
-  --blue-700: #1848d8;
-  --blue-600: #2559ef;
-  --amber-500: #f3b33c;
-
-  --white: #ffffff;
-  --surface: #f3f4f7;
-
-  --text: #14233b;
-  --text-soft: #6f7b8f;
-
-  --line: #d9dee8;
-  --line-strong: #c7cfdb;
-
+  --navy: #09192f;
+  --navy-soft: #15315b;
+  --primary: #2457eb;
+  --primary-dark: #1646d4;
+  --accent: #f3b33c;
+  --surface: #f6f8fc;
+  --text: #192b45;
+  --muted: #758298;
+  --line: #dce3ef;
   --danger: #c4362f;
-  --danger-bg: #fff1ef;
-
-  font-family:
-    'Manrope',
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-
+  font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: var(--surface);
 }
@@ -52,24 +30,15 @@
   box-sizing: border-box;
 }
 
-/* ==========================================================
+/* =====================================================
    1. ESTRUCTURA PRINCIPAL
-========================================================== */
-
+===================================================== */
 .login-shell {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 44fr)
-    minmax(0, 56fr);
-
+  grid-template-columns: minmax(0, 44fr) minmax(0, 56fr);
   width: 100%;
-  min-width: 0;
-
   min-height: 100vh;
   min-height: 100dvh;
-
-  background: var(--surface);
 }
 
 .showcase,
@@ -77,41 +46,43 @@
   min-width: 0;
 }
 
-/* ==========================================================
-   2. PANEL IZQUIERDO
-========================================================== */
+/* =====================================================
+   PANEL IZQUIERDO - ARRIBA MÁS CLARO / ABAJO MÁS OSCURO
+===================================================== */
 
+/* PANEL IZQUIERDO - MÁS CLARO ARRIBA Y OSCURO ABAJO */
 .showcase {
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  color: var(--white);
-
+  color: #fff;
   background:
-    linear-gradient(
-      145deg,
-      #061226 0%,
-      #0b1f41 48%,
-      #123162 100%
+    radial-gradient(circle at top center, rgba(255,255,255,.12), transparent 38%),
+    linear-gradient(180deg,
+      #32649B 0%,
+      #28588D 20%,
+      #1C4778 40%,
+      #13355F 65%,
+      #0B2343 85%,
+      #08182E 100%
     );
 }
+
 
 .showcase-overlay {
   position: absolute;
   inset: 0;
-
   pointer-events: none;
-
   background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.03),
-      transparent 55%
+    linear-gradient(180deg,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,.03) 18%,
+      rgba(255,255,255,.01) 38%,
+      rgba(0,0,0,.05) 72%,
+      rgba(0,0,0,.12) 100%
     );
 }
-
 .showcase-shape {
   position: absolute;
   border-radius: 50%;
@@ -119,165 +90,168 @@
 }
 
 .showcase-shape-1 {
-  width: 420px;
-  height: 420px;
-
-  top: -150px;
-  right: -170px;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(57, 109, 255, 0.22),
-      transparent 70%
-    );
+  width: 360px;
+  height: 360px;
+  top: -160px;
+  right: -150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90,146,255,.14), transparent 72%);
+  filter: blur(8px);
 }
 
 .showcase-shape-2 {
-  width: 340px;
-  height: 340px;
-
+  width: 280px;
+  height: 280px;
   bottom: -120px;
-  left: -140px;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(243, 179, 60, 0.09),
-      transparent 70%
-    );
+  left: -120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.05), transparent 72%);
+  filter: blur(10px);
 }
-
-/* ==========================================================
-   3. CONTENIDO DEL SHOWCASE
-========================================================== */
 
 .showcase-content {
   position: relative;
   z-index: 1;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   flex: 1;
-
   width: 100%;
   min-width: 0;
-
-  padding:
-    clamp(28px, 5vw, 58px)
-    clamp(24px, 4vw, 56px)
-    24px;
+  padding: clamp(25px, 4vw, 48px) clamp(25px, 4vw, 54px) 25px;
 }
 
+/* =====================================================
+   3. LOGO WORKSTOCK - RESPLANDOR BLANCO DIFUMINADO
+===================================================== */
+
+/* =====================================================
+   WORKSTOCK - FONDO RECTANGULAR DIFUMINADO
+===================================================== */
+.workstock-brand {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px; /* ANCHO MÁXIMO */
+  height: 120px;    /* ALTO */
+  margin: 0 auto;
+  padding: 15px;
+  background: transparent;
+}
+
+.workstock-brand::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 5px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.88);
+  filter: blur(18px);
+  pointer-events: none;
+}
+.workstock-brand-logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  filter: drop-shadow(0 2px 4px rgba(4,29,73,.12));
+}
+
+
+/* =====================================================
+   4. CONTENIDO PRINCIPAL
+===================================================== */
 .showcase-main {
   display: flex;
   flex-direction: column;
   justify-content: center;
   flex: 1;
-
   min-width: 0;
-
-  padding-block: 30px;
+  padding-block: 22px;
 }
 
 .showcase-kicker {
   display: flex;
   align-items: center;
   gap: 10px;
-
-  min-width: 0;
-
-  color: rgba(255, 255, 255, 0.72);
-
-  font-size: 11px;
+  color: rgba(255, 255, 255, .68);
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.11em;
-
+  letter-spacing: .11em;
   text-transform: uppercase;
 }
 
 .kicker-line {
-  flex: 0 0 23px;
-
-  width: 23px;
+  flex: 0 0 22px;
+  width: 22px;
   height: 2px;
-
-  background: var(--amber-500);
-  border-radius: 10px;
+  border-radius: 4px;
+  background: var(--accent);
 }
 
 .showcase-title {
   max-width: 440px;
-
-  margin: 21px 0 0;
-
-  font-size: clamp(28px, 3.2vw, 46px);
+  margin: 17px 0 0;
+  font-size: clamp(28px, 3vw, 43px);
   font-weight: 800;
-
-  line-height: 1.13;
-  letter-spacing: -0.045em;
-
+  line-height: 1.15;
+  letter-spacing: -.04em;
   overflow-wrap: break-word;
 }
 
 .showcase-title strong {
   display: block;
-  color: var(--amber-500);
+  color: var(--accent);
   font-weight: 800;
 }
 
-/* ==========================================================
-   4. BENEFICIOS
-========================================================== */
+.showcase-description {
+  max-width: 410px;
+  margin: 13px 0 0;
+  color: rgba(230, 239, 255, .66);
+  font-size: 13px;
+  line-height: 1.6;
+}
 
+/* =====================================================
+   5. BENEFICIOS
+===================================================== */
 .benefits {
   display: grid;
-  gap: 11px;
-
+  gap: 9px;
   width: 100%;
   max-width: 440px;
-
-  margin-top: 32px;
+  margin-top: 26px;
 }
 
 .benefit-card {
   display: grid;
-
-  grid-template-columns:
-    42px
-    minmax(0, 1fr);
-
+  grid-template-columns: 40px minmax(0, 1fr);
   align-items: center;
-
-  gap: 13px;
-
+  gap: 12px;
   min-width: 0;
-  padding: 12px 14px;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.09);
-
-  border-radius: 13px;
-
-  background: rgba(255, 255, 255, 0.045);
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .045);
 }
 
 .benefit-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  width: 42px;
-  height: 42px;
-
-  border-radius: 11px;
-
-  color: var(--amber-500);
-
-  background: rgba(243, 179, 60, 0.09);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: var(--accent);
+  background: rgba(243, 179, 60, .09);
 }
 
 .benefit-icon svg {
@@ -291,97 +265,64 @@
 
 .benefit-copy h3 {
   margin: 0;
-
-  color: #ffffff;
-
-  font-size: 13px;
-  font-weight: 700;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 750;
   line-height: 1.4;
 }
 
 .benefit-copy p {
-  margin: 4px 0 0;
-
-  color: rgba(255, 255, 255, 0.56);
-
-  font-size: 12px;
-  line-height: 1.45;
+  margin: 3px 0 0;
+  color: rgba(255, 255, 255, .56);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
-/* ==========================================================
-   5. PIE IZQUIERDO
-========================================================== */
-
+/* =====================================================
+   6. PIE DEL PANEL IZQUIERDO
+===================================================== */
 .showcase-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  gap: 12px;
-
-  width: 100%;
-  min-width: 0;
-
-  padding-top: 20px;
-
-  border-top:
-    1px solid
-    rgba(255, 255, 255, 0.09);
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, .09);
 }
 
 .status {
   display: flex;
   align-items: center;
-  gap: 9px;
-
-  min-width: 0;
-
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 11px;
+  gap: 8px;
+  color: rgba(255, 255, 255, .62);
+  font-size: 10px;
 }
 
 .status-dot {
   flex: 0 0 8px;
-
   width: 8px;
   height: 8px;
-
   border-radius: 50%;
   background: #32d583;
 }
 
 .product-name {
-  color: rgba(255, 255, 255, 0.45);
-
-  font-size: 11px;
+  color: rgba(255, 255, 255, .48);
+  font-size: 10px;
   font-weight: 700;
-
   white-space: nowrap;
 }
 
-/* ==========================================================
-   6. PANEL DERECHO
-========================================================== */
-
+/* =====================================================
+   7. PANEL DE ACCESO
+===================================================== */
 .access-panel {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  width: 100%;
   min-width: 0;
-
-  padding:
-    clamp(28px, 4vw, 55px)
-    clamp(24px, 5vw, 74px);
-
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(37, 89, 239, 0.05),
-      transparent 35%
-    ),
-    var(--surface);
+  padding: 30px clamp(24px, 5vw, 72px);
+  background: radial-gradient(circle at top right, rgba(36, 87, 235, .035), transparent 45%), var(--surface);
 }
 
 .access-wrap {
@@ -390,25 +331,15 @@
   min-width: 0;
 }
 
-/* ==========================================================
-   7. EMPRESA / LOGO
-========================================================== */
-
+/* =====================================================
+   8. IDENTIDAD DE EMPRESA
+===================================================== */
 .access-top {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, 150px);
-
+  grid-template-columns: minmax(0, 1fr) minmax(0, 120px);
   align-items: center;
-
   gap: 16px;
-
-  width: 100%;
-  min-width: 0;
-
-  margin-bottom: 24px;
+  margin-bottom: 15px;
 }
 
 .company-summary {
@@ -417,27 +348,20 @@
 
 .company-caption {
   display: block;
-
   margin-bottom: 7px;
-
-  color: var(--text-soft);
-
+  color: var(--muted);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: .1em;
 }
 
 .company-name {
   margin: 0;
-
   color: var(--text);
-
-  font-size: clamp(21px, 2.4vw, 30px);
+  font-size: clamp(22px, 2.4vw, 29px);
   font-weight: 800;
-
-  line-height: 1.16;
-  letter-spacing: -0.035em;
-
+  line-height: 1.17;
+  letter-spacing: -.03em;
   overflow-wrap: anywhere;
 }
 
@@ -445,23 +369,17 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-
   width: 100%;
   min-width: 0;
-  min-height: 65px;
 }
 
 .company-logo {
   display: block;
-
   width: 100%;
-  max-width: 150px;
-
+  max-width: 120px;
   height: auto;
-  max-height: 75px;
-
+  max-height: 70px;
   object-fit: contain;
-
   background: transparent;
 }
 
@@ -469,84 +387,51 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  width: 54px;
-  height: 54px;
-
-  border-radius: 12px;
-
-  color: var(--blue-600);
-  background: rgba(37, 89, 239, 0.08);
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: #e9efff;
+  color: var(--primary);
 }
 
 .company-logo-fallback svg {
-  width: 25px;
-  height: 25px;
+  width: 23px;
+  height: 23px;
 }
 
-/* ==========================================================
-   8. BIENVENIDA
-========================================================== */
-
+/* =====================================================
+   9. INTRODUCCIÓN
+===================================================== */
 .access-intro {
-  margin-bottom: 19px;
-}
-
-.access-intro h3 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: clamp(25px, 2.7vw, 30px);
-  font-weight: 800;
-
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  margin-bottom: 18px;
 }
 
 .access-intro p {
-  margin: 7px 0 0;
-
-  color: var(--text-soft);
-
-  font-size: 13px;
-  line-height: 1.5;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
-/* ==========================================================
-   9. TARJETA FORMULARIO
-========================================================== */
-
+/* =====================================================
+   10. TARJETA DEL FORMULARIO
+===================================================== */
 .login-card {
   width: 100%;
   min-width: 0;
-
-  padding: 23px;
-
-  border:
-    1px solid
-    rgba(210, 216, 227, 0.85);
-
-  border-radius: 19px;
-
-  background: #ffffff;
-
-  box-shadow:
-    0 18px 45px rgba(16, 24, 40, 0.075),
-    0 4px 12px rgba(16, 24, 40, 0.035);
+  padding: 22px;
+  border: 1px solid #dce3ee;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 14px 38px rgba(17, 35, 64, .065), 0 3px 10px rgba(17, 35, 64, .025);
 }
 
 .login-form {
   display: grid;
-  gap: 17px;
-
+  gap: 16px;
   width: 100%;
   min-width: 0;
 }
-
-/* ==========================================================
-   10. CAMPOS
-========================================================== */
 
 .field {
   width: 100%;
@@ -555,42 +440,34 @@
 
 .field label {
   display: block;
-
   margin-bottom: 8px;
-
   color: var(--text);
-
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 750;
 }
 
+/* =====================================================
+   11. CONTROLES
+===================================================== */
 .control {
   display: flex;
   align-items: center;
-
   width: 100%;
   min-width: 0;
-  min-height: 50px;
-
-  border: 1.5px solid var(--line);
-  border-radius: 11px;
-
-  background: #ffffff;
-
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
 
 .control:hover {
-  border-color: var(--line-strong);
+  border-color: #aebbd0;
 }
 
 .control:focus-within {
-  border-color: var(--blue-600);
-
-  box-shadow:
-    0 0 0 4px rgba(37, 89, 239, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(36, 87, 235, .09);
 }
 
 .control.is-invalid {
@@ -598,52 +475,39 @@
 }
 
 .control.is-invalid:focus-within {
-  box-shadow:
-    0 0 0 4px rgba(196, 54, 47, 0.1);
+  box-shadow: 0 0 0 3px rgba(196, 54, 47, .1);
 }
 
 .control-icon {
   flex: 0 0 18px;
-
   width: 18px;
   height: 18px;
-
-  margin-left: 14px;
-
-  color: #97a2b3;
+  margin-left: 13px;
+  color: #98a6b9;
 }
 
 .control:focus-within .control-icon {
-  color: var(--blue-600);
+  color: var(--primary);
 }
 
 .control input {
   flex: 1 1 auto;
-
   display: block;
-
   width: 100%;
   min-width: 0;
-
-  height: 48px;
-
-  padding: 0 12px;
-
+  height: 46px;
+  padding: 0 11px;
   border: 0;
   outline: none;
-
   background: transparent;
-
   color: var(--text);
-
   font: inherit;
-  font-size: 14px;
-
+  font-size: 13px;
   appearance: none;
 }
 
 .control input::placeholder {
-  color: #9aa5b6;
+  color: #9ca9ba;
   opacity: 1;
 }
 
@@ -654,41 +518,41 @@
   -webkit-box-shadow: 0 0 0 1000px #fff inset;
 }
 
-/* ==========================================================
-   11. MOSTRAR CONTRASEÑA
-========================================================== */
+.field-error {
+  display: block;
+  margin-top: 6px;
+  color: var(--danger);
+  font-size: 11px;
+  line-height: 1.4;
+}
 
+/* =====================================================
+   12. MOSTRAR / OCULTAR CONTRASEÑA
+===================================================== */
 .toggle {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  flex: 0 0 42px;
-
-  width: 42px;
-  height: 42px;
-
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
   margin-right: 4px;
   padding: 0;
-
   border: 0;
   border-radius: 9px;
-
   background: transparent;
-  color: #7b8799;
-
+  color: #8592a5;
   cursor: pointer;
-
   touch-action: manipulation;
 }
 
 .toggle:hover {
-  color: var(--blue-600);
+  color: var(--primary);
   background: #edf2ff;
 }
 
 .toggle:focus-visible {
-  outline: 3px solid rgba(37, 89, 239, 0.3);
+  outline: 3px solid rgba(36, 87, 235, .28);
   outline-offset: 2px;
 }
 
@@ -697,46 +561,26 @@
   height: 19px;
 }
 
-/* ==========================================================
-   12. VALIDACIONES
-========================================================== */
-
-.field-error {
-  display: block;
-
-  margin-top: 6px;
-
-  color: var(--danger);
-
-  font-size: 12px;
-  line-height: 1.45;
-}
-
+/* =====================================================
+   13. ERROR DE AUTENTICACIÓN
+===================================================== */
 .auth-error {
   display: flex;
   align-items: flex-start;
-
-  gap: 10px;
-
+  gap: 9px;
   min-width: 0;
-
-  padding: 12px;
-
+  padding: 11px;
   border: 1px solid #ffd6d1;
   border-left: 3px solid var(--danger);
-
-  border-radius: 10px;
-
-  background: var(--danger-bg);
+  border-radius: 9px;
+  background: #fff1ef;
   color: var(--danger);
-
   font-size: 12px;
   line-height: 1.5;
 }
 
 .auth-error svg {
   flex: 0 0 17px;
-
   width: 17px;
   height: 17px;
 }
@@ -746,56 +590,34 @@
   overflow-wrap: anywhere;
 }
 
-/* ==========================================================
-   13. BOTÓN
-========================================================== */
-
+/* =====================================================
+   14. BOTÓN INICIAR SESIÓN
+===================================================== */
 .submit {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  gap: 10px;
-
+  gap: 9px;
   width: 100%;
-  min-height: 51px;
-
-  margin-top: 3px;
+  min-height: 49px;
+  margin-top: 2px;
   padding: 12px 16px;
-
   border: 0;
-  border-radius: 11px;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--blue-600),
-      #214edf
-    );
-
-  color: #ffffff;
-
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
   font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-
+  font-size: 13px;
+  font-weight: 750;
   cursor: pointer;
   touch-action: manipulation;
-
-  box-shadow:
-    0 9px 21px rgba(37, 89, 239, 0.2);
-
-  transition:
-    background 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  box-shadow: 0 8px 19px rgba(36, 87, 235, .19);
+  transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .submit:hover:not(:disabled) {
   transform: translateY(-1px);
-
-  box-shadow:
-    0 12px 26px rgba(37, 89, 239, 0.28);
+  box-shadow: 0 11px 24px rgba(36, 87, 235, .27);
 }
 
 .submit:active:not(:disabled) {
@@ -803,13 +625,13 @@
 }
 
 .submit:disabled {
-  opacity: 0.7;
+  opacity: .65;
   cursor: wait;
   box-shadow: none;
 }
 
 .submit:focus-visible {
-  outline: 3px solid rgba(37, 89, 239, 0.3);
+  outline: 3px solid rgba(36, 87, 235, .3);
   outline-offset: 3px;
 }
 
@@ -821,13 +643,10 @@
 .spinner {
   width: 17px;
   height: 17px;
-
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: white;
-
+  border: 2px solid rgba(255, 255, 255, .4);
+  border-top-color: #fff;
   border-radius: 50%;
-
-  animation: workstock-spin 0.7s linear infinite;
+  animation: workstock-spin .7s linear infinite;
 }
 
 @keyframes workstock-spin {
@@ -836,88 +655,81 @@
   }
 }
 
-/* ==========================================================
-   14. PIE DE SEGURIDAD
-========================================================== */
-
+/* =====================================================
+   15. PIE DE SEGURIDAD
+===================================================== */
 .panel-foot {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  gap: 8px;
-
-  margin: 20px 0 0;
-
-  color: var(--text-soft);
-
-  font-size: 11px;
-  line-height: 1.5;
+  gap: 7px;
+  margin: 17px 0 0;
+  color: var(--muted);
+  font-size: 10px;
   text-align: center;
+  line-height: 1.5;
 }
 
 .panel-foot svg {
-  flex: 0 0 16px;
-
-  width: 16px;
-  height: 16px;
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
 }
 
-/* ==========================================================
-   15. LAPTOP / DESKTOP MEDIANO
-========================================================== */
-
+/* =====================================================
+   16. LAPTOP
+===================================================== */
 @media (max-width: 1200px) and (min-width: 901px) {
-
   .showcase-content {
-    padding-inline: 30px;
+    padding-inline: 32px;
+  }
+
+  .workstock-brand {
+    max-width: 310px;
+    padding: 22px 20px;
+  }
+
+  .workstock-brand-logo {
+    max-width: 270px;
   }
 
   .showcase-title {
     font-size: clamp(27px, 3vw, 37px);
   }
 
-  .benefits {
-    margin-top: 25px;
+  .showcase-description {
+    font-size: 12px;
   }
 
-  .benefit-card {
-    gap: 11px;
-    padding: 11px 12px;
+  .benefits {
+    margin-top: 22px;
   }
 
   .access-panel {
     padding-inline: 28px;
   }
-
-  .access-wrap {
-    max-width: 390px;
-  }
-
-  .access-top {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(0, 125px);
-  }
-
-  .company-logo {
-    max-width: 125px;
-  }
-
-  .company-name {
-    font-size: 24px;
-  }
 }
 
-/* ==========================================================
-   16. PANTALLAS DE POCA ALTURA
-========================================================== */
-
+/* =====================================================
+   17. PANTALLAS DE POCA ALTURA
+===================================================== */
 @media (min-width: 901px) and (max-height: 760px) {
-
   .showcase-content {
     padding-top: 20px;
-    padding-bottom: 18px;
+    padding-bottom: 16px;
+  }
+
+  .workstock-brand {
+    max-width: 280px;
+    padding: 16px 18px;
+  }
+
+  .workstock-brand-logo {
+    max-width: 245px;
+  }
+
+  .workstock-brand::before {
+    filter: blur(14px);
   }
 
   .showcase-main {
@@ -925,306 +737,223 @@
   }
 
   .showcase-title {
-    margin-top: 13px;
-    font-size: clamp(25px, 2.7vw, 35px);
+    margin-top: 12px;
+    font-size: clamp(25px, 2.6vw, 34px);
+  }
+
+  .showcase-description {
+    margin-top: 8px;
   }
 
   .benefits {
-    gap: 8px;
-    margin-top: 20px;
+    gap: 7px;
+    margin-top: 16px;
   }
 
   .benefit-card {
-    padding: 9px 11px;
+    padding: 8px 11px;
+    grid-template-columns: 35px minmax(0, 1fr);
   }
 
   .benefit-icon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .benefit-card {
-    grid-template-columns: 36px minmax(0, 1fr);
+    width: 35px;
+    height: 35px;
   }
 
   .showcase-footer {
-    padding-top: 12px;
-  }
-
-  .access-panel {
-    padding-block: 20px;
-  }
-
-  .access-top {
-    margin-bottom: 15px;
-  }
-
-  .access-intro {
-    margin-bottom: 13px;
+    padding-top: 11px;
   }
 
   .login-card {
     padding: 19px;
   }
-
-  .login-form {
-    gap: 13px;
-  }
-
-  .panel-foot {
-    margin-top: 13px;
-  }
 }
 
-/* ==========================================================
-   17. TABLET
-   Hasta 900px
-========================================================== */
-
+/* =====================================================
+   18. TABLET
+===================================================== */
 @media (max-width: 900px) {
-
-  :host {
-    min-height: 100dvh;
-  }
-
   .login-shell {
     display: flex;
     flex-direction: column;
-
     min-height: 100vh;
     min-height: 100dvh;
-
-    width: 100%;
-    overflow: visible;
   }
-
-  /* HEADER OSCURO COMPACTO */
 
   .showcase {
     flex: 0 0 auto;
-    min-height: 0;
-    overflow: hidden;
   }
 
   .showcase-content {
-    min-height: 0;
-    padding: 19px 30px;
+    align-items: center;
+    padding: 20px 24px;
+    gap: 11px;
+  }
+
+  .workstock-brand {
+    max-width: 280px;
+    padding: 16px 18px;
+  }
+
+  .workstock-brand-logo {
+    max-width: 245px;
+  }
+
+  .workstock-brand::before {
+    filter: blur(14px);
   }
 
   .showcase-main {
+    width: 100%;
     padding: 0;
+    align-items: center;
+    text-align: center;
   }
 
   .showcase-kicker {
-    font-size: 10px;
+    justify-content: center;
+    font-size: 9px;
   }
 
   .showcase-title {
     max-width: none;
-    margin-top: 10px;
-    font-size: 24px;
-    line-height: 1.2;
+    margin-top: 8px;
+    font-size: 23px;
   }
 
   .showcase-title strong {
     display: inline;
   }
 
-  /* Las características no desplazan el login */
-
-  .benefits {
+  .showcase-description {
     display: none;
   }
 
+  .benefits,
   .showcase-footer {
     display: none;
   }
 
-  /* FORMULARIO CENTRADO */
-
   .access-panel {
-    flex: 1 0 auto;
-
+    flex: 1;
     align-items: center;
-
-    padding: 30px 24px 40px;
+    padding: 32px 24px;
   }
 
   .access-wrap {
-    width: 100%;
-    max-width: 450px;
-  }
-
-  .access-top {
-    grid-template-columns:
-      minmax(0, 1fr)
-      150px;
-  }
-
-  .company-name {
-    font-size: 27px;
-  }
-
-  .company-logo {
-    max-width: 150px;
+    max-width: 430px;
   }
 }
 
-/* ==========================================================
-   18. TELÉFONOS
-   Hasta 600px
-========================================================== */
-
+/* =====================================================
+   19. CELULARES
+===================================================== */
 @media (max-width: 600px) {
-
-  .login-shell {
-    min-height: 100dvh;
+  .showcase-content {
+    padding: 16px 20px;
+    gap: 8px;
   }
 
-  .showcase-content {
-    padding: 17px 20px;
+  .workstock-brand {
+    max-width: 245px;
+    padding: 14px 16px;
+  }
+
+  .workstock-brand-logo {
+    max-width: 215px;
+  }
+
+  .workstock-brand::before {
+    filter: blur(12px);
   }
 
   .showcase-kicker {
-    gap: 8px;
     font-size: 9px;
-    letter-spacing: 0.09em;
-  }
-
-  .kicker-line {
-    flex-basis: 19px;
-    width: 19px;
   }
 
   .showcase-title {
-    margin-top: 9px;
-    font-size: clamp(18px, 5vw, 23px);
-    letter-spacing: -0.035em;
+    margin-top: 7px;
+    font-size: clamp(18px, 5vw, 22px);
   }
 
   .access-panel {
-    flex: 1 0 auto;
-
     align-items: flex-start;
-
-    padding:
-      29px
-      18px
-      35px;
+    padding: 29px 17px 35px;
   }
-
-  .access-wrap {
-    max-width: 420px;
-    margin-inline: auto;
-  }
-
-  /* Nombre a la izquierda, logo a la derecha */
 
   .access-top {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(0, 125px);
-
-    align-items: center;
-
-    gap: 12px;
-
-    margin-bottom: 22px;
-  }
-
-  .company-caption {
-    margin-bottom: 5px;
-    font-size: 9px;
+    grid-template-columns: minmax(0, 1fr) 95px;
+    gap: 10px;
+    margin-bottom: 13px;
   }
 
   .company-name {
-    font-size: clamp(19px, 5vw, 25px);
-  }
-
-  .company-logo-area {
-    min-height: 55px;
+    font-size: clamp(20px, 5vw, 25px);
   }
 
   .company-logo {
-    max-width: 125px;
-    max-height: 65px;
+    max-width: 95px;
+    max-height: 58px;
   }
 
   .access-intro {
-    margin-bottom: 17px;
-  }
-
-  .access-intro h3 {
-    font-size: 25px;
+    margin-bottom: 15px;
   }
 
   .access-intro p {
-    margin-top: 6px;
     font-size: 12px;
   }
 
   .login-card {
-    padding: 20px;
-    border-radius: 16px;
+    padding: 19px;
+    border-radius: 15px;
   }
 
   .login-form {
-    gap: 18px;
+    gap: 16px;
   }
-
-  .field label {
-    font-size: 12px;
-  }
-
-  .control {
-    min-height: 50px;
-  }
-
-  /* 16px evita zoom automático en Safari móvil */
 
   .control input {
     font-size: 16px;
   }
 
-  .submit {
-    min-height: 51px;
-    font-size: 14px;
-  }
-
   .panel-foot {
-    margin-top: 18px;
+    margin-top: 16px;
     font-size: 10px;
   }
 }
 
-/* ==========================================================
-   19. MÓVILES PEQUEÑOS
-   Hasta 390px
-========================================================== */
-
+/* =====================================================
+   20. CELULARES PEQUEÑOS
+===================================================== */
 @media (max-width: 390px) {
-
   .showcase-content {
-    padding: 15px 16px;
+    padding: 13px 15px;
+  }
+
+  .workstock-brand {
+    max-width: 215px;
+    padding: 12px 14px;
+  }
+
+  .workstock-brand-logo {
+    max-width: 190px;
+  }
+
+  .workstock-brand::before {
+    filter: blur(10px);
   }
 
   .showcase-title {
-    font-size: 19px;
+    font-size: 18px;
   }
 
   .access-panel {
-    padding:
-      24px
-      13px
-      30px;
+    padding: 24px 13px 30px;
   }
 
   .access-top {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(0, 100px);
-
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 75px;
   }
 
   .company-name {
@@ -1232,38 +961,19 @@
   }
 
   .company-logo {
-    max-width: 100px;
-    max-height: 56px;
-  }
-
-  .access-intro h3 {
-    font-size: 23px;
+    max-width: 75px;
+    max-height: 50px;
   }
 
   .login-card {
     padding: 17px 15px;
-    border-radius: 14px;
-  }
-
-  .control-icon {
-    margin-left: 11px;
-  }
-
-  .control input {
-    padding-inline: 10px;
-  }
-
-  .panel-foot {
-    font-size: 10px;
   }
 }
 
-/* ==========================================================
-   20. PANTALLAS EXTREMADAMENTE ESTRECHAS
-========================================================== */
-
+/* =====================================================
+   21. PANTALLAS MUY ESTRECHAS
+===================================================== */
 @media (max-width: 300px) {
-
   .access-top {
     display: flex;
     flex-direction: column;
@@ -1287,14 +997,16 @@
   }
 }
 
-/* ==========================================================
-   21. TABLET HORIZONTAL CON POCA ALTURA
-========================================================== */
-
+/* =====================================================
+   22. TABLET HORIZONTAL CON POCA ALTURA
+===================================================== */
 @media (max-width: 900px) and (orientation: landscape) {
-
   .showcase-content {
     padding-block: 12px;
+  }
+
+  .workstock-brand {
+    padding-block: 10px;
   }
 
   .showcase-title {
@@ -1328,18 +1040,17 @@
   }
 }
 
-/* ==========================================================
-   22. ACCESIBILIDAD
-========================================================== */
-
+/* =====================================================
+   23. ACCESIBILIDAD
+===================================================== */
 @media (prefers-reduced-motion: reduce) {
 
   :host *,
   :host *::before,
   :host *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: .01ms !important;
     scroll-behavior: auto !important;
   }
 }

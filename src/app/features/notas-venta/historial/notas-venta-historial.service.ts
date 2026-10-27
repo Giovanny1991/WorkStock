@@ -1,3 +1,4 @@
+
 import {
     inject,
     Injectable
@@ -16,20 +17,18 @@ import {
     NotaVentaResumen
 } from '../nota-venta.model';
 
-
-/* =====================================================
-   ESTADOS
-===================================================== */
+// =====================================================
+// ESTADOS
+// =====================================================
 
 export type EstadoFiltroNotaVenta =
     | 'TODOS'
     | 'FACTURADO'
     | 'ANULADA';
 
-
-/* =====================================================
-   ORDENAMIENTO
-===================================================== */
+// =====================================================
+// ORDENAMIENTO
+// =====================================================
 
 export type NotaVentaOrden =
     | 'numero'
@@ -40,15 +39,13 @@ export type NotaVentaOrden =
     | 'total'
     | 'estado';
 
-
 export type DireccionOrdenNotaVenta =
     | 'asc'
     | 'desc';
 
-
-/* =====================================================
-   PARÁMETROS
-===================================================== */
+// =====================================================
+// PARÁMETROS DEL HISTORIAL
+// =====================================================
 
 export interface NotasVentaHistorialParametros {
 
@@ -64,12 +61,20 @@ export interface NotasVentaHistorialParametros {
 
     sortDir: DireccionOrdenNotaVenta;
 
+    // ===============================================
+    // FILTROS DE FECHA
+    // FORMATO YYYY-MM-DD PARA SQL SERVER
+    // ===============================================
+
+    fechaInicial?: string | null;
+
+    fechaFinal?: string | null;
+
 }
 
-
-/* =====================================================
-   PAGINACIÓN
-===================================================== */
+// =====================================================
+// PAGINACIÓN
+// =====================================================
 
 export interface NotasVentaPaginacion {
 
@@ -83,10 +88,9 @@ export interface NotasVentaPaginacion {
 
 }
 
-
-/* =====================================================
-   RESPUESTA
-===================================================== */
+// =====================================================
+// RESPUESTA DEL BACKEND
+// =====================================================
 
 export interface NotasVentaHistorialResponse {
 
@@ -98,6 +102,9 @@ export interface NotasVentaHistorialResponse {
 
 }
 
+// =====================================================
+// SERVICIO
+// =====================================================
 
 @Injectable({
     providedIn: 'root'
@@ -107,80 +114,119 @@ export class NotasVentaHistorialService {
     private readonly http =
         inject(HttpClient);
 
-
     private readonly apiUrl =
         '/api/notas-venta';
 
-
-    /* =====================================================
-       LISTAR
-    ===================================================== */
+    // ===================================================
+    // LISTAR NOTAS DE VENTA
+    //
+    // Incluye:
+    // - Paginación remota
+    // - Filtro de estado
+    // - Búsqueda
+    // - Ordenamiento
+    // - Fecha inicial
+    // - Fecha final
+    // ===================================================
 
     listar(
         parametros: NotasVentaHistorialParametros
     ): Observable<NotasVentaHistorialResponse> {
 
-        let params =
-            new HttpParams()
+        let params = new HttpParams()
 
-                .set(
-                    'page',
-                    String(parametros.page)
-                )
+            .set(
+                'page',
+                String(parametros.page)
+            )
 
-                .set(
-                    'pageSize',
-                    String(parametros.pageSize)
-                )
+            .set(
+                'pageSize',
+                String(parametros.pageSize)
+            )
 
-                .set(
-                    'sortBy',
-                    parametros.sortBy
-                )
+            .set(
+                'sortBy',
+                parametros.sortBy
+            )
 
-                .set(
-                    'sortDir',
-                    parametros.sortDir
-                );
+            .set(
+                'sortDir',
+                parametros.sortDir
+            );
 
-
-        /* =================================================
-           ESTADO
-        ================================================= */
+        // =================================================
+        // FILTRO DE ESTADO
+        // =================================================
 
         if (
-            parametros.estado !==
-            'TODOS'
+            parametros.estado !== 'TODOS'
         ) {
 
-            params =
-                params.set(
-                    'estado',
-                    parametros.estado
-                );
+            params = params.set(
+                'estado',
+                parametros.estado
+            );
 
         }
 
-
-        /* =================================================
-           BÚSQUEDA
-        ================================================= */
+        // =================================================
+        // BÚSQUEDA
+        // =================================================
 
         const busqueda =
-            parametros.busqueda
-                .trim();
-
+            parametros.busqueda.trim();
 
         if (busqueda) {
 
-            params =
-                params.set(
-                    'busqueda',
-                    busqueda
-                );
+            params = params.set(
+                'busqueda',
+                busqueda
+            );
 
         }
 
+        // =================================================
+        // FECHA INICIAL
+        //
+        // Ejemplo:
+        // 2026-10-01
+        // =================================================
+
+        const fechaInicial =
+            parametros.fechaInicial?.trim();
+
+        if (fechaInicial) {
+
+            params = params.set(
+                'fechaInicial',
+                fechaInicial
+            );
+
+        }
+
+        // =================================================
+        // FECHA FINAL
+        //
+        // Ejemplo:
+        // 2026-10-23
+        // =================================================
+
+        const fechaFinal =
+            parametros.fechaFinal?.trim();
+
+        if (fechaFinal) {
+
+            params = params.set(
+                'fechaFinal',
+                fechaFinal
+            );
+
+        }
+
+        // =================================================
+        // SOLICITUD HTTP
+        // =================================================
 
         return this.http.get<
             NotasVentaHistorialResponse

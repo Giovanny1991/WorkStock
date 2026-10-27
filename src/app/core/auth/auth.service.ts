@@ -8,6 +8,10 @@ import {
 } from '@angular/core';
 
 import {
+  Title
+} from '@angular/platform-browser';
+
+import {
   HttpClient
 } from '@angular/common/http';
 
@@ -38,6 +42,14 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly document = inject(DOCUMENT);
+
+  private readonly titleService = inject(Title);
+
+  // =====================================================
+  // CONFIGURACIÓN DEL TÍTULO
+  // =====================================================
+
+  private readonly tituloDefecto = 'WorkStock';
 
   // =====================================================
   // ALMACENAMIENTO DEL CÓDIGO PÚBLICO
@@ -110,6 +122,70 @@ export class AuthService {
         ? '/administracion'
         : '/inicio'
   );
+
+  // =====================================================
+  // TÍTULO DINÁMICO DEL NAVEGADOR
+  //
+  // EMPRESA:
+  // MYC | WorkStock
+  //
+  // PLATAFORMA:
+  // WorkStock
+  //
+  // SIN EMPRESA:
+  // WorkStock
+  // =====================================================
+
+  private actualizarTituloEmpresa(
+    usuario: Usuario | null
+  ): void {
+
+    if (
+      !usuario ||
+      usuario.tipoCuenta !== 'EMPRESA'
+    ) {
+
+      this.titleService.setTitle(
+        this.tituloDefecto
+      );
+
+      return;
+
+    }
+
+    // El modelo EmpresaSesion utiliza "nombre".
+    const nombreEmpresa =
+      usuario.empresa?.nombre?.trim() ?? '';
+
+    if (!nombreEmpresa) {
+
+      this.titleService.setTitle(
+        this.tituloDefecto
+      );
+
+      return;
+
+    }
+
+    // Evitar WorkStock | WorkStock.
+    if (
+      nombreEmpresa.toLowerCase() ===
+      this.tituloDefecto.toLowerCase()
+    ) {
+
+      this.titleService.setTitle(
+        this.tituloDefecto
+      );
+
+      return;
+
+    }
+
+    this.titleService.setTitle(
+      `${nombreEmpresa} | ${this.tituloDefecto}`
+    );
+
+  }
 
   // =====================================================
   // VALIDAR CÓDIGO PÚBLICO DE EMPRESA
@@ -313,9 +389,15 @@ export class AuthService {
     usuario: Usuario
   ): void {
 
+    // Guardar el código público correspondiente.
     this.guardarCodigoEmpresa(usuario);
 
+    // Actualizar sesión reactiva.
     this._usuario.set(usuario);
+
+    // Actualizar título usando la empresa
+    // de la sesión autenticada.
+    this.actualizarTituloEmpresa(usuario);
 
   }
 
@@ -428,12 +510,14 @@ export class AuthService {
 
   limpiarSesion(): void {
 
-    // Se elimina solamente el usuario autenticado.
-    //
+    // Eliminar el usuario autenticado.
+    this._usuario.set(null);
+
+    // Restaurar el título predeterminado.
+    this.actualizarTituloEmpresa(null);
+
     // Se conserva el código público de la empresa
     // para regresar a su login personalizado.
-
-    this._usuario.set(null);
 
   }
 

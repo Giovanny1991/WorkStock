@@ -81,7 +81,6 @@ interface OrdenTrabajoDetalleData {
   standalone: true,
 
   imports: [
-    OrdenTrabajoImagenesComponent,
     CurrencyPipe,
     DatePipe,
     MatButtonModule,

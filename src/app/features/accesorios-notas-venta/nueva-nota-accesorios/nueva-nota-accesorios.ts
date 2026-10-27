@@ -166,7 +166,8 @@ export class NuevaNotaAccesorios implements OnInit {
 
   readonly displayedColumns = computed(() => {
 
-    const columnas = ['producto', 'stock'];
+    //const columnas = ['producto', 'stock'];
+    const columnas = ['producto'];
 
     if (this.esAdministrador()) {
       columnas.push('costo');

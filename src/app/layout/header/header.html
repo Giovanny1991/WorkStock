@@ -1,210 +1,90 @@
 <mat-toolbar class="header">
 
-
-  <!-- =================================================
-       MENÚ
-  ================================================== -->
-
-  <button
-    mat-icon-button
-    type="button"
-    class="menu-button"
-    (click)="toggleMenu()"
-    aria-label="Abrir o cerrar menú"
-  >
-
-    <mat-icon>
-      menu
-    </mat-icon>
-
+  <!-- MENÚ LATERAL -->
+  <button mat-icon-button type="button" class="menu-button" (click)="toggleMenu()" aria-label="Abrir o cerrar menú">
+    <mat-icon>menu</mat-icon>
   </button>
 
-
-  <!-- =================================================
-       WORKSTOCK
-  ================================================== -->
-
+  <!-- MARCA WORKSTOCK -->
   <div class="workstock-brand">
-
-    <!-- <span
-      class="workstock-mark"
-      aria-hidden="true"
-    >
-
-      <mat-icon>
-        inventory_2
-      </mat-icon>
-
-    </span> -->
-
-
     <div class="workstock-text">
-
-      <strong>
-        WorkStock
-      </strong>
-
-
+      <strong>WorkStock</strong>
       <small>
-
-        {{
-          esSuperAdmin()
-            ? 'Administración de plataforma'
-            : 'Gestión comercial'
-        }}
-
+        {{ esSuperAdmin() ? 'Administración de plataforma' : 'Gestión comercial' }}
       </small>
-
     </div>
-
   </div>
-
-
-  <!-- =================================================
-       ESPACIO
-  ================================================== -->
 
   <span class="spacer"></span>
 
-
-  <!-- PALETA DE COLOR: independiente del modo claro / oscuro -->
-  <button mat-icon-button type="button" class="palette-toggle"
-          [matMenuTriggerFor]="paletteMenu" aria-label="Cambiar colores del sistema"
-          title="Colores de navegación">
+  <!-- CAMBIAR PALETA -->
+  <button mat-icon-button type="button" class="palette-toggle" [matMenuTriggerFor]="paletteMenu"
+    aria-label="Cambiar colores del sistema" title="Colores de navegación">
     <mat-icon>palette</mat-icon>
   </button>
 
   <mat-menu #paletteMenu="matMenu" xPosition="before">
     @for (opcion of paletas; track opcion.id) {
-      <button mat-menu-item type="button" (click)="cambiarPaleta.emit(opcion.id)">
-        <mat-icon [style.color]="opcion.color">circle</mat-icon>
-        <span>{{ opcion.nombre }}</span>
-        @if (paleta === opcion.id) {
-          <mat-icon>check</mat-icon>
-        }
-      </button>
+    <button mat-menu-item type="button" (click)="cambiarPaleta.emit(opcion.id)">
+      <mat-icon [style.color]="opcion.color">circle</mat-icon>
+      <span>{{ opcion.nombre }}</span>
+      @if (paleta === opcion.id) {
+      <mat-icon>check</mat-icon>
+      }
+    </button>
     }
   </mat-menu>
 
-  <!-- =================================================
-       TEMA
-  ================================================== -->
-
-  <button
-    mat-icon-button
-    type="button"
-    class="theme-toggle"
-    (click)="cambiarTema.emit()"
-    [attr.aria-label]="
-      tema === 'dark'
-        ? 'Activar modo claro'
-        : 'Activar modo oscuro'
-    "
-    [attr.title]="
-      tema === 'dark'
-        ? 'Modo claro'
-        : 'Modo oscuro'
-    "
-  >
-
+  <!-- MODO CLARO / OSCURO -->
+  <button mat-icon-button type="button" class="theme-toggle" (click)="cambiarTema.emit()"
+    [attr.aria-label]="tema === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'"
+    [attr.title]="tema === 'dark' ? 'Modo claro' : 'Modo oscuro'">
     <mat-icon>
-
-      {{
-        tema === 'dark'
-          ? 'light_mode'
-          : 'dark_mode'
-      }}
-
+      {{ tema === 'dark' ? 'light_mode' : 'dark_mode' }}
     </mat-icon>
-
   </button>
 
-
-  <!-- =================================================
-       USUARIO
-  ================================================== -->
-
-  @if (
-    authService.usuario();
-    as usuario
-  ) {
-
-    <button
-      mat-button
-      type="button"
-      [matMenuTriggerFor]="userMenu"
-      class="user-button"
-      aria-label="Opciones de usuario"
-    >
-
-      <span class="profile-content">
-
-
-        <span
-          class="avatar"
-          aria-hidden="true"
-        >
-
-          <mat-icon>
-            person_outline
-          </mat-icon>
-
-        </span>
-
-
-        <span class="user-info">
-
-          <span class="name">
-            {{ usuario.nombre }}
-          </span>
-
-
-          <span class="role">
-
-            {{
-              esSuperAdmin()
-                ? 'SUPERADMINISTRADOR'
-                : usuario.rol
-            }}
-
-          </span>
-
-        </span>
-
-
-        <mat-icon
-          class="arrow"
-          aria-hidden="true"
-        >
-          keyboard_arrow_down
-        </mat-icon>
-
+  <!-- USUARIO -->
+  @if (authService.usuario(); as usuario) {
+  <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-button" aria-label="Opciones de usuario">
+    <span class="profile-content">
+      <span class="avatar" aria-hidden="true">
+        <mat-icon>person_outline</mat-icon>
       </span>
+      <span class="user-info">
+        <span class="name">{{ usuario.nombre }}</span>
+        <span class="role">
+          {{ esSuperAdmin() ? 'SUPERADMINISTRADOR' : usuario.rol }}
+        </span>
+      </span>
+      <mat-icon class="arrow" aria-hidden="true">
+        keyboard_arrow_down
+      </mat-icon>
+    </span>
+  </button>
 
+  <mat-menu #userMenu="matMenu" xPosition="before">
+
+    <!-- ACTUALIZACIONES -->
+    <button mat-menu-item type="button" class="menu-update-item" [disabled]="pwaUpdate.verificando()"
+      (click)="buscarActualizaciones()">
+      <mat-icon [class.update-spinning]="pwaUpdate.verificando()">
+        {{ pwaUpdate.verificando() ? 'sync' : 'system_update_alt' }}
+      </mat-icon>
+      <span>
+        {{ pwaUpdate.verificando()
+        ? 'Verificando actualizaciones...'
+        : 'Buscar actualizaciones' }}
+      </span>
     </button>
 
+    <!-- CERRAR SESIÓN -->
+    <button mat-menu-item type="button" (click)="cerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
 
-    <mat-menu
-      #userMenu="matMenu"
-    >
-
-      <button
-        mat-menu-item
-        (click)="cerrarSesion()"
-      >
-
-        <mat-icon>
-          logout
-        </mat-icon>
-
-        <span>
-          Cerrar sesión
-        </span>
-
-      </button>
-
-    </mat-menu>
-
+  </mat-menu>
   }
 
 </mat-toolbar>

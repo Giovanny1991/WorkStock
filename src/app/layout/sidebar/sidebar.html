@@ -1,8 +1,8 @@
 <div class="sidebar-container">
 
-  <!-- ===========================================
-       IDENTIDAD DEL CONTEXTO
-  ============================================ -->
+  <!-- =============================================
+       IDENTIDAD DE EMPRESA / PLATAFORMA
+  ============================================== -->
 
   @if (esSuperAdmin()) {
 
@@ -58,15 +58,15 @@
 
   }
 
-  <!-- ===========================================
+  <!-- =============================================
        NAVEGACIÓN PRINCIPAL
-  ============================================ -->
+  ============================================== -->
 
   <mat-nav-list aria-label="Navegación principal">
 
-    <!-- =========================================
-         SUPERADMIN
-    ========================================== -->
+    <!-- ===========================================
+         SUPERADMINISTRADOR
+    ============================================ -->
 
     @if (esSuperAdmin()) {
 
@@ -89,10 +89,9 @@
 
     } @else {
 
-    <!-- =======================================
+    <!-- =========================================
            INICIO
-           ADMINISTRADOR Y VENDEDOR
-      ======================================== -->
+      ========================================== -->
 
     <a mat-list-item routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       (click)="onNavigate()">
@@ -107,11 +106,9 @@
 
     </a>
 
-
-    <!-- =======================================
+    <!-- =========================================
            VENTAS CELULARES
-           ADMINISTRADOR Y VENDEDOR
-      ======================================== -->
+      ========================================== -->
 
     <div class="menu-section">
       VENTAS CELULARES
@@ -158,7 +155,6 @@
 
     </mat-expansion-panel>
 
-
     <!-- NOTAS DE VENTA CELULARES -->
 
     <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'notas'">
@@ -200,11 +196,9 @@
 
     </mat-expansion-panel>
 
-
-    <!-- =======================================
+    <!-- =========================================
            VENTAS ACCESORIOS
-           ADMINISTRADOR Y VENDEDOR
-      ======================================== -->
+      ========================================== -->
 
     <div class="menu-section">
       VENTAS ACCESORIOS
@@ -249,20 +243,15 @@
 
     </mat-expansion-panel>
 
-
-    <!-- =======================================
+    <!-- =========================================
            INVENTARIO
-      ======================================== -->
+      ========================================== -->
 
     <div class="menu-section">
       INVENTARIO
     </div>
 
-
-    <!-- =======================================
-           MARCAS
-           SOLO ADMINISTRADOR
-      ======================================== -->
+    <!-- MARCAS: SOLO ADMINISTRADOR -->
 
     @if (esAdministrador()) {
 
@@ -281,11 +270,10 @@
 
     }
 
-
-    <!-- =======================================
+    <!-- =========================================
            CELULARES
            ADMINISTRADOR Y VENDEDOR
-      ======================================== -->
+      ========================================== -->
 
     <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'celulares'">
 
@@ -298,8 +286,7 @@
 
       </mat-expansion-panel-header>
 
-
-      <!-- STOCK DE CELULARES -->
+      <!-- STOCK CELULARES -->
 
       <a mat-list-item routerLink="/inventario/celulares" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
@@ -309,25 +296,46 @@
         </mat-icon>
 
         <span matListItemTitle>
-          Stock de celulares
+          Stock celulares
         </span>
 
       </a>
 
-
-      <!-- MODELOS: SOLO ADMINISTRADOR -->
+      <!-- =======================================
+             CELULARES VENDIDOS
+             SOLO ADMINISTRADOR
+        ======================================== -->
 
       @if (esAdministrador()) {
 
-      <a mat-list-item routerLink="/modelos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        class="submenu-item" (click)="onNavigate()">
+      <a mat-list-item routerLink="/inventario/celulares-vendidos" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+
+        <mat-icon matListItemIcon>
+          shopping_bag
+        </mat-icon>
+
+        <span matListItemTitle>
+          Celulares vendidos
+        </span>
+
+      </a>
+
+      }
+
+      <!-- MODELOS CELULARES: ADMINISTRADOR -->
+
+      @if (esAdministrador()) {
+
+      <a mat-list-item routerLink="/modelos-celulares" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
 
         <mat-icon matListItemIcon>
           devices
         </mat-icon>
 
         <span matListItemTitle>
-          Modelos de dispositivos
+          Modelos de celulares
         </span>
 
       </a>
@@ -336,11 +344,10 @@
 
     </mat-expansion-panel>
 
-
-    <!-- =======================================
+    <!-- =========================================
            ACCESORIOS
            SOLO ADMINISTRADOR
-      ======================================== -->
+      ========================================== -->
 
     @if (esAdministrador()) {
 
@@ -355,8 +362,7 @@
 
       </mat-expansion-panel-header>
 
-
-      <!-- STOCK DE ACCESORIOS -->
+      <!-- STOCK ACCESORIOS -->
 
       <a mat-list-item routerLink="/accesorios/accesorios-stock" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
@@ -371,8 +377,7 @@
 
       </a>
 
-
-      <!-- CATEGORÍAS DE ACCESORIOS -->
+      <!-- CATEGORÍAS ACCESORIOS -->
 
       <a mat-list-item routerLink="/accesorios/categorias" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
@@ -391,21 +396,17 @@
 
     }
 
-
-    <!-- =======================================
+    <!-- =========================================
            FUNCIONALIDADES ADMINISTRATIVAS
-      ======================================== -->
+      ========================================== -->
 
     @if (esAdministrador()) {
 
-    <!-- =====================================
-             OPERACIONES
-        ====================================== -->
+    <!-- OPERACIONES -->
 
     <div class="menu-section">
       OPERACIONES
     </div>
-
 
     <!-- SERVICIO TÉCNICO -->
 
@@ -420,9 +421,6 @@
 
       </mat-expansion-panel-header>
 
-
-      <!-- NUEVA ORDEN -->
-
       <a mat-list-item routerLink="/servicio-tecnico/nueva" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
 
@@ -435,9 +433,6 @@
         </span>
 
       </a>
-
-
-      <!-- ÓRDENES UNIFICADAS -->
 
       <a mat-list-item routerLink="/servicio-tecnico/ordenes" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
@@ -454,17 +449,11 @@
 
     </mat-expansion-panel>
 
-
-    <!-- =====================================
-             CONTACTOS
-        ====================================== -->
+    <!-- CONTACTOS -->
 
     <div class="menu-section">
       CONTACTOS
     </div>
-
-
-    <!-- CLIENTES -->
 
     <a mat-list-item routerLink="/clientes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       (click)="onNavigate()">
@@ -479,9 +468,6 @@
 
     </a>
 
-
-    <!-- PROVEEDORES -->
-
     <a mat-list-item routerLink="/proveedores" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       (click)="onNavigate()">
 
@@ -495,10 +481,7 @@
 
     </a>
 
-
-    <!-- =====================================
-             REPORTERÍA
-        ====================================== -->
+    <!-- REPORTERÍA -->
 
     <div class="menu-section">
       REPORTERÍA
@@ -517,17 +500,11 @@
 
     </a>
 
-
-    <!-- =====================================
-             ADMINISTRACIÓN
-        ====================================== -->
+    <!-- ADMINISTRACIÓN -->
 
     <div class="menu-section">
       ADMINISTRACIÓN
     </div>
-
-
-    <!-- MIS USUARIOS -->
 
     <a mat-list-item routerLink="/administracion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
       (click)="onNavigate()">
@@ -542,10 +519,7 @@
 
     </a>
 
-
-    <!-- =====================================
-             CONFIGURACIÓN
-        ====================================== -->
+    <!-- CONFIGURACIÓN -->
 
     <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'configuracion'">
 
@@ -557,9 +531,6 @@
         </mat-panel-title>
 
       </mat-expansion-panel-header>
-
-
-      <!-- ACTUALIZACIÓN IVA -->
 
       <a mat-list-item routerLink="/configuracion/iva" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">

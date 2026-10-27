@@ -1,194 +1,157 @@
-import {
-    inject,
-    Injectable
-} from '@angular/core';
+
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 import {
-    HttpClient,
-    HttpParams
-} from '@angular/common/http';
-
-import {
-    Observable
-} from 'rxjs';
-
-import {
-    AccesorioNotaVentaResumen
+  AccesorioNotaVentaResumen
 } from '../accesorios-notas-venta.model';
 
-
-/* =====================================================
-   FILTRO DE ESTADO
-===================================================== */
+// =====================================================
+// FILTRO DE ESTADO
+// =====================================================
 
 export type EstadoFiltroAccesorioNota =
-    | 'TODOS'
-    | 'FACTURADO'
-    | 'ANULADA';
+  | 'TODOS'
+  | 'FACTURADO'
+  | 'ANULADA';
 
-
-/* =====================================================
-   ORDENAMIENTO
-===================================================== */
+// =====================================================
+// ORDENAMIENTO
+// =====================================================
 
 export type AccesorioNotaOrden =
-    | 'numero'
-    | 'fecha'
-    | 'cliente'
-    | 'identificacion'
-    | 'vendedor'
-    | 'total'
-    | 'estado';
-
+  | 'numero'
+  | 'fecha'
+  | 'cliente'
+  | 'identificacion'
+  | 'vendedor'
+  | 'total'
+  | 'estado';
 
 export type DireccionOrdenAccesorioNota =
-    | 'asc'
-    | 'desc';
+  | 'asc'
+  | 'desc';
 
-
-/* =====================================================
-   PARÁMETROS
-===================================================== */
+// =====================================================
+// PARÁMETROS
+// =====================================================
 
 export interface AccesoriosNotasHistorialParametros {
-
-    page: number;
-
-    pageSize: number;
-
-    estado: EstadoFiltroAccesorioNota;
-
-    busqueda: string;
-
-    sortBy: AccesorioNotaOrden;
-
-    sortDir: DireccionOrdenAccesorioNota;
-
+  page: number;
+  pageSize: number;
+  estado: EstadoFiltroAccesorioNota;
+  busqueda: string;
+  sortBy: AccesorioNotaOrden;
+  sortDir: DireccionOrdenAccesorioNota;
+  fechaInicial?: string | null;
+  fechaFinal?: string | null;
 }
 
-
-/* =====================================================
-   PAGINACIÓN
-===================================================== */
+// =====================================================
+// PAGINACIÓN
+// =====================================================
 
 export interface AccesoriosNotasPaginacion {
-
-    page: number;
-
-    pageSize: number;
-
-    total: number;
-
-    totalPages: number;
-
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
 }
 
-
-/* =====================================================
-   RESPUESTA
-===================================================== */
+// =====================================================
+// RESPUESTA
+// =====================================================
 
 export interface AccesoriosNotasHistorialResponse {
-
-    success: boolean;
-
-    data: AccesorioNotaVentaResumen[];
-
-    pagination: AccesoriosNotasPaginacion;
-
+  success: boolean;
+  data: AccesorioNotaVentaResumen[];
+  pagination: AccesoriosNotasPaginacion;
 }
 
+// =====================================================
+// SERVICIO
+// =====================================================
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AccesoriosNotasVentaHistorialService {
 
-    private readonly http =
-        inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
+  private readonly apiUrl =
+    '/api/accesorios-notas-venta';
 
-    private readonly apiUrl =
-        '/api/accesorios-notas-venta';
+  listar(
+    parametros: AccesoriosNotasHistorialParametros
+  ): Observable<AccesoriosNotasHistorialResponse> {
 
+    let params = new HttpParams()
+      .set('page', String(parametros.page))
+      .set('pageSize', String(parametros.pageSize))
+      .set('sortBy', parametros.sortBy)
+      .set('sortDir', parametros.sortDir);
 
-    /* =====================================================
-       LISTAR
-    ===================================================== */
+    // ===============================================
+    // ESTADO
+    // ===============================================
 
-    listar(
-        parametros: AccesoriosNotasHistorialParametros
-    ): Observable<AccesoriosNotasHistorialResponse> {
-
-        let params =
-            new HttpParams()
-
-                .set(
-                    'page',
-                    String(parametros.page)
-                )
-
-                .set(
-                    'pageSize',
-                    String(parametros.pageSize)
-                )
-
-                .set(
-                    'sortBy',
-                    parametros.sortBy
-                )
-
-                .set(
-                    'sortDir',
-                    parametros.sortDir
-                );
-
-
-        /* =================================================
-           ESTADO
-        ================================================= */
-
-        if (
-            parametros.estado !== 'TODOS'
-        ) {
-
-            params =
-                params.set(
-                    'estado',
-                    parametros.estado
-                );
-
-        }
-
-
-        /* =================================================
-           BÚSQUEDA
-        ================================================= */
-
-        const busqueda =
-            parametros.busqueda.trim();
-
-
-        if (busqueda) {
-
-            params =
-                params.set(
-                    'busqueda',
-                    busqueda
-                );
-
-        }
-
-
-        return this.http.get<
-            AccesoriosNotasHistorialResponse
-        >(
-            this.apiUrl,
-            {
-                params
-            }
-        );
-
+    if (parametros.estado !== 'TODOS') {
+      params = params.set(
+        'estado',
+        parametros.estado
+      );
     }
 
+    // ===============================================
+    // BÚSQUEDA REMOTA
+    // ===============================================
+
+    const busqueda = parametros.busqueda.trim();
+
+    if (busqueda) {
+      params = params.set(
+        'busqueda',
+        busqueda
+      );
+    }
+
+    // ===============================================
+    // FILTRO DE FECHA INICIAL
+    // ===============================================
+
+    const fechaInicial =
+      parametros.fechaInicial?.trim();
+
+    if (fechaInicial) {
+      params = params.set(
+        'fechaInicial',
+        fechaInicial
+      );
+    }
+
+    // ===============================================
+    // FILTRO DE FECHA FINAL
+    // ===============================================
+
+    const fechaFinal =
+      parametros.fechaFinal?.trim();
+
+    if (fechaFinal) {
+      params = params.set(
+        'fechaFinal',
+        fechaFinal
+      );
+    }
+
+    // ===============================================
+    // CONSULTA AL BACKEND
+    // ===============================================
+
+    return this.http.get<AccesoriosNotasHistorialResponse>(
+      this.apiUrl,
+      { params }
+    );
+  }
 }

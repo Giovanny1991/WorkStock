@@ -1,4 +1,3 @@
-
 import {
   Component,
   computed,
@@ -35,16 +34,11 @@ import {
 } from '@angular/core/rxjs-interop';
 
 import { MatButtonModule } from '@angular/material/button';
-
-import {
-  MatDialog,
-  MatDialogModule
-} from '@angular/material/dialog';
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 
 import {
   MatPaginatorModule,
@@ -52,7 +46,6 @@ import {
 } from '@angular/material/paginator';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 
 import {
   MatSortModule,
@@ -97,14 +90,21 @@ import {
   ConfirmDialog
 } from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
 
+// =====================================================
+// RANGO DE FECHAS APLICADO
+// =====================================================
 
-/* =====================================================
-   COMPONENTE UNIFICADO DE ÓRDENES
-===================================================== */
+interface RangoFechas {
+  inicial: string;
+  final: string;
+}
+
+// =====================================================
+// COMPONENTE
+// =====================================================
 
 @Component({
   selector: 'app-ordenes-historial',
-
   standalone: true,
 
   imports: [
@@ -112,14 +112,13 @@ import {
     DatePipe,
     ReactiveFormsModule,
     MatButtonModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatMenuModule,
     MatPaginatorModule,
     MatProgressBarModule,
-    MatSelectModule,
     MatSortModule,
     MatTableModule,
     MatTooltipModule
@@ -130,9 +129,9 @@ import {
 })
 export class OrdenesHistorial implements OnInit {
 
-  /* =====================================================
-     SERVICIOS
-  ===================================================== */
+  // ===================================================
+  // SERVICIOS
+  // ===================================================
 
   private readonly listadoService =
     inject(OrdenesTrabajoListadoService);
@@ -152,18 +151,16 @@ export class OrdenesHistorial implements OnInit {
   private readonly destroyRef =
     inject(DestroyRef);
 
-
-  /* =====================================================
-     RECARGA
-  ===================================================== */
+  // ===================================================
+  // RECARGA REMOTA
+  // ===================================================
 
   private readonly recargar$ =
     new Subject<void>();
 
-
-  /* =====================================================
-     ESTADO GENERAL
-  ===================================================== */
+  // ===================================================
+  // ESTADO GENERAL
+  // ===================================================
 
   readonly cargando =
     signal(false);
@@ -180,26 +177,22 @@ export class OrdenesHistorial implements OnInit {
   readonly filtroEstado =
     signal<FiltroEstadoOrden>('TODOS');
 
-
-  /* =====================================================
-     PERMISOS DE ADMINISTRADOR
-  ===================================================== */
+  // ===================================================
+  // PERMISOS
+  // ===================================================
 
   readonly esAdministrador = computed(() => {
-
     const rol = this.authService
       .usuario()
       ?.rol
       ?.toUpperCase();
 
     return rol === 'ADMINISTRADOR';
-
   });
 
-
-  /* =====================================================
-     CONTROLES DE FILTROS
-  ===================================================== */
+  // ===================================================
+  // CONTROLES DE BÚSQUEDA Y ESTADO
+  // ===================================================
 
   readonly buscarControl =
     new FormControl('', {
@@ -214,10 +207,48 @@ export class OrdenesHistorial implements OnInit {
       }
     );
 
+  // ===================================================
+  // FILTROS DE FECHAS
+  // ===================================================
 
-  /* =====================================================
-     PAGINACIÓN
-  ===================================================== */
+  readonly fechaMaxima =
+    new Date();
+
+  readonly fechaInicialControl =
+    new FormControl<Date | null>(
+      new Date(
+        this.fechaMaxima.getFullYear(),
+        this.fechaMaxima.getMonth(),
+        1
+      )
+    );
+
+  readonly fechaFinalControl =
+    new FormControl<Date | null>(
+      new Date(
+        this.fechaMaxima.getFullYear(),
+        this.fechaMaxima.getMonth(),
+        this.fechaMaxima.getDate()
+      )
+    );
+
+  // ===================================================
+  // FECHAS APLICADAS A LA CONSULTA
+  // ===================================================
+
+  readonly fechasAplicadas =
+    signal<RangoFechas>({
+      inicial: this.formatearFechaSQL(
+        this.fechaInicialControl.value!
+      ),
+      final: this.formatearFechaSQL(
+        this.fechaFinalControl.value!
+      )
+    });
+
+  // ===================================================
+  // PAGINACIÓN
+  // ===================================================
 
   readonly paginaActual =
     signal(0);
@@ -238,9 +269,7 @@ export class OrdenesHistorial implements OnInit {
   readonly totalPaginas =
     signal(0);
 
-
   readonly registroDesde = computed(() => {
-
     if (this.totalRegistros() === 0) {
       return 0;
     }
@@ -249,25 +278,20 @@ export class OrdenesHistorial implements OnInit {
       this.paginaActual() *
       this.tamanioPagina()
     ) + 1;
-
   });
 
-
   readonly registroHasta = computed(() => {
-
     return Math.min(
       (
         this.paginaActual() + 1
       ) * this.tamanioPagina(),
       this.totalRegistros()
     );
-
   });
 
-
-  /* =====================================================
-     ORDENAMIENTO
-  ===================================================== */
+  // ===================================================
+  // ORDENAMIENTO
+  // ===================================================
 
   readonly columnaOrden =
     signal<OrdenTrabajoOrden>('fechaIngreso');
@@ -275,14 +299,9 @@ export class OrdenesHistorial implements OnInit {
   readonly direccionOrden =
     signal<DireccionOrdenTrabajo>('desc');
 
-
-  /* =====================================================
-     COLUMNAS DE LA TABLA
-
-     Se conserva la estructura anterior.
-     El estado se incorporará visualmente
-     en el siguiente paso HTML.
-  ===================================================== */
+  // ===================================================
+  // COLUMNAS ORIGINALES
+  // ===================================================
 
   readonly displayedColumns = [
     'numeroOrden',
@@ -294,83 +313,149 @@ export class OrdenesHistorial implements OnInit {
     'acciones'
   ];
 
-
-  /* =====================================================
-     INICIALIZACIÓN
-  ===================================================== */
+  // ===================================================
+  // INICIALIZACIÓN
+  // ===================================================
 
   ngOnInit(): void {
-
     this.configurarBusqueda();
-
     this.configurarEstado();
-
     this.configurarCarga();
-
   }
 
+  // ===================================================
+  // FORMATEAR FECHA LOCAL A SQL
+  // ===================================================
 
-  /* =====================================================
-     CONFIGURAR BÚSQUEDA
-  ===================================================== */
+  private formatearFechaSQL(
+    fecha: Date
+  ): string {
+
+    const anio =
+      fecha.getFullYear();
+
+    const mes =
+      String(
+        fecha.getMonth() + 1
+      ).padStart(2, '0');
+
+    const dia =
+      String(
+        fecha.getDate()
+      ).padStart(2, '0');
+
+    return `${anio}-${mes}-${dia}`;
+  }
+
+  // ===================================================
+  // VALIDAR OBJETO FECHA
+  // ===================================================
+
+  private fechaValida(
+    fecha: Date | null
+  ): fecha is Date {
+
+    return (
+      fecha instanceof Date &&
+      !Number.isNaN(fecha.getTime())
+    );
+  }
+
+  // ===================================================
+  // APLICAR FILTROS DE FECHA
+  // ===================================================
+
+  aplicarFechas(): void {
+
+    const desde =
+      this.fechaInicialControl.value;
+
+    const hasta =
+      this.fechaFinalControl.value;
+
+    if (
+      !this.fechaValida(desde) ||
+      !this.fechaValida(hasta)
+    ) {
+      this.notify.warning(
+        'Selecciona una fecha inicial y una fecha final válidas'
+      );
+      return;
+    }
+
+    const inicial =
+      this.formatearFechaSQL(desde);
+
+    const final =
+      this.formatearFechaSQL(hasta);
+
+    const hoy =
+      this.formatearFechaSQL(new Date());
+
+    if (inicial > final) {
+      this.notify.warning(
+        'La fecha inicial no puede ser mayor que la fecha final'
+      );
+      return;
+    }
+
+    if (inicial > hoy || final > hoy) {
+      this.notify.warning(
+        'No puedes consultar fechas futuras'
+      );
+      return;
+    }
+
+    this.fechasAplicadas.set({
+      inicial,
+      final
+    });
+
+    this.paginaActual.set(0);
+    this.cargar();
+  }
+
+  // ===================================================
+  // CONFIGURAR BÚSQUEDA
+  // ===================================================
 
   private configurarBusqueda(): void {
 
     this.buscarControl.valueChanges
       .pipe(
         debounceTime(350),
-
         map(value => value.trim()),
-
         distinctUntilChanged(),
-
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(value => {
-
         this.busqueda.set(value);
-
         this.paginaActual.set(0);
-
         this.cargar();
-
       });
-
   }
 
-
-  /* =====================================================
-     CONFIGURAR FILTRO DE ESTADO
-  ===================================================== */
+  // ===================================================
+  // CONFIGURAR FILTRO DE ESTADO
+  // ===================================================
 
   private configurarEstado(): void {
 
     this.estadoControl.valueChanges
       .pipe(
         distinctUntilChanged(),
-
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(value => {
-
         this.filtroEstado.set(value);
-
         this.paginaActual.set(0);
-
         this.cargar();
-
       });
-
   }
 
-
-  /* =====================================================
-     CARGA UNIFICADA DE ÓRDENES
-
-     TODOS
-     INGRESADO
-     FINALIZADO
-  ===================================================== */
+  // ===================================================
+  // CARGAR ÓRDENES
+  // ===================================================
 
   private configurarCarga(): void {
 
@@ -382,40 +467,28 @@ export class OrdenesHistorial implements OnInit {
 
           this.cargando.set(true);
 
+          const fechas =
+            this.fechasAplicadas();
+
           return this.listadoService.listar({
-
             page: this.paginaActual() + 1,
-
             pageSize: this.tamanioPagina(),
-
             estado: this.filtroEstado(),
-
             busqueda: this.busqueda(),
-
             sortBy: this.columnaOrden(),
-
-            sortDir: this.direccionOrden()
-
+            sortDir: this.direccionOrden(),
+            fechaInicial: fechas.inicial,
+            fechaFinal: fechas.final
           }).pipe(
-
             catchError(error => {
-
               this.notify.error(
                 error?.error?.message ??
                 'No fue posible cargar las órdenes de trabajo'
               );
 
               return of(null);
-
-            }),
-
-            finalize(() => {
-              // El estado de carga se actualiza
-              // al recibir la respuesta o el error.
             })
-
           );
-
         }),
 
         takeUntilDestroyed(this.destroyRef)
@@ -441,108 +514,61 @@ export class OrdenesHistorial implements OnInit {
           this.paginaActual() + 1
         );
 
-
-        /* =============================================
-           CONTROL DE PÁGINA FUERA DE RANGO
-        ============================================= */
-
         if (
           totalPages > 0 &&
           paginaServidor > totalPages
         ) {
-
-          this.paginaActual.set(
-            totalPages - 1
-          );
-
+          this.paginaActual.set(totalPages - 1);
           this.cargar();
-
           return;
-
         }
 
         if (
           total === 0 &&
           this.paginaActual() !== 0
         ) {
-
           this.paginaActual.set(0);
-
         }
 
-
-        /* =============================================
-           ACTUALIZACIÓN DE RESULTADOS
-        ============================================= */
-
-        this.ordenes.set(
-          response.data ?? []
-        );
-
+        this.ordenes.set(response.data ?? []);
         this.totalRegistros.set(total);
-
         this.totalPaginas.set(totalPages);
-
       });
-
   }
 
-
-  /* =====================================================
-     RECARGAR DATOS
-  ===================================================== */
+  // ===================================================
+  // RECARGAR
+  // ===================================================
 
   cargar(): void {
-
     this.recargar$.next();
-
   }
-
-
-  /* =====================================================
-     ACTUALIZACIÓN MANUAL
-  ===================================================== */
 
   refrescar(): void {
-
     this.cargar();
-
   }
 
-
-  /* =====================================================
-     CAMBIAR PÁGINA
-  ===================================================== */
+  // ===================================================
+  // CAMBIAR PÁGINA
+  // ===================================================
 
   cambiarPagina(event: PageEvent): void {
 
     const cambioTamanio =
       event.pageSize !== this.tamanioPagina();
 
-    this.tamanioPagina.set(
-      event.pageSize
+    this.tamanioPagina.set(event.pageSize);
+
+    this.paginaActual.set(
+      cambioTamanio ? 0 : event.pageIndex
     );
 
-    if (cambioTamanio) {
-
-      this.paginaActual.set(0);
-
-    } else {
-
-      this.paginaActual.set(
-        event.pageIndex
-      );
-
-    }
-
     this.cargar();
-
   }
 
-
-  /* =====================================================
-     CAMBIAR ORDENAMIENTO
-  ===================================================== */
+  // ===================================================
+  // ORDENAMIENTO
+  // ===================================================
 
   cambiarOrden(event: Sort): void {
 
@@ -555,7 +581,6 @@ export class OrdenesHistorial implements OnInit {
 
     const columnasPermitidas:
       OrdenTrabajoOrden[] = [
-
         'numeroOrden',
         'fechaIngreso',
         'cliente',
@@ -566,67 +591,78 @@ export class OrdenesHistorial implements OnInit {
         'saldo',
         'estado',
         'vendedor'
-
       ];
 
-    const columna =
-      columnasPermitidas.find(
-        item => item === event.active
-      );
+    const columna = columnasPermitidas.find(
+      item => item === event.active
+    );
 
     if (!columna) {
       return;
     }
 
-    this.columnaOrden.set(
-      columna
-    );
-
-    this.direccionOrden.set(
-      event.direction
-    );
-
+    this.columnaOrden.set(columna);
+    this.direccionOrden.set(event.direction);
     this.paginaActual.set(0);
-
     this.cargar();
-
   }
 
-
-  /* =====================================================
-     LIMPIAR FILTROS
-  ===================================================== */
+  // ===================================================
+  // LIMPIAR TODOS LOS FILTROS
+  // ===================================================
 
   limpiarFiltros(): void {
 
-    this.buscarControl.setValue(
-      '',
-      {
-        emitEvent: false
-      }
+    const hoy = new Date();
+
+    const primerDia = new Date(
+      hoy.getFullYear(),
+      hoy.getMonth(),
+      1
     );
 
-    this.estadoControl.setValue(
-      'TODOS',
-      {
-        emitEvent: false
-      }
+    const fechaActual = new Date(
+      hoy.getFullYear(),
+      hoy.getMonth(),
+      hoy.getDate()
+    );
+
+    this.buscarControl.setValue('', {
+      emitEvent: false
+    });
+
+    this.estadoControl.setValue('TODOS', {
+      emitEvent: false
+    });
+
+    this.fechaInicialControl.setValue(
+      primerDia,
+      { emitEvent: false }
+    );
+
+    this.fechaFinalControl.setValue(
+      fechaActual,
+      { emitEvent: false }
     );
 
     this.busqueda.set('');
-
     this.filtroEstado.set('TODOS');
 
+    this.fechasAplicadas.set({
+      inicial: this.formatearFechaSQL(primerDia),
+      final: this.formatearFechaSQL(fechaActual)
+    });
+
+    this.columnaOrden.set('fechaIngreso');
+    this.direccionOrden.set('desc');
+
     this.paginaActual.set(0);
-
     this.cargar();
-
   }
 
-
-  /* =====================================================
-     VALIDAR ESTADO PENDIENTE
-  ===================================================== */
+  // ===================================================
+  // ESTADOS
+  // ===================================================
 
   esPendiente(
     orden: OrdenTrabajoResumen
@@ -635,13 +671,7 @@ export class OrdenesHistorial implements OnInit {
     return String(
       orden.estado ?? ''
     ).trim().toUpperCase() === 'INGRESADO';
-
   }
-
-
-  /* =====================================================
-     VALIDAR ESTADO FINALIZADO
-  ===================================================== */
 
   esFinalizada(
     orden: OrdenTrabajoResumen
@@ -650,26 +680,17 @@ export class OrdenesHistorial implements OnInit {
     return String(
       orden.estado ?? ''
     ).trim().toUpperCase() === 'FINALIZADO';
-
   }
 
-
-  /* =====================================================
-     PERMITIR GESTIONAR
-  ===================================================== */
+  // ===================================================
+  // PERMISOS DE ACCIONES
+  // ===================================================
 
   puedeGestionar(
     orden: OrdenTrabajoResumen
   ): boolean {
-
     return this.esPendiente(orden);
-
   }
-
-
-  /* =====================================================
-     PERMITIR ELIMINAR
-  ===================================================== */
 
   puedeEliminar(
     orden: OrdenTrabajoResumen
@@ -679,15 +700,11 @@ export class OrdenesHistorial implements OnInit {
       this.esAdministrador() &&
       this.esPendiente(orden)
     );
-
   }
 
-
-  /* =====================================================
-     VISUALIZAR ORDEN
-
-     Disponible para cualquier estado.
-  ===================================================== */
+  // ===================================================
+  // VISUALIZAR ORDEN
+  // ===================================================
 
   visualizar(
     orden: OrdenTrabajoResumen
@@ -696,65 +713,44 @@ export class OrdenesHistorial implements OnInit {
     this.dialog.open(
       OrdenTrabajoDetalleComponent,
       {
-
         width: '430px',
-
         maxWidth: '95vw',
-
         maxHeight: '95vh',
-
         disableClose: true,
-
         autoFocus: false,
-
         data: {
           idOrden: orden.id
         }
-
       }
     );
-
   }
 
-
-  /* =====================================================
-     GESTIONAR ORDEN
-
-     Solo órdenes pendientes.
-  ===================================================== */
+  // ===================================================
+  // GESTIONAR ORDEN
+  // ===================================================
 
   gestionar(
     orden: OrdenTrabajoResumen
   ): void {
 
     if (!this.puedeGestionar(orden)) {
-
       this.notify.warning(
         'Solo se pueden gestionar órdenes pendientes'
       );
-
       return;
-
     }
 
     const dialogRef = this.dialog.open(
       OrdenTrabajoGestion,
       {
-
         width: '920px',
-
         maxWidth: '96vw',
-
         maxHeight: '95vh',
-
         disableClose: true,
-
         autoFocus: false,
-
         data: {
           idOrden: orden.id
         }
-
       }
     );
 
@@ -763,59 +759,32 @@ export class OrdenesHistorial implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(resultado => {
-
         if (resultado === true) {
-
-          /*
-           * Se actualiza el listado.
-           *
-           * Si se finalizó la orden:
-           * - En TODOS seguirá apareciendo,
-           *   pero con el nuevo estado.
-           * - En INGRESADO desaparecerá.
-           * - En FINALIZADO aparecerá
-           *   cuando se aplique ese filtro.
-           */
-
           this.cargar();
-
         }
-
       });
-
   }
 
-
-  /* =====================================================
-     ELIMINAR ORDEN
-
-     Condiciones:
-     - Administrador
-     - Estado INGRESADO
-  ===================================================== */
+  // ===================================================
+  // ELIMINAR ORDEN
+  // ===================================================
 
   eliminar(
     orden: OrdenTrabajoResumen
   ): void {
 
     if (!this.esAdministrador()) {
-
       this.notify.warning(
         'No tiene permisos para eliminar órdenes de trabajo'
       );
-
       return;
-
     }
 
     if (!this.esPendiente(orden)) {
-
       this.notify.warning(
         'Solo se pueden eliminar órdenes pendientes'
       );
-
       return;
-
     }
 
     if (this.eliminandoId() !== null) {
@@ -825,25 +794,16 @@ export class OrdenesHistorial implements OnInit {
     this.dialog.open(
       ConfirmDialog,
       {
-
         width: '430px',
-
         maxWidth: '92vw',
-
         disableClose: true,
-
         data: {
-
           title: 'Eliminar orden de trabajo',
-
           message:
             `¿Está seguro de eliminar la orden #${orden.numeroOrden}? ` +
             'Esta acción no se puede deshacer.',
-
           confirmText: 'Eliminar'
-
         }
-
       }
     )
       .afterClosed()
@@ -851,21 +811,17 @@ export class OrdenesHistorial implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(confirmado => {
-
         if (!confirmado) {
           return;
         }
 
         this.ejecutarEliminacion(orden);
-
       });
-
   }
 
-
-  /* =====================================================
-     EJECUTAR ELIMINACIÓN
-  ===================================================== */
+  // ===================================================
+  // EJECUTAR ELIMINACIÓN
+  // ===================================================
 
   private ejecutarEliminacion(
     orden: OrdenTrabajoResumen
@@ -879,167 +835,106 @@ export class OrdenesHistorial implements OnInit {
 
     this.service.eliminar(orden.id)
       .pipe(
-
         finalize(() => {
-
           this.eliminandoId.set(null);
-
         }),
-
         takeUntilDestroyed(this.destroyRef)
-
       )
       .subscribe({
-
         next: response => {
-
           this.notify.success(
             response?.message ??
             'Orden de trabajo eliminada correctamente'
           );
 
           this.cargar();
-
         },
 
         error: error => {
 
-          const codigo =
-            error?.error?.code;
+          const codigo = error?.error?.code;
 
           const mensaje =
             error?.error?.message ??
             'No fue posible eliminar la orden de trabajo';
 
-
-          /* ===========================================
-             ORDEN CON ACCESORIOS
-          ============================================ */
+          // ===========================================
+          // ORDEN CON ACCESORIOS
+          // ===========================================
 
           if (codigo === 'ORDEN_CON_ACCESORIOS') {
-
             this.dialog.open(
               ConfirmDialog,
               {
-
                 width: '440px',
-
                 maxWidth: '92vw',
-
                 disableClose: true,
-
                 autoFocus: false,
-
                 data: {
-
-                  title:
-                    'No se puede eliminar la orden',
-
+                  title: 'No se puede eliminar la orden',
                   message:
                     'La orden contiene accesorios utilizados. ' +
                     'Primero debes ingresar a Gestionar orden ' +
                     'y retirar los accesorios asociados.',
-
-                  confirmText:
-                    'Entendido'
-
+                  confirmText: 'Entendido'
                 }
-
               }
             );
-
             return;
-
           }
 
-
-          /* ===========================================
-             ORDEN CON IMÁGENES
-          ============================================ */
+          // ===========================================
+          // ORDEN CON IMÁGENES
+          // ===========================================
 
           if (codigo === 'ORDEN_CON_IMAGENES') {
-
             this.dialog.open(
               ConfirmDialog,
               {
-
                 width: '440px',
-
                 maxWidth: '92vw',
-
                 disableClose: true,
-
                 autoFocus: false,
-
                 data: {
-
-                  title:
-                    'No se puede eliminar la orden',
-
-                  message:
-                    mensaje,
-
-                  confirmText:
-                    'Entendido'
-
+                  title: 'No se puede eliminar la orden',
+                  message: mensaje,
+                  confirmText: 'Entendido'
                 }
-
               }
             );
-
             return;
-
           }
 
-
-          /* ===========================================
-             ORDEN FINALIZADA
-          ============================================ */
+          // ===========================================
+          // ORDEN FINALIZADA
+          // ===========================================
 
           if (codigo === 'ORDEN_FINALIZADA') {
-
             this.dialog.open(
               ConfirmDialog,
               {
-
                 width: '420px',
-
                 maxWidth: '92vw',
-
                 disableClose: true,
-
                 data: {
-
-                  title:
-                    'Orden finalizada',
-
+                  title: 'Orden finalizada',
                   message:
                     'No es posible eliminar una orden de trabajo finalizada.',
-
-                  confirmText:
-                    'Entendido'
-
+                  confirmText: 'Entendido'
                 }
-
               }
             );
-
             return;
-
           }
 
           this.notify.error(mensaje);
-
         }
-
       });
-
   }
 
-
-  /* =====================================================
-     VALIDAR TOTAL PENDIENTE
-  ===================================================== */
+  // ===================================================
+  // VALIDAR TOTAL PENDIENTE
+  // ===================================================
 
   esTotalPendiente(
     orden: OrdenTrabajoResumen
@@ -1054,13 +949,11 @@ export class OrdenesHistorial implements OnInit {
       valor === 'true' ||
       valor === '1'
     );
-
   }
 
-
-  /* =====================================================
-     VALOR DE LA ORDEN
-  ===================================================== */
+  // ===================================================
+  // VALOR DE LA ORDEN
+  // ===================================================
 
   valorOrden(
     orden: OrdenTrabajoResumen
@@ -1070,16 +963,12 @@ export class OrdenesHistorial implements OnInit {
       return null;
     }
 
-    return Number(
-      orden.total ?? 0
-    );
-
+    return Number(orden.total ?? 0);
   }
 
-
-  /* =====================================================
-     SALDO DE LA ORDEN
-  ===================================================== */
+  // ===================================================
+  // SALDO DE LA ORDEN
+  // ===================================================
 
   saldoOrden(
     orden: OrdenTrabajoResumen
@@ -1089,10 +978,6 @@ export class OrdenesHistorial implements OnInit {
       return null;
     }
 
-    return Number(
-      orden.saldo ?? 0
-    );
-
+    return Number(orden.saldo ?? 0);
   }
-
 }

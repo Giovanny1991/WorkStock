@@ -1,26 +1,63 @@
 /* =====================================================
-   WORKSTOCK
-   SERVICIO TÉCNICO - ÓRDENES DE TRABAJO
-   LISTADO UNIFICADO
+   WORKSTOCK - ÓRDENES DE TRABAJO
+   ESTILO COMPACTO UNIFICADO Y RESPONSIVE
+   ANCHO MÍNIMO DE TABLA: 920PX
+===================================================== */
+
+/* =====================================================
+   1. VARIABLES
 ===================================================== */
 
 :host {
   display: block;
   width: 100%;
+  max-width: 100%;
   min-width: 0;
+
+  --hist-bg: var(--app-card, #ffffff);
+  --hist-bg-soft: var(--app-card-secondary, #f8fafc);
+  --hist-text: var(--app-text, #1f2937);
+  --hist-muted: var(--app-text-muted, #64748b);
+  --hist-border: var(--app-border, #e2e8f0);
+  --hist-primary: var(--app-primary, #075db0);
+  --hist-primary-soft: var(--app-primary-soft, #eaf3ff);
+  --hist-hover: var(--app-hover, #f1f5f9);
+  --hist-success: var(--app-success, #15803d);
+  --hist-success-bg: var(--app-success-bg, #dcfce7);
+  --hist-danger: var(--app-danger, #dc2626);
+  --hist-danger-bg: var(--app-danger-bg, #fee2e2);
+  --hist-warning: var(--app-warning, #b45309);
+  --hist-warning-bg:
+    var(--app-warning-bg, rgba(245, 158, 11, 0.12));
+
+  color: var(--hist-text);
+}
+
+:host,
+:host * {
   box-sizing: border-box;
 }
 
 /* =====================================================
-   ENCABEZADO PRINCIPAL
+   2. PÁGINA
+===================================================== */
+
+.page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* =====================================================
+   3. ENCABEZADO
 ===================================================== */
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
+
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .page-title {
@@ -29,571 +66,872 @@
   h1 {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 
     margin: 0;
 
-    color: var(--app-text);
-    font-size: 22px;
+    color: var(--hist-text);
+    font-size: 21px;
     font-weight: 700;
     line-height: 1.3;
+    letter-spacing: -0.3px;
 
     mat-icon {
-      color: var(--app-primary);
       flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      color: var(--hist-primary);
+      font-size: 22px;
+      line-height: 22px;
     }
   }
 
   p {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
 
-    color: var(--app-text-muted);
-    font-size: 13px;
+    color: var(--hist-muted);
+    font-size: 12px;
     line-height: 1.5;
   }
 }
 
 /* =====================================================
-   BOTÓN ACTUALIZAR
-===================================================== */
-
-.refresh-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-
-  height: 40px;
-  flex-shrink: 0;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  mat-icon {
-    width: 19px;
-    height: 19px;
-    font-size: 19px;
-  }
-}
-
-/* =====================================================
-   CONTENEDOR PRINCIPAL
+   4. TARJETA
 ===================================================== */
 
 .card {
   position: relative;
+  display: flex;
+  flex-direction: column;
 
   width: 100%;
+  max-width: 100%;
   min-width: 0;
 
   overflow: hidden;
 
-  background: var(--app-card);
-
-  border: 1px solid var(--app-border);
-  border-radius: 10px;
-
-  box-shadow: 0 2px 7px rgba(16, 24, 40, 0.05);
+  background: var(--hist-bg);
+  border: 1px solid var(--hist-border);
+  border-radius: 8px;
 }
 
 /* =====================================================
-   BARRA DE PROGRESO
-===================================================== */
-
-mat-progress-bar {
-  position: relative;
-  z-index: 2;
-}
-
-/* =====================================================
-   BARRA DE FILTROS
+   5. BARRA DE FILTROS
 ===================================================== */
 
 .toolbar {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
 
-  gap: 12px;
+  column-gap: 7px;
+  row-gap: 9px;
 
-  padding: 14px 16px;
-
-  border-bottom: 1px solid var(--app-border);
-}
-
-.filters {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-
-  gap: 10px;
-
+  width: 100%;
   min-width: 0;
+
+  padding: 11px 12px;
+
+  background: var(--hist-bg);
+  border-bottom: 1px solid var(--hist-border);
 }
 
 /* =====================================================
-   CAMPO BÚSQUEDA
+   6. BUSCADOR
 ===================================================== */
 
 .search-field {
-  width: 310px;
-  max-width: 100%;
-  font-size: 13px;
-}
+  flex: 1 1 150px;
 
-/* =====================================================
-   FILTRO ESTADO
-===================================================== */
+  width: 175px;
+  min-width: 125px;
+  max-width: 210px;
 
-.status-field {
-  width: 190px;
-  max-width: 100%;
-  font-size: 13px;
-}
-
-/* =====================================================
-   BOTÓN LIMPIAR
-===================================================== */
-
-.clear-button {
-  height: 40px;
-  flex-shrink: 0;
-
+  margin: 0;
+  color: var(--hist-text);
   font-size: 12px;
-  font-weight: 600;
-
-  mat-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-  }
 }
 
-/* =====================================================
-   CONTADOR DE REGISTROS
-===================================================== */
+.clear-search {
+  width: 32px;
+  height: 32px;
 
-.records {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  color: var(--app-text-muted);
-
-  font-size: 12px;
-  white-space: nowrap;
+  color: var(--hist-muted);
 
   mat-icon {
     width: 17px;
     height: 17px;
     font-size: 17px;
+    line-height: 17px;
+  }
+
+  &:hover {
+    color: var(--hist-text);
   }
 }
 
 /* =====================================================
-   CAMPOS ANGULAR MATERIAL
+   7. FECHAS
 ===================================================== */
 
-:host ::ng-deep .search-field .mat-mdc-text-field-wrapper,
+.date-field {
+  flex: 0 0 135px;
 
-:host ::ng-deep .status-field .mat-mdc-text-field-wrapper {
-  height: 40px;
-}
+  width: 135px;
+  min-width: 135px;
+  max-width: 135px;
 
-:host ::ng-deep .search-field .mat-mdc-form-field-infix,
+  margin: 0;
 
-:host ::ng-deep .status-field .mat-mdc-form-field-infix {
-  min-height: 40px;
+  color: var(--hist-text);
+  font-size: 12px;
 
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-}
-
-:host ::ng-deep .search-field .mat-mdc-form-field-icon-prefix {
-  padding-right: 5px;
-  color: var(--app-text-muted);
+  input {
+    cursor: pointer;
+    color: var(--hist-text);
+  }
 }
 
 /* =====================================================
-   CONTENEDOR TABLA
+   8. ANGULAR MATERIAL COMPACTO
+===================================================== */
+
+:host ::ng-deep {
+
+  .toolbar .mat-mdc-form-field {
+    margin-bottom: 0;
+  }
+
+  .toolbar .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .toolbar .mat-mdc-text-field-wrapper {
+    height: 38px;
+
+    background: var(--app-input-bg,
+        var(--hist-bg));
+
+    border-radius: 6px;
+  }
+
+  .toolbar .mat-mdc-form-field-flex {
+    height: 38px;
+    align-items: center;
+  }
+
+  .toolbar .mat-mdc-form-field-infix {
+    display: flex;
+    align-items: center;
+
+    height: 38px;
+    min-height: 38px;
+
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .toolbar input.mat-mdc-input-element {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+
+    color: var(--hist-text);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: normal;
+
+    caret-color: var(--hist-primary);
+  }
+
+  .toolbar input.mat-mdc-input-element::placeholder {
+    color: var(--hist-muted);
+    font-size: 11px;
+    opacity: 0.8;
+  }
+
+  .toolbar .mdc-floating-label {
+    color: var(--hist-muted);
+    font-size: 11px;
+  }
+
+  .toolbar .mat-mdc-form-field-icon-prefix,
+  .toolbar .mat-mdc-form-field-icon-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--hist-muted);
+  }
+
+  .toolbar .mat-mdc-form-field-icon-prefix {
+    padding-left: 7px;
+    padding-right: 2px;
+  }
+
+  .toolbar .mat-mdc-form-field-icon-prefix mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    line-height: 17px;
+  }
+
+  .toolbar .mat-datepicker-toggle {
+    color: var(--hist-muted);
+  }
+
+  .toolbar .mat-datepicker-toggle .mat-mdc-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+  }
+
+  .toolbar .mat-datepicker-toggle-default-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toolbar .mat-mdc-form-field-focus-overlay {
+    background: transparent;
+  }
+}
+
+/* =====================================================
+   9. BOTONES CONSULTAR Y LIMPIAR
+===================================================== */
+
+.date-filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+
+  flex: 0 0 auto;
+
+  gap: 5px;
+  min-width: max-content;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    min-width: auto;
+    min-height: 36px;
+    height: 36px;
+
+    padding: 0 9px;
+
+    border-radius: 6px;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  mat-icon {
+    flex-shrink: 0;
+
+    width: 15px;
+    height: 15px;
+
+    margin-right: 3px;
+
+    font-size: 15px;
+    line-height: 15px;
+  }
+}
+
+.btn-apply-filters {
+  background: var(--hist-primary) !important;
+  color: #ffffff !important;
+
+  border: 1px solid var(--hist-primary) !important;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-clear-filters {
+  background: var(--hist-bg) !important;
+  color: var(--hist-muted) !important;
+
+  border: 1px solid var(--hist-border) !important;
+
+  &:hover:not(:disabled) {
+    background: var(--hist-hover) !important;
+    color: var(--hist-text) !important;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+/* =====================================================
+   10. FILTROS POR ESTADO
+===================================================== */
+
+.document-filters {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+
+  flex: 0 0 auto;
+
+  gap: 5px;
+
+  width: auto;
+  min-width: max-content;
+  max-width: 100%;
+
+  margin-left: auto;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  min-height: 33px;
+
+  padding: 6px 8px;
+
+  border: 1px solid var(--hist-border);
+  border-radius: 6px;
+
+  background: var(--hist-bg);
+  color: var(--hist-muted);
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: var(--hist-hover);
+    color: var(--hist-text);
+  }
+
+  &.selected {
+    background: var(--hist-primary-soft);
+    border-color: var(--hist-primary);
+    color: var(--hist-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--hist-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* =====================================================
+   11. CONTENEDOR RESPONSIVE
 ===================================================== */
 
 .table-wrapper {
+  display: block;
+
   width: 100%;
+  max-width: 100%;
   min-width: 0;
+
   overflow-x: auto;
   overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--hist-border) var(--hist-bg);
 }
 
 /* =====================================================
-   TABLA ANGULAR MATERIAL
+   12. TABLA COMPACTA DE 920PX
 ===================================================== */
 
-table {
+table.mat-mdc-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 920px;
 
-  border-collapse: collapse;
+  table-layout: auto;
 
-  background: var(--app-card);
+  border-collapse: separate;
+  border-spacing: 0;
+
+  background: var(--hist-bg);
+  color: var(--hist-text);
 }
 
 /* =====================================================
-   ENCABEZADOS TABLA
+   13. ENCABEZADOS
 ===================================================== */
 
 .mat-mdc-header-row {
-  height: 46px;
-  background: var(--app-card-secondary);
+  height: 42px;
+
+  background: var(--hist-bg-soft);
 }
 
 .mat-mdc-header-cell {
-  padding: 0 12px;
-
-  color: var(--app-text-muted);
-
-  border-bottom: 1px solid var(--app-border);
-
-  font-size: 11px;
-  font-weight: 700;
-
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-
-  white-space: nowrap;
-}
-
-/* =====================================================
-   FILAS
-===================================================== */
-
-.mat-mdc-row {
-  height: 58px;
-
-  transition: background 0.15s ease;
-}
-
-.mat-mdc-row:hover {
-  background: var(--app-card-secondary);
-}
-
-.mat-mdc-cell {
-  padding: 8px 12px;
-
-  color: var(--app-text);
-
-  border-bottom: 1px solid var(--app-border-soft);
-
-  font-size: 13px;
   vertical-align: middle;
-}
 
-/* =====================================================
-   ESTILO FILAS
-===================================================== */
+  padding: 0 8px;
 
-.row-pending {
-  opacity: 1;
-}
+  background: transparent;
+  color: var(--hist-muted);
 
-.row-finished {
-  opacity: 0.96;
-}
-
-/* =====================================================
-   INFORMACIÓN DE LA ORDEN
-===================================================== */
-
-.order-info,
-.client-info,
-.equipment-info {
-  display: flex;
-  flex-direction: column;
-
-  gap: 4px;
-  min-width: 0;
-}
-
-/* =====================================================
-   NÚMERO DE ORDEN
-===================================================== */
-
-.invoice-number {
-  color: var(--app-primary);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-/* =====================================================
-   CLIENTE
-===================================================== */
-
-.client-name {
-  color: var(--app-text);
-  font-weight: 600;
-}
-
-/* =====================================================
-   EQUIPO
-===================================================== */
-
-.equipment-name {
-  color: var(--app-text);
-  font-weight: 600;
-}
-
-/* =====================================================
-   DATOS SECUNDARIOS
-===================================================== */
-
-td small {
-  display: block;
-
-  color: var(--app-text-muted);
-
-  font-size: 11px;
-  line-height: 1.4;
-}
-
-/* =====================================================
-   VALOR TOTAL
-===================================================== */
-
-.total-value {
-  color: var(--app-success);
-
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-/* =====================================================
-   SALDO
-===================================================== */
-
-.balance-value {
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.balance-pending {
-  color: var(--app-danger);
-}
-
-.balance-paid {
-  color: var(--app-success);
-}
-
-/* =====================================================
-   VALOR POR CONFIRMAR
-===================================================== */
-
-.value-pending {
-  display: inline-block;
-
-  padding: 4px 8px;
-
-  background: var(--app-primary-soft);
-  color: var(--app-primary);
-
-  border-radius: 6px;
+  border-bottom: 1px solid var(--hist-border);
 
   font-size: 10px;
   font-weight: 700;
 
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
   white-space: nowrap;
 }
 
 /* =====================================================
-   COLUMNA ESTADO
+   14. FILAS
 ===================================================== */
 
-.mat-column-estado {
-  min-width: 112px;
+.mat-mdc-row {
+  height: 47px;
+
+  background: var(--hist-bg);
+
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--hist-hover);
+  }
 }
 
 /* =====================================================
-   ETIQUETAS DE ESTADO
+   15. CELDAS
 ===================================================== */
+
+.mat-mdc-cell {
+  vertical-align: middle;
+
+  padding: 8px;
+
+  background: transparent;
+  color: var(--hist-text);
+
+  border-bottom: 1px solid var(--hist-border);
+
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* =====================================================
+   16. ANCHOS DE COLUMNAS
+===================================================== */
+
+.mat-column-numeroOrden {
+  min-width: 118px;
+}
+
+.mat-column-cliente {
+  min-width: 140px;
+}
+
+.mat-column-equipo {
+  min-width: 145px;
+}
+
+.mat-column-valor,
+.mat-column-saldo {
+  min-width: 93px;
+}
+
+.mat-column-estado {
+  min-width: 100px;
+}
+
+.mat-column-acciones {
+  width: 125px;
+  min-width: 125px;
+  max-width: 125px;
+}
+
+/* =====================================================
+   17. NÚMERO DE ORDEN
+===================================================== */
+
+.order-info {
+  min-width: 0;
+}
+
+.invoice-number {
+  display: block;
+
+  color: var(--hist-primary);
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.order-info small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--hist-muted);
+
+  font-size: 10px;
+  line-height: 1.4;
+
+  white-space: nowrap;
+}
+
+/* =====================================================
+   18. CLIENTE
+===================================================== */
+
+.client-info {
+  min-width: 0;
+}
+
+.client-name {
+  display: block;
+
+  color: var(--hist-text);
+
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.client-info small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--hist-muted);
+
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+/* =====================================================
+   19. EQUIPO
+===================================================== */
+
+.equipment-info {
+  min-width: 0;
+}
+
+.equipment-name {
+  display: block;
+
+  color: var(--hist-text);
+
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.equipment-info small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--hist-muted);
+
+  font-size: 10px;
+  line-height: 1.4;
+
+  white-space: nowrap;
+}
+
+/* =====================================================
+   20. VALOR Y SALDO
+===================================================== */
+
+.money-column {
+  text-align: center;
+  white-space: nowrap;
+}
+
+:host ::ng-deep {
+
+  .mat-column-valor .mat-sort-header-container,
+  .mat-column-saldo .mat-sort-header-container {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.total-value,
+.balance-value,
+.value-pending {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 7px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  text-align: center;
+  white-space: nowrap;
+
+  font-variant-numeric: tabular-nums;
+}
+
+.total-value {
+  background: var(--hist-success-bg);
+  color: var(--hist-success);
+}
+
+.value-pending {
+  background: var(--hist-warning-bg);
+  color: var(--hist-warning);
+
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.balance-value {
+  background: var(--hist-bg-soft);
+  color: var(--hist-muted);
+}
+
+.balance-value.balance-pending {
+  background: var(--hist-danger-bg);
+  color: var(--hist-danger);
+}
+
+.balance-value.balance-paid {
+  background: var(--hist-success-bg);
+  color: var(--hist-success);
+}
+
+/* =====================================================
+   21. ESTADOS
+===================================================== */
+
+.status-column {
+  text-align: center;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .mat-column-estado .mat-sort-header-container {
+  width: 100%;
+  justify-content: center;
+}
 
 .status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  gap: 5px;
+  gap: 3px;
 
-  padding: 5px 9px;
+  min-width: 84px;
+  padding: 4px 7px;
 
-  border-radius: 6px;
+  border-radius: 20px;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.4;
 
   white-space: nowrap;
 
   mat-icon {
-    width: 15px;
-    height: 15px;
+    width: 13px;
+    height: 13px;
 
-    font-size: 15px;
-    line-height: 15px;
-
-    margin: 0;
+    font-size: 13px;
+    line-height: 13px;
   }
 }
 
-/* =====================================================
-   ESTADO PENDIENTE
-===================================================== */
-
 .status-badge.pending {
-  background: #fff3df;
-  color: #996000;
+  background: var(--hist-warning-bg);
+  color: var(--hist-warning);
 }
-
-/* =====================================================
-   ESTADO FINALIZADA
-===================================================== */
 
 .status-badge.finished {
-  background: #e4f7e9;
-  color: #18713b;
+  background: var(--hist-success-bg);
+  color: var(--hist-success);
 }
-
-/* =====================================================
-   ESTADO DESCONOCIDO
-===================================================== */
 
 .status-badge.unknown {
-  background: var(--app-card-secondary);
-  color: var(--app-text-muted);
+  background: var(--hist-bg-soft);
+  color: var(--hist-muted);
 }
 
 /* =====================================================
-   ACCIONES
-   ÍCONOS PEQUEÑOS SIN FONDO NI BORDES
+   22. FILAS SEGÚN ESTADO
 ===================================================== */
 
-.col-actions,
-.mat-column-acciones {
-  width: 115px;
-  min-width: 115px;
+.mat-mdc-row.row-pending .mat-column-numeroOrden {
+  box-shadow: inset 3px 0 0 var(--hist-warning);
+}
 
-  text-align: center !important;
+.mat-mdc-row.row-finished .mat-column-numeroOrden {
+  box-shadow: inset 3px 0 0 var(--hist-success);
+}
+
+/* =====================================================
+   23. ACCIONES
+===================================================== */
+
+.col-actions {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+
+  text-align: center;
   white-space: nowrap;
 }
-
-/* =====================================================
-   CONTENEDOR ACCIONES
-===================================================== */
 
 .actions-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: nowrap;
 
-  gap: 5px;
+  gap: 3px;
 
   width: 100%;
-  min-height: 32px;
+  min-width: 0;
 }
 
-/* =====================================================
-   BOTÓN BASE DE ACCIÓN
-===================================================== */
-
 .action-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
+  flex: 0 0 32px;
 
-  padding: 0 !important;
+  width: 32px;
+  height: 32px;
 
-  background: transparent !important;
-  border: none !important;
+  min-width: 32px;
+  min-height: 32px;
 
-  border-radius: 4px !important;
+  padding: 0;
+  margin: 0;
 
-  box-shadow: none !important;
-
-  cursor: pointer;
+  border-radius: 7px;
 
   transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
     opacity 0.15s ease,
     transform 0.15s ease;
 
   mat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    width: 18px;
+    height: 18px;
 
-    width: 17px !important;
-    height: 17px !important;
+    margin: 0;
 
-    font-size: 17px !important;
-    line-height: 17px !important;
-
-    margin: 0 !important;
-  }
-
-  &:not(:disabled):hover {
-    background: transparent !important;
-    opacity: 0.75;
-    transform: scale(1.08);
+    font-size: 18px;
+    line-height: 18px;
   }
 
   &:disabled {
-    opacity: 0.35;
+    opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
   }
 }
 
 /* =====================================================
-   VISUALIZAR - AZUL
+   24. VISUALIZAR
 ===================================================== */
 
 .view-btn {
-  color: #2563eb !important;
+  background: rgba(7, 93, 176, 0.07);
+  color: var(--hist-primary);
+
+  &:hover:not(:disabled) {
+    background: rgba(7, 93, 176, 0.14);
+  }
 }
 
 /* =====================================================
-   GESTIONAR - AZUL
+   25. GESTIONAR
 ===================================================== */
 
 .edit-btn {
-  color: #2563eb !important;
+  background: var(--hist-success-bg);
+  color: var(--hist-success);
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.95);
+  }
 }
 
 /* =====================================================
-   ELIMINAR - ROJO
+   26. ELIMINAR
 ===================================================== */
 
 .delete-btn {
-  color: #dc2626 !important;
+  background: var(--hist-danger-bg);
+  color: var(--hist-danger);
+
+  &:hover:not(:disabled) {
+    background: rgba(220, 38, 38, 0.17);
+  }
 }
 
 /* =====================================================
-   ACCESIBILIDAD TECLADO
-===================================================== */
-
-.action-btn:focus-visible {
-  outline: 2px solid var(--app-primary);
-  outline-offset: 2px;
-}
-
-/* =====================================================
-   ESTADO SIN REGISTROS
+   27. SIN RESULTADOS
 ===================================================== */
 
 .no-data {
-  height: 170px;
+  height: 110px;
+  padding: 15px;
+
   text-align: center;
+  color: var(--hist-muted);
 }
 
 .empty-state {
@@ -602,153 +940,251 @@ td small {
   align-items: center;
   justify-content: center;
 
-  gap: 7px;
+  gap: 6px;
 
-  padding: 22px;
-
-  color: var(--app-text-muted);
+  width: 100%;
+  padding: 12px;
 
   mat-icon {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
 
-    font-size: 36px;
-    opacity: 0.65;
+    color: var(--hist-muted);
+
+    font-size: 26px;
+    line-height: 26px;
   }
 
   strong {
-    color: var(--app-text);
+    color: var(--hist-text);
 
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 650;
   }
 
   p {
-    max-width: 400px;
-
     margin: 0;
 
-    font-size: 12px;
-    line-height: 1.5;
+    color: var(--hist-muted);
 
-    text-align: center;
+    font-size: 11px;
+    line-height: 1.5;
   }
 }
 
 /* =====================================================
-   PAGINADOR
+   28. PAGINADOR
 ===================================================== */
 
 mat-paginator {
-  border-top: 1px solid var(--app-border);
+  display: block;
+  width: 100%;
 
-  background: var(--app-card);
-  color: var(--app-text);
+  background: var(--hist-bg);
+  color: var(--hist-muted);
+
+  border-top: 1px solid var(--hist-border);
+}
+
+:host ::ng-deep {
+
+  .mat-mdc-paginator-container {
+    min-height: 45px !important;
+    padding: 4px 12px;
+
+    font-size: 12px;
+  }
+
+  .mat-mdc-paginator-page-size-label,
+  .mat-mdc-paginator-range-label {
+    color: var(--hist-muted);
+    font-size: 11px;
+  }
 }
 
 /* =====================================================
-   RESPONSIVE TABLET
+   29. BARRA DE PROGRESO
 ===================================================== */
 
-@media (max-width: 900px) {
+mat-progress-bar {
+  width: 100%;
+}
 
-  .toolbar {
-    align-items: stretch;
-    flex-direction: column;
+/* =====================================================
+   30. RESPONSIVE - PANTALLAS MEDIANAS
+===================================================== */
+
+@media (max-width: 1250px) {
+
+  .search-field {
+    flex: 1 1 165px;
+
+    min-width: 125px;
+    max-width: 220px;
   }
 
-  .filters {
+  .date-field {
+    flex: 0 0 135px;
+
+    width: 135px;
+    min-width: 135px;
+    max-width: 135px;
+  }
+
+  .document-filters {
+    margin-left: auto;
+  }
+}
+
+/* =====================================================
+   31. RESPONSIVE - TABLETS
+===================================================== */
+
+@media (max-width: 850px) {
+
+  .search-field {
+    flex: 1 1 100%;
+
     width: 100%;
+    min-width: 0;
+    max-width: none;
   }
 
-  .records {
-    justify-content: flex-end;
+  .date-field {
+    flex: 1 1 145px;
+
+    width: auto;
+    min-width: 130px;
+    max-width: none;
   }
 
+  .document-filters {
+    justify-content: flex-start;
+    margin-left: 0;
+  }
 }
 
 /* =====================================================
-   RESPONSIVE MÓVIL
+   32. RESPONSIVE - MÓVILES
 ===================================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 560px) {
 
   .page-header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
 
-    gap: 12px;
+    gap: 10px;
   }
 
-  .page-title h1 {
-    font-size: 19px;
-  }
+  .page-title {
+    h1 {
+      font-size: 19px;
+    }
 
-  .refresh-button {
-    width: 100%;
-  }
-
-  .toolbar {
-    padding: 12px;
-  }
-
-  .filters {
-    flex-direction: column;
-    align-items: stretch;
-
-    width: 100%;
-  }
-
-  .search-field,
-  .status-field,
-  .clear-button {
-    width: 100%;
-  }
-
-  .records {
-    justify-content: flex-start;
-  }
-
-  table {
-    min-width: 900px;
-  }
-
-  .mat-mdc-header-cell {
-    font-size: 10px;
-  }
-
-  .mat-mdc-cell {
-    font-size: 12px;
-  }
-
-  .actions-container {
-    gap: 3px;
-  }
-
-  .col-actions,
-  .mat-column-acciones {
-    width: 105px;
-    min-width: 105px;
-  }
-
-}
-
-/* =====================================================
-   RESPONSIVE PANTALLAS PEQUEÑAS
-===================================================== */
-
-@media (max-width: 380px) {
-
-  .page-title h1 {
-    font-size: 18px;
-  }
-
-  .page-title p {
-    font-size: 12px;
+    p {
+      font-size: 11px;
+    }
   }
 
   .toolbar {
     padding: 10px;
+
+    column-gap: 8px;
+    row-gap: 9px;
   }
 
+  .search-field {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-field {
+    flex: 1 1 calc(50% - 4px);
+
+    width: calc(50% - 4px);
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-filter-actions {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 8px;
+
+    button {
+      flex: 1 1 50%;
+
+      min-width: 0;
+      min-height: 39px;
+      height: 39px;
+    }
+  }
+
+  .document-filters {
+    flex: 1 1 100%;
+
+    justify-content: stretch;
+
+    width: 100%;
+    min-width: 0;
+
+    margin-left: 0;
+    gap: 6px;
+  }
+
+  .filter-chip {
+    flex: 1 1 0;
+
+    min-width: 0;
+    padding: 7px 6px;
+
+    font-size: 10px;
+  }
+
+  table.mat-mdc-table {
+    min-width: 920px;
+  }
 }
+
+/* =====================================================
+   33. MÓVILES PEQUEÑOS
+===================================================== */
+
+@media (max-width: 350px) {
+
+  .date-field {
+    flex: 1 1 100%;
+
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .date-filter-actions {
+    flex-wrap: wrap;
+
+    button {
+      padding: 0 6px;
+      font-size: 10px;
+    }
+  }
+
+  .document-filters {
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    flex: 1 1 auto;
+  }
+}
+
+/* =====================================================
+   FIN - ÓRDENES DE TRABAJO
+===================================================== */

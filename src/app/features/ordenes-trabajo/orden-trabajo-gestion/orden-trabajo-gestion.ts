@@ -353,9 +353,7 @@ export class OrdenTrabajoGestion implements OnInit {
                 return (response.data ?? [])
 
                   .filter(accesorio =>
-                    String(accesorio.estado)
-                      .trim()
-                      .toUpperCase() === 'ACTIVO' &&
+                    Number(accesorio.id) > 0 &&
                     Number(accesorio.cantidadStock) > 0
                   )
 

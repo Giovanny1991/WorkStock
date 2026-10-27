@@ -2,7 +2,8 @@
    Importar en src/styles.scss: @use './app/workstock-theme';
    No altera lógica ni rutas. */
 
-:root, :root[data-workstock-theme='light'] {
+:root,
+:root[data-workstock-theme='light'] {
   color-scheme: light;
   --app-bg: #f5f7fb;
   --app-card: #ffffff;
@@ -22,6 +23,7 @@
   --app-warning-bg: #fffaeb;
   --app-input-bg: #ffffff;
 }
+
 :root[data-workstock-theme='dark'] {
   color-scheme: dark;
   --app-bg: #0f172a;
@@ -69,20 +71,29 @@
   background-color: var(--app-card);
   color: var(--app-text);
 }
+
 :root[data-workstock-theme='dark'] .mat-mdc-input-element {
   color: var(--app-text);
   caret-color: var(--app-primary);
 }
+
 :root[data-workstock-theme='dark'] .mat-mdc-input-element::placeholder {
   color: var(--app-text-muted);
 }
+
 :root[data-workstock-theme='dark'] .mat-mdc-header-row {
   background: var(--app-card-secondary);
 }
+
 :root[data-workstock-theme='dark'] .mat-mdc-row:hover {
   background: var(--app-hover);
 }
+
 /* Los tickets están exceptuados de la recolorización: papel blanco. */
 @media print {
-  :root, :root[data-workstock-theme='dark'] { color-scheme: light; }
+
+  :root,
+  :root[data-workstock-theme='dark'] {
+    color-scheme: light;
+  }
 }

@@ -163,7 +163,7 @@
               IMEI: {{ producto.imei1 }} ·
               {{ producto.ram }} RAM ·
               {{ producto.almacenamiento }} GB ·
-              {{ producto.color }}
+              {{ producto.color }} <b>/ {{ producto.estadoCelular }}</b>
             </div>
 
           </mat-option>
@@ -274,24 +274,7 @@
 
           </ng-container>
 
-          <!-- COSTO: SOLO ADMINISTRADOR -->
-
-          <ng-container matColumnDef="costo">
-
-            <th mat-header-cell *matHeaderCellDef>
-              Costo
-            </th>
-
-            <td mat-cell *matCellDef="let x">
-
-              {{
-              x.precioCosto
-              | currency:'USD':'symbol':'1.2-2'
-              }}
-
-            </td>
-
-          </ng-container>
+     
 
           <!-- PRECIO DE VENTA -->
 

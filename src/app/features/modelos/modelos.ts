@@ -301,7 +301,7 @@ export class Modelos
 
   readonly displayedColumns = [
 
-    'id',
+  
 
     'marca',
 

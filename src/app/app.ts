@@ -1,12 +1,19 @@
-import { Component } from '@angular/core';
+
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { PwaUpdateService } from './core/services/pwa-update.service';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.scss',
+  standalone: true,
+  imports: [RouterOutlet],
   templateUrl: './app.html',
+  styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
+  private pwaUpdate = inject(PwaUpdateService);
 
+  ngOnInit(): void {
+    this.pwaUpdate.iniciar();
+  }
 }
