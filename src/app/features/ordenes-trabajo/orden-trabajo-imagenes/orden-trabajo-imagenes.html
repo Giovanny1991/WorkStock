@@ -1,54 +1,95 @@
 <section class="imagenes-orden">
   <div class="imagenes-titulo">
-    <div><h3><mat-icon>photo_library</mat-icon> Evidencia fotográfica</h3>
-      <p>Fotografías del equipo, daños y reparación.</p></div>
+    <div class="titulo-contenido">
+      <div class="titulo-icono"><mat-icon>photo_library</mat-icon></div>
+      <div>
+        <h3>Evidencia fotográfica</h3>
+        <p>Fotografías del equipo, daños y reparación.</p>
+      </div>
+    </div>
     @if (!soloLectura) {
-      <label class="selector-imagenes" [class.inhabilitado]="procesando()">
-        <mat-icon>add_photo_alternate</mat-icon> Seleccionar fotos
-        <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-          [disabled]="procesando()" (change)="seleccionar($event)">
+    <div class="imagenes-herramientas">
+      <label class="selector-imagenes selector-camara" [class.inhabilitado]="procesando()">
+        <mat-icon>photo_camera</mat-icon>
+        <span>Tomar fotografía</span>
+        <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" [disabled]="procesando()"
+          (change)="seleccionar($event)">
       </label>
+      <label class="selector-imagenes" [class.inhabilitado]="procesando()">
+        <mat-icon>add_photo_alternate</mat-icon>
+        <span>Seleccionar fotos</span>
+        <input type="file" accept="image/jpeg,image/png,image/webp" multiple [disabled]="procesando()"
+          (change)="seleccionar($event)">
+      </label>
+    </div>
     }
   </div>
-  @if (cargando() || procesando()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (cargando() || procesando()) {
+  <mat-progress-bar mode="indeterminate" />
+  }
+
   @if (imagenes().length || previsualizaciones().length) {
-    <div class="imagenes-grid">
-      @for (imagen of imagenes(); track imagen.id) {
-        <div class="imagen-tarjeta">
-          @if (imagen.url) {
-            <button type="button" class="imagen-preview" (click)="ampliar(imagen.url, imagen.nombreOriginal)" aria-label="Ampliar fotografía">
-              <img [src]="imagen.url" [alt]="imagen.nombreOriginal">
-            </button>
-          } @else { <div class="imagen-vacia">Imagen no disponible</div> }
-          <div class="imagen-pie"><span [title]="imagen.nombreOriginal">{{ imagen.nombreOriginal }}</span>
-            @if (!soloLectura) {
-              <button mat-icon-button type="button" aria-label="Eliminar fotografía"
-                [disabled]="procesando()" (click)="eliminar(imagen)"><mat-icon>delete_outline</mat-icon></button>
-            }
-          </div>
-        </div>
+  <div class="imagenes-grid">
+    @for (imagen of imagenes(); track imagen.id) {
+    <div class="imagen-tarjeta">
+      @if (imagen.url) {
+      <button type="button" class="imagen-preview" (click)="ampliar(imagen.url, imagen.nombreOriginal)"
+        aria-label="Ampliar fotografía">
+        <img [src]="imagen.url" [alt]="imagen.nombreOriginal">
+        <span class="zoom-icon"><mat-icon>zoom_in</mat-icon></span>
+      </button>
+      } @else {
+      <div class="imagen-vacia">Imagen no disponible</div>
       }
-      @for (url of previsualizaciones(); track url; let i = $index) {
-        <div class="imagen-tarjeta pendiente">
-          <button type="button" class="imagen-preview" (click)="ampliar(url, pendientes()[i].name)" aria-label="Ampliar fotografía pendiente">
-            <img [src]="url" alt="Fotografía pendiente de guardar">
-          </button>
-          <div class="imagen-pie"><span>{{ pendientes()[i].name }}</span>
-            <button mat-icon-button type="button" [disabled]="procesando()"
-              (click)="quitarPendiente(i)" aria-label="Quitar foto pendiente"><mat-icon>close</mat-icon></button>
-          </div>
-        </div>
-      }
-    </div>
-  } @else if (!cargando()) { <p class="vacio">Todavía no hay fotografías registradas.</p> }
-  @if (pendientes().length) {
-    <div class="acciones-imagenes">
-      <small>{{ pendientes().length }} fotografía(s) por subir · JPG, PNG, WEBP · 2 MB por foto</small>
-      @if (idOrden) {
-        <button mat-flat-button type="button" [disabled]="procesando()" (click)="subir()">
-          <mat-icon>cloud_upload</mat-icon> Subir fotografías
+      <div class="imagen-pie">
+        <span [title]="imagen.nombreOriginal">{{ imagen.nombreOriginal }}</span>
+        @if (!soloLectura) {
+        <button mat-icon-button type="button" class="btn-eliminar" aria-label="Eliminar fotografía"
+          [disabled]="procesando()" (click)="eliminar(imagen)">
+          <mat-icon>delete_outline</mat-icon>
         </button>
-      } @else { <small>Se subirán al registrar la orden.</small> }
+        }
+      </div>
     </div>
+    }
+
+    @for (url of previsualizaciones(); track url; let i = $index) {
+    <div class="imagen-tarjeta pendiente">
+      <span class="badge-pendiente">PENDIENTE</span>
+      <button type="button" class="imagen-preview" (click)="ampliar(url, pendientes()[i].name)"
+        aria-label="Ampliar fotografía pendiente">
+        <img [src]="url" alt="Fotografía pendiente de guardar">
+        <span class="zoom-icon"><mat-icon>zoom_in</mat-icon></span>
+      </button>
+      <div class="imagen-pie">
+        <span [title]="pendientes()[i].name">{{ pendientes()[i].name }}</span>
+        <button mat-icon-button type="button" class="btn-eliminar" [disabled]="procesando()"
+          (click)="quitarPendiente(i)" aria-label="Quitar foto pendiente">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  } @else if (!cargando()) {
+  <div class="imagenes-vacio">
+    <mat-icon>add_a_photo</mat-icon>
+    <strong>Sin fotografías registradas</strong>
+    <span>Utiliza la cámara o selecciona imágenes del dispositivo.</span>
+  </div>
+  }
+
+  @if (pendientes().length) {
+  <div class="acciones-imagenes">
+    <div class="pendientes-info">
+      <mat-icon>info_outline</mat-icon>
+      <small>
+        {{ pendientes().length }} fotografía(s) seleccionada(s) ·
+        Se guardarán automáticamente al
+        {{ idOrden ? 'actualizar' : 'registrar' }} la orden.
+      </small>
+    </div>
+  </div>
   }
 </section>

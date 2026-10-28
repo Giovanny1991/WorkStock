@@ -521,31 +521,33 @@
 
     <!-- CONFIGURACIÓN -->
 
+
+    <!-- =========================================
+     CONFIGURACIÓN
+========================================== -->
     <mat-expansion-panel class="menu-panel" [expanded]="grupoActivo === 'configuracion'">
-
       <mat-expansion-panel-header>
-
         <mat-panel-title>
           <mat-icon>settings</mat-icon>
           <span>Configuración</span>
         </mat-panel-title>
-
       </mat-expansion-panel-header>
 
+      <!-- ACTUALIZACIÓN DEL IVA -->
       <a mat-list-item routerLink="/configuracion/iva" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
-
-        <mat-icon matListItemIcon>
-          percent
-        </mat-icon>
-
-        <span matListItemTitle>
-          Actualización del IVA
-        </span>
-
+        <mat-icon matListItemIcon>percent</mat-icon>
+        <span matListItemTitle>Actualización del IVA</span>
       </a>
 
+      <!-- NOTIFICACIONES DE ÓRDENES -->
+      <a mat-list-item routerLink="/configuracion/notificaciones-ordenes" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+        <mat-icon matListItemIcon>notifications_active</mat-icon>
+        <span matListItemTitle>Notificaciones de órdenes</span>
+      </a>
     </mat-expansion-panel>
+
 
     }
 

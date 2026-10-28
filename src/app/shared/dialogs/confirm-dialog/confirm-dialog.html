@@ -6,10 +6,16 @@
   </div>
 </div>
 
+
 <mat-dialog-actions align="end">
-  <button mat-button (click)="cancelar()">Cancelar</button>
-  <button mat-flat-button class="danger-btn" (click)="confirmar()">
-    <mat-icon>delete</mat-icon>
+  <button mat-button type="button" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button mat-flat-button type="button"
+    class="confirm-action-btn"
+    [attr.data-action]="tipoAccion"
+    (click)="confirmar()">
+    <mat-icon>{{ iconoConfirmacion }}</mat-icon>
     {{ data.confirmText || 'Confirmar' }}
   </button>
 </mat-dialog-actions>

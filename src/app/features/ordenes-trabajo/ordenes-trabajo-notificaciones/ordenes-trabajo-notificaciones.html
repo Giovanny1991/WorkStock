@@ -1,0 +1,173 @@
+<div class="page">
+    <div class="page-header">
+        <div class="page-title">
+            <div class="title-icon"><mat-icon>notifications_active</mat-icon></div>
+            <div>
+                <h1>Notificaciones de órdenes</h1>
+                <p>Personaliza los mensajes enviados al cliente según el estado del servicio técnico.</p>
+            </div>
+        </div>
+        <button mat-stroked-button type="button" class="refresh-button"
+            [disabled]="cargando() || guardando() || modificado()" (click)="cargar()">
+            <mat-icon>refresh</mat-icon> Actualizar
+        </button>
+    </div>
+
+    @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" />
+    }
+
+    <div class="summary-bar">
+        <div class="summary-item">
+            <mat-icon>tune</mat-icon>
+            <span>Estados configurados</span>
+            <strong>{{ configuraciones().length }} / 7</strong>
+        </div>
+        <div class="summary-item">
+            <mat-icon>notifications</mat-icon>
+            <span>Notificaciones habilitadas</span>
+            <strong>{{ totalActivos() }}</strong>
+        </div>
+        <div class="summary-note">
+            <mat-icon>info_outline</mat-icon>
+            La configuración es independiente para cada empresa.
+        </div>
+    </div>
+
+    <div class="settings-layout">
+        <aside class="states-panel">
+            <div class="panel-heading">
+                <mat-icon>view_list</mat-icon>
+                <span>Estados de la orden</span>
+            </div>
+            <div class="states-list">
+                @for (estado of estados; track estado) {
+                <button type="button" class="state-item" [class.active]="seleccionado() === estado"
+                    [disabled]="guardando() || cargando()" (click)="seleccionarEstado(estado)">
+                    <span class="state-indicator"
+                        [class.enabled]="configuraciones().find(x => x.estado === estado)?.notificarCliente">
+                    </span>
+                    <span class="state-label">{{ estado }}</span>
+                    @if (seleccionado() === estado) {
+                    <mat-icon>chevron_right</mat-icon>
+                    }
+                </button>
+                }
+            </div>
+            <div class="states-footer">
+                <mat-icon>lock_outline</mat-icon>
+                <span>Solo administradores pueden modificar esta configuración.</span>
+            </div>
+        </aside>
+
+        <main class="editor-panel">
+            <div class="editor-header">
+                <div class="editor-heading">
+                    <div class="editor-icon"><mat-icon>edit_notifications</mat-icon></div>
+                    <div>
+                        <h2>{{ seleccionado() }}</h2>
+                        <p>Configura el mensaje correspondiente a este estado.</p>
+                    </div>
+                </div>
+                @if (configuracionActual()?.activo) {
+                <span class="status-chip enabled">Disponible</span>
+                } @else {
+                <span class="status-chip disabled">No configurado</span>
+                }
+            </div>
+
+            @if (!cargando() && cargado() && configuracionActual()) {
+            <div class="editor-content">
+                <div class="notification-toggle">
+                    <div class="toggle-description">
+                        <strong>Notificar al cliente</strong>
+                        <span>Habilita o deshabilita la notificación para este estado.</span>
+                    </div>
+                    <mat-checkbox [formControl]="notificarCliente" aria-label="Notificar al cliente" />
+                </div>
+
+                <div class="field-heading">
+                    <label for="mensaje-estado">Mensaje de notificación</label>
+                    <span [class.limit-warning]="longitudMensaje() > 1900">
+                        {{ longitudMensaje() }} / 2000
+                    </span>
+                </div>
+
+                <mat-form-field appearance="outline" class="message-field" subscriptSizing="dynamic">
+                    <textarea matInput id="mensaje-estado" rows="6" maxlength="2000" [formControl]="mensajeCliente"
+                        placeholder="Escribe el mensaje que recibirá el cliente..."></textarea>
+                </mat-form-field>
+
+                <div class="variables-section">
+                    <div class="variables-heading">
+                        <mat-icon>data_object</mat-icon>
+                        <span>Variables disponibles</span>
+                    </div>
+                    <p>Selecciona una variable para agregarla al final del mensaje.</p>
+                    <div class="variables-list">
+                        @for (item of variables; track item.variable) {
+                        <button type="button" class="variable-chip" [disabled]="guardando()"
+                            [matTooltip]="item.descripcion" (click)="insertarVariable(item.variable)">
+                            <mat-icon>add</mat-icon>{{ item.variable }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <div class="preview-heading">
+                        <div>
+                            <mat-icon>visibility</mat-icon>
+                            <strong>Vista previa</strong>
+                        </div>
+                        <button mat-button type="button" (click)="alternarVistaPrevia()">
+                            {{ mostrarVistaPrevia() ? 'Ocultar' : 'Mostrar' }}
+                            <mat-icon>{{ mostrarVistaPrevia() ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        </button>
+                    </div>
+                    @if (mostrarVistaPrevia()) {
+                    <div class="preview-content">
+                        <div class="preview-avatar"><mat-icon>person</mat-icon></div>
+                        <div class="preview-message">
+                            <span class="preview-name">Mensaje para el cliente</span>
+                            <p>{{ vistaPrevia() || 'Escribe un mensaje para visualizar su contenido.' }}</p>
+                            <small>Datos de ejemplo · No se enviará ningún mensaje</small>
+                        </div>
+                    </div>
+                    }
+                </div>
+
+                <div class="editor-footer">
+                    <div class="save-info">
+                        @if (modificado()) {
+                        <mat-icon>edit_note</mat-icon>
+                        <span>Hay cambios sin guardar</span>
+                        } @else if (configuracionActual()?.fechaActualizacion; as fecha) {
+                        <mat-icon>check_circle_outline</mat-icon>
+                        <span>Última actualización: {{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+                        }
+                    </div>
+                    <div class="footer-actions">
+                        <button mat-stroked-button type="button" [disabled]="!modificado() || guardando()"
+                            (click)="restablecer()">
+                            <mat-icon>undo</mat-icon> Descartar
+                        </button>
+                        <button mat-flat-button type="button" class="save-button"
+                            [disabled]="!modificado() || guardando() || mensajeCliente.invalid" (click)="guardar()">
+                            <mat-icon>{{ guardando() ? 'hourglass_top' : 'save' }}</mat-icon>
+                            {{ guardando() ? 'Guardando...' : 'Guardar configuración' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            } @else if (!cargando()) {
+            <div class="empty-state">
+                <mat-icon>notifications_off</mat-icon>
+                <strong>Configuración no disponible</strong>
+                <p>No se pudo cargar la configuración del estado seleccionado.</p>
+                <button mat-stroked-button type="button" (click)="cargar()">Reintentar</button>
+            </div>
+            }
+        </main>
+    </div>
+</div>

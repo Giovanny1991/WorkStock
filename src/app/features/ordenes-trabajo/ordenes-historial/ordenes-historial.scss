@@ -1186,5 +1186,158 @@ mat-progress-bar {
 }
 
 /* =====================================================
-   FIN - ÓRDENES DE TRABAJO
+   FILTROS POR ESTADO - BOTONES COMPACTOS WORKSTOCK
+   Borde izquierdo 4px, icono 13px, texto regular y contador 11px
 ===================================================== */
+.state-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--hist-border);
+}
+
+.state-card {
+  --state-fg: #475467;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  gap: 3px;
+  max-width: 100%;
+  height: 30px;
+  min-width: 0;
+  padding: 0 6px 0 5px;
+  border: 1px solid color-mix(in srgb, var(--state-fg) 25%, transparent);
+  border-left: 4px solid var(--state-fg);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--state-fg) 8%, var(--hist-bg));
+  color: var(--state-fg);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color .15s ease, box-shadow .15s ease, border-color .15s ease;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--state-fg) 14%, var(--hist-bg));
+  }
+
+  &.selected {
+    border-color: var(--state-fg);
+    border-left-width: 4px;
+    background: color-mix(in srgb, var(--state-fg) 13%, var(--hist-bg));
+    box-shadow: 0 0 0 1px var(--state-fg) inset;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--state-fg);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+  }
+}
+
+.state-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 13px;
+  width: 13px;
+  height: 13px;
+  color: var(--state-fg);
+
+  mat-icon {
+    width: 13px;
+    height: 13px;
+    font-size: 13px;
+    line-height: 13px;
+  }
+}
+
+.state-card-label {
+  color: var(--state-fg);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.state-card-count {
+  color: var(--state-fg);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.todos {
+  --state-fg: #526079;
+}
+
+.pendientes {
+  --state-fg: #b45309;
+}
+
+.diagnostico {
+  --state-fg: #2165c4;
+}
+
+.repuesto {
+  --state-fg: #bd680c;
+}
+
+.reparado {
+  --state-fg: #208047;
+}
+
+.sin-reparacion {
+  --state-fg: #bc3636;
+}
+
+.entregado {
+  --state-fg: #0b8274;
+}
+
+.entregado-sin-reparar {
+  --state-fg: #7652bc;
+}
+
+.abandonado {
+  --state-fg: #686d79;
+}
+
+/* Se conserva el color por estado en el grid */
+.status-badge.todos,
+.status-badge.pendientes,
+.status-badge.diagnostico,
+.status-badge.repuesto,
+.status-badge.reparado,
+.status-badge.sin-reparacion,
+.status-badge.entregado,
+.status-badge.entregado-sin-reparar,
+.status-badge.abandonado {
+  color: var(--state-fg);
+  background: color-mix(in srgb, var(--state-fg) 11%, var(--hist-bg));
+  border: 1px solid color-mix(in srgb, var(--state-fg) 24%, transparent);
+}
+
+@media (max-width: 560px) {
+  .state-cards {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .state-card {
+    height: 30px;
+    padding-right: 6px;
+  }
+
+  .state-card-label {
+    font-size: 11px;
+  }
+}

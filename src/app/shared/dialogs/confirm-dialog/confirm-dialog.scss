@@ -27,3 +27,49 @@ mat-dialog-actions {
   background: var(--app-danger) !important;
   color: #fff !important;
 }
+
+
+
+.confirm-action-btn {
+  --action-bg: #1766aa;
+  --action-hover: #12558f;
+  color: #fff !important;
+  background-color: var(--action-bg) !important;
+  border-radius: 7px;
+  min-height: 38px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+
+  mat-icon {
+    color: #fff !important;
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--action-hover) !important;
+  }
+
+  &[data-action='create'],
+  &[data-action='deliver'],
+  &[data-action='share'] {
+    --action-bg: #21834b;
+    --action-hover: #17673a;
+  }
+
+  &[data-action='delete'] {
+    --action-bg: #c53131;
+    --action-hover: #a52323;
+  }
+
+  &[data-action='close'] {
+    --action-bg: #596579;
+    --action-hover: #414c5e;
+  }
+
+  &[data-action='update'] {
+    --action-bg: #1766aa;
+    --action-hover: #12558f;
+  }
+}

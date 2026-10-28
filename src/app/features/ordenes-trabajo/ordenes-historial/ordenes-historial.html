@@ -109,33 +109,21 @@
 
       </div>
 
-      <!-- FILTROS DE ESTADO -->
+    </div>
 
-      <div class="document-filters" role="group" aria-label="Filtrar órdenes de trabajo">
-
-        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'TODOS'"
-          [attr.aria-pressed]="filtroEstado() === 'TODOS'" (click)="estadoControl.setValue('TODOS')">
-
-          Todos
-
-        </button>
-
-        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'INGRESADO'"
-          [attr.aria-pressed]="filtroEstado() === 'INGRESADO'" (click)="estadoControl.setValue('INGRESADO')">
-
-          Pendientes
-
-        </button>
-
-        <button type="button" class="filter-chip" [class.selected]="filtroEstado() === 'FINALIZADO'"
-          [attr.aria-pressed]="filtroEstado() === 'FINALIZADO'" (click)="estadoControl.setValue('FINALIZADO')">
-
-          Finalizadas
-
-        </button>
-
-      </div>
-
+    <!-- TARJETAS DE ESTADOS: CONTADORES DEL SERVIDOR -->
+    <div class="state-cards" role="group" aria-label="Filtrar órdenes de trabajo por estado">
+      @for (filtro of filtrosEstado; track filtro.value) {
+      <button type="button" class="state-card" [ngClass]="apariencia(filtro.value).clase"
+        [class.selected]="filtroEstado() === filtro.value" [attr.aria-pressed]="filtroEstado() === filtro.value"
+        [attr.aria-label]="filtro.label + ', ' + (contadores()[filtro.value] ?? 'sin dato') + ' órdenes'"
+        [matTooltip]="filtro.label" (click)="seleccionarEstado(filtro.value)">
+        <span class="state-card-icon"><mat-icon>{{ apariencia(filtro.value).icono }}</mat-icon></span>
+        <span class="state-card-label">{{ filtro.label }}</span>
+        <strong class="state-card-count">{{ contadores()[filtro.value] === null || contadores()[filtro.value] ===
+          undefined ? '—' : contadores()[filtro.value] }}</strong>
+      </button>
+      }
     </div>
 
     <!-- TABLA -->
@@ -301,40 +289,13 @@
         <!-- ESTADO -->
 
         <ng-container matColumnDef="estado">
-
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
-
-            Estado
-
-          </th>
-
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">Estado</th>
           <td mat-cell *matCellDef="let x" class="status-column">
-
-            @if (esPendiente(x)) {
-
-            <span class="status-badge pending">
-              <mat-icon>schedule</mat-icon>
-              Pendiente
+            <span class="status-badge" [ngClass]="apariencia(x.estado).clase" [matTooltip]="nombreEstado(x.estado)">
+              <mat-icon>{{ apariencia(x.estado).icono }}</mat-icon>
+              {{ nombreEstado(x.estado) }}
             </span>
-
-            } @else if (esFinalizada(x)) {
-
-            <span class="status-badge finished">
-              <mat-icon>check_circle</mat-icon>
-              Finalizada
-            </span>
-
-            } @else {
-
-            <span class="status-badge unknown">
-              <mat-icon>help_outline</mat-icon>
-              {{ x.estado || 'Sin estado' }}
-            </span>
-
-            }
-
           </td>
-
         </ng-container>
 
         <!-- ACCIONES -->

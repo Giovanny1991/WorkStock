@@ -289,8 +289,7 @@ mat-dialog-content {
   display: grid;
 
   grid-template-columns:
-    minmax(0, 180px)
-    minmax(0, 1fr);
+    minmax(0, 180px) minmax(0, 1fr);
 
   gap: 8px;
 }
@@ -370,8 +369,7 @@ mat-dialog-content {
 }
 
 
-:host ::ng-deep
-.observaciones-field {
+:host ::ng-deep .observaciones-field {
 
   .mat-mdc-text-field-wrapper {
     height: auto;
@@ -509,9 +507,7 @@ mat-dialog-content {
   display: grid;
 
   grid-template-columns:
-    minmax(0, 1fr)
-    90px
-    auto;
+    minmax(0, 1fr) 90px auto;
 
   gap: 7px;
 
@@ -590,8 +586,7 @@ mat-dialog-content {
 }
 
 
-:host ::ng-deep
-.accessories-table {
+:host ::ng-deep .accessories-table {
 
   .mat-mdc-header-row {
     height: 30px;
@@ -652,8 +647,7 @@ mat-dialog-content {
 }
 
 
-:host ::ng-deep
-.actions-column {
+:host ::ng-deep .actions-column {
 
   .mat-mdc-icon-button {
     width: 27px;
@@ -771,9 +765,7 @@ mat-dialog-actions {
    RESPONSIVE TABLET
 ===================================================== */
 
-@media (
-  max-width: 800px
-) {
+@media (max-width: 800px) {
 
   .info-grid {
     grid-template-columns:
@@ -813,14 +805,12 @@ mat-dialog-actions {
    RESPONSIVE MÓVIL
 ===================================================== */
 
-@media (
-  max-width: 560px
-) {
+@media (max-width: 560px) {
 
-    .estado-field {
+  .estado-field {
     width: 100%;
   }
-  
+
   .dialog-header {
     padding: 8px 10px;
 
@@ -873,4 +863,705 @@ mat-dialog-actions {
     padding: 6px 9px 7px;
   }
 
+}
+
+/* =====================================================
+   WORKSTOCK - AJUSTE VISUAL ELEGANTE DE GESTIÓN
+   Solo presentación: se mantienen lógica y controles.
+===================================================== */
+:host {
+  --gestion-radius: 10px;
+  --gestion-soft-border: var(--app-border, #e2e8f0);
+  --gestion-muted: var(--app-text-muted, #64748b);
+  --gestion-surface: var(--app-card, #fff);
+  --gestion-canvas: var(--app-bg, #f5f7fb);
+  --gestion-primary: var(--app-primary, #1765a8);
+  color: var(--app-text, #243244);
+}
+
+.dialog-header.dialog-header-premium {
+  min-height: 66px;
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--gestion-soft-border);
+  background: var(--gestion-surface);
+
+  h2 {
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -.3px;
+    line-height: 1.3;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--gestion-muted);
+  }
+
+  button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  button mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+    line-height: 19px;
+  }
+}
+
+mat-dialog-content {
+  padding: 16px 18px !important;
+  max-height: min(73vh, 850px);
+  background: var(--gestion-canvas);
+}
+
+.section-card {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: var(--gestion-surface);
+  border: 1px solid var(--gestion-soft-border);
+  border-radius: var(--gestion-radius);
+  box-shadow: 0 1px 3px rgba(17, 35, 61, .035);
+}
+
+.section-header {
+  gap: 10px;
+  margin-bottom: 14px;
+
+  h3 {
+    font-size: 13.5px;
+    font-weight: 650;
+    line-height: 1.35;
+    letter-spacing: -.1px;
+  }
+
+  p {
+    margin-top: 3px;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+}
+
+.section-icon {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+  border-radius: 8px;
+  background: var(--app-primary-soft, #eaf2fc);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+.info-grid {
+  gap: 9px;
+}
+
+.info-item {
+  padding: 10px 12px;
+  border-radius: 7px;
+  border: 1px solid color-mix(in srgb, var(--gestion-soft-border) 65%, transparent);
+
+  span {
+    font-size: 10px;
+    font-weight: 550;
+    line-height: 1.35;
+    margin-bottom: 5px;
+    letter-spacing: .02em;
+  }
+
+  strong {
+    font-size: 12px;
+    font-weight: 550;
+    line-height: 1.4;
+  }
+}
+
+.damage-box {
+  padding: 12px 14px;
+  margin-top: 10px;
+  border-radius: 7px;
+
+  span {
+    font-size: 10px;
+    font-weight: 550;
+    margin-bottom: 6px;
+  }
+
+  strong {
+    font-size: 12px;
+    font-weight: 550;
+    line-height: 1.5;
+  }
+}
+
+.pending-check mat-checkbox {
+  font-size: 12px;
+}
+
+.stock-info,
+.warning-box {
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.add-button {
+  height: 40px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.gestion-grid {
+  gap: 10px;
+}
+
+.estado-field {
+  width: min(280px, 100%);
+}
+
+/* Botones principales: tamaño cercano al modal de ticket */
+mat-dialog-actions.gestion-dialog-actions {
+  min-height: 68px;
+  padding: 12px 20px;
+  gap: 10px;
+  background: var(--gestion-surface);
+  border-top: 1px solid var(--gestion-soft-border);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 126px;
+    min-height: 42px;
+    height: 42px;
+    padding: 0 19px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background-color .15s ease, box-shadow .15s ease;
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      line-height: 18px;
+      margin: 0;
+    }
+  }
+
+  .btn-dialog-cancel {
+    color: var(--app-text, #334155);
+    background: var(--gestion-surface);
+    border: 1px solid var(--gestion-soft-border);
+  }
+
+  .btn-dialog-save {
+    min-width: 158px;
+    background: var(--gestion-primary);
+    color: #fff;
+  }
+
+  button:focus-visible {
+    outline: 2px solid var(--gestion-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media(max-width: 800px) {
+  mat-dialog-content {
+    padding: 12px !important;
+  }
+
+  .section-card {
+    padding: 13px;
+  }
+}
+
+@media(max-width: 560px) {
+  .dialog-header.dialog-header-premium {
+    min-height: 60px;
+    padding: 11px 13px;
+
+    h2 {
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 11px;
+    }
+  }
+
+  mat-dialog-content {
+    padding: 9px !important;
+  }
+
+  .section-card {
+    padding: 12px;
+    margin-bottom: 9px;
+  }
+
+  .info-grid {
+    gap: 7px;
+  }
+
+  .info-item {
+    padding: 9px 10px;
+  }
+
+  mat-dialog-actions.gestion-dialog-actions {
+    padding: 10px 12px;
+    gap: 8px;
+    min-height: 64px;
+  }
+
+  mat-dialog-actions.gestion-dialog-actions button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 10px;
+    height: 42px;
+    font-size: 12px;
+  }
+}
+
+/* =====================================================
+   WORKSTOCK - RESUMEN COMPACTO ESTILO TICKET
+   Tarjetas gemelas: renglones de etiqueta / valor.
+===================================================== */
+.orden-resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.orden-resumen-grid .resumen-card {
+  min-width: 0;
+  margin: 0;
+  padding: 11px 13px 12px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.resumen-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  color: var(--app-primary, #1b67a6);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .035em;
+}
+
+.resumen-title mat-icon {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+  line-height: 15px;
+}
+
+.resumen-row {
+  display: grid;
+  grid-template-columns: minmax(0, 44%) minmax(0, 56%);
+  align-items: baseline;
+  column-gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--app-border, #e5eaf0);
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.resumen-row:last-child {
+  border-bottom: 0;
+}
+
+.resumen-row>span {
+  min-width: 0;
+  color: var(--app-text-muted, #64748b);
+  font-weight: 400;
+}
+
+.resumen-row>strong {
+  min-width: 0;
+  color: var(--app-text, #273449);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.resumen-identificador {
+  font-variant-numeric: tabular-nums;
+}
+
+.resumen-dano {
+  margin-top: 9px;
+  padding: 9px 10px;
+  border: 1px solid var(--app-border, #e5eaf0);
+  border-radius: 7px;
+  background: var(--app-card-secondary, #f8fafc);
+}
+
+.resumen-dano span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--app-primary, #1b67a6);
+}
+
+.resumen-dano p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--app-text, #273449);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+/* Contenido y acciones: compacto sin botones diminutos */
+mat-dialog-content {
+  padding: 12px 14px !important;
+}
+
+.section-card {
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: none;
+}
+
+.section-header {
+  margin-bottom: 10px;
+}
+
+.section-icon {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+}
+
+.section-icon mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  line-height: 17px;
+}
+
+mat-dialog-actions.gestion-dialog-actions {
+  padding: 10px 18px;
+  min-height: 62px;
+}
+
+mat-dialog-actions.gestion-dialog-actions button {
+  height: 40px;
+  min-height: 40px;
+  min-width: 112px;
+  padding: 0 17px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+mat-dialog-actions.gestion-dialog-actions .btn-dialog-save {
+  min-width: 132px;
+}
+
+@media (max-width: 720px) {
+  .orden-resumen-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+}
+
+@media (max-width: 560px) {
+  mat-dialog-content {
+    padding: 9px !important;
+  }
+
+  .orden-resumen-grid .resumen-card {
+    padding: 10px 11px;
+  }
+
+  .resumen-row {
+    grid-template-columns: minmax(0, 42%) minmax(0, 58%);
+    font-size: 11px;
+  }
+
+  .resumen-row>strong {
+    font-size: 11px;
+  }
+
+  mat-dialog-actions.gestion-dialog-actions {
+    padding: 9px 11px;
+  }
+
+  mat-dialog-actions.gestion-dialog-actions button {
+    min-width: 0;
+    height: 40px;
+  }
+}
+
+/* ================================================================
+   AJUSTE FINAL - PIE ESTILO TICKET Y SCROLL ÚNICO
+   Un desplazamiento solo en el contenido (no en toda la ventana).
+   Conservar estos ajustes AL FINAL del archivo.
+================================================================ */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  max-height: 95vh;
+  max-height: 95dvh;
+  overflow: hidden;
+}
+
+.dialog-header.dialog-header-premium {
+  flex: 0 0 auto;
+}
+
+mat-dialog-content {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Mismo pie y tamaño natural de botones que el modal del ticket */
+mat-dialog-actions.gestion-dialog-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  min-height: 0;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 18px 14px;
+  border-top: 1px solid var(--app-border, #eaecf0);
+  background: var(--app-card, #fff);
+}
+
+mat-dialog-actions.gestion-dialog-actions button.mat-mdc-button-base {
+  flex: 0 0 auto;
+  width: auto;
+  height: 36px;
+  min-height: 36px;
+  min-width: 90px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+mat-dialog-actions.gestion-dialog-actions .btn-dialog-cancel {
+  color: var(--app-text, #334155);
+  background: transparent;
+  border: 1px solid var(--app-border, #e2e8f0);
+}
+
+mat-dialog-actions.gestion-dialog-actions .btn-dialog-save {
+  min-width: 105px;
+  color: #fff;
+  background: var(--app-primary, #075db0);
+}
+
+@media (max-width: 560px) {
+  mat-dialog-actions.gestion-dialog-actions {
+    padding: 10px 12px 12px;
+    gap: 8px;
+  }
+
+  mat-dialog-actions.gestion-dialog-actions button.mat-mdc-button-base {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 90px;
+    height: 36px;
+    min-height: 36px;
+    font-size: 12px;
+  }
+}
+
+/* =====================================================
+   AJUSTE FINAL: HEADER COMPACTO Y ESTADOS DEL HISTORIAL
+   Paleta idéntica a los filtros de órdenes de trabajo.
+===================================================== */
+.dialog-header.dialog-header-premium {
+  min-height: 0;
+  padding: 7px 14px;
+  gap: 8px;
+
+  h2 {
+    font-size: 15px;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -.15px;
+  }
+
+  p {
+    margin-top: 2px;
+    font-size: 10.5px;
+    line-height: 1.2;
+  }
+
+  button.mat-mdc-icon-button {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    flex: 0 0 30px;
+  }
+
+  button.mat-mdc-icon-button mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    line-height: 17px;
+  }
+}
+
+.historial-estado {
+  --estado-color: #526079;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: 100%;
+  min-height: 23px;
+  padding: 3px 8px;
+  border: 1px solid color-mix(in srgb, var(--estado-color) 24%, transparent);
+  border-left: 3px solid var(--estado-color);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--estado-color) 10%, var(--app-card, #fff));
+  color: var(--estado-color);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.historial-estado[data-estado='PENDIENTES'] {
+  --estado-color: #b45309;
+}
+
+.historial-estado[data-estado='EN DIAGNÓSTICO'],
+.historial-estado[data-estado='INGRESADO'] {
+  --estado-color: #2165c4;
+}
+
+.historial-estado[data-estado='ESPERANDO REPUESTO'] {
+  --estado-color: #bd680c;
+}
+
+.historial-estado[data-estado='REPARADO'] {
+  --estado-color: #208047;
+}
+
+.historial-estado[data-estado='SIN REPARACIÓN'] {
+  --estado-color: #bc3636;
+}
+
+.historial-estado[data-estado='ENTREGADO'],
+.historial-estado[data-estado='FINALIZADO'] {
+  --estado-color: #0b8274;
+}
+
+.historial-estado[data-estado='ENTREGADO SIN REPARAR'] {
+  --estado-color: #7652bc;
+}
+
+.historial-estado[data-estado='EQUIPO ABANDONADO'] {
+  --estado-color: #686d79;
+}
+
+.historial-estado[data-estado='SIN ESTADO'] {
+  --estado-color: #64748b;
+}
+
+@media (max-width: 560px) {
+  .dialog-header.dialog-header-premium {
+    padding: 7px 10px;
+
+    h2 {
+      font-size: 14px;
+    }
+
+    p {
+      font-size: 10px;
+    }
+  }
+
+  .historial-estado {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+}
+
+/* Buscador de estado: mantiene el tamaño compacto del modal */
+.estado-field {
+  width: 220px;
+  max-width: 100%;
+}
+
+.estado-field input {
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 560px) {
+  .estado-field {
+    width: 100%;
+  }
+}
+
+.btn-dialog-seguimiento {
+  min-height: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--app-primary, #1766aa) !important;
+  border-color: var(--app-primary, #1766aa) !important;
+  white-space: nowrap;
+
+  mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+    line-height: 17px;
+    margin-right: 5px;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 620px) {
+  .gestion-dialog-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .btn-dialog-seguimiento {
+    flex: 1 1 100%;
+    width: 100%;
+  }
 }
