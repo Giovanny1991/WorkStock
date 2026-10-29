@@ -33,6 +33,9 @@
             "styles": [
               "src/styles.scss"
             ],
+            "allowedCommonJsDependencies": [
+              "qrcode"
+            ],
             "security": {
               "allowedHosts": []
             }
@@ -42,7 +45,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "650kB",
                   "maximumError": "2MB"
                 },
                 {
@@ -62,14 +65,11 @@
           },
           "defaultConfiguration": "production"
         },
-
         "serve": {
           "builder": "@angular/build:dev-server",
-
           "options": {
             "proxyConfig": "proxy.conf.json"
           },
-
           "configurations": {
             "production": {
               "buildTarget": "WorkStock:build:production"
@@ -78,10 +78,8 @@
               "buildTarget": "WorkStock:build:development"
             }
           },
-
           "defaultConfiguration": "development"
         },
-
         "test": {
           "builder": "@angular/build:unit-test"
         }

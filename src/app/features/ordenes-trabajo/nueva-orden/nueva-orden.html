@@ -1,417 +1,259 @@
-<div class="page-header">
-  <div>
-    <h1>Nueva orden de trabajo</h1>
-    <p>Registra el ingreso de un dispositivo al servicio técnico.</p>
-  </div>
-</div>
-
-<div class="order-layout">
-
-  <!-- ==========================================
-       COLUMNA PRINCIPAL
-  ========================================== -->
-
-  <div class="main-column">
-
-    <!-- CLIENTE -->
-
-    <section class="card form-card">
-
-      <div class="section-header">
-        <div class="section-icon">
-          <mat-icon>person</mat-icon>
-        </div>
-
-        <div class="section-heading">
-          <h2>Cliente</h2>
-          <p>Selecciona o registra el cliente.</p>
-        </div>
+<div class="ws-page">
+  <header class="ws-page-heading">
+    <div class="ws-page-identity">
+      <span class="ws-page-symbol"><mat-icon>assignment_add</mat-icon></span>
+      <div>
+        <h1>Nueva orden de trabajo</h1>
+        <p>Recepción y registro de dispositivos</p>
       </div>
+    </div>
+    <span class="ws-page-status"><mat-icon>fiber_new</mat-icon>NUEVO INGRESO</span>
+  </header>
 
-      <div class="client-selector">
+  <div class="ws-form-layout">
+    <main class="ws-form-main">
 
-        <mat-form-field appearance="outline" class="autocomplete-field">
-
-          <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
-            placeholder="Cédula, RUC, pasaporte o nombre" autocomplete="off">
-
-          <mat-icon matSuffix>search</mat-icon>
-
-          <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="mostrarCliente"
-            (optionSelected)="seleccionarCliente($event.option.value)">
-
-            @for (
-            cliente of clientesFiltrados();
-            track cliente.id
-            ) {
-
-            <mat-option [value]="cliente">
-
-              <div class="option-main">
-                {{ cliente.nombreCliente }}
-              </div>
-
-              <div class="option-secondary">
-                {{ cliente.identificacion }}
-              </div>
-
-            </mat-option>
-
+      <!-- 01 - CLIENTE -->
+      <section class="ws-form-section">
+        <header class="ws-section-heading">
+          <span class="ws-section-icon"><mat-icon>person_outline</mat-icon></span>
+          <div>
+            <h2>Cliente</h2>
+            <p>Identifica al propietario del dispositivo.</p>
+          </div>
+          <span class="ws-section-number">01</span>
+        </header>
+        <div class="ws-section-body">
+          <div class="ws-client-line">
+            <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Buscar cliente</mat-label>
+              <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente" autocomplete="off"
+                placeholder="Identificación o nombre">
+              <mat-icon matSuffix>search</mat-icon>
+              <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="mostrarCliente"
+                (optionSelected)="seleccionarCliente($event.option.value)">
+                @for (cliente of clientesFiltrados(); track cliente.id) {
+                <mat-option [value]="cliente">
+                  <div class="option-main">{{ cliente.nombreCliente }}</div>
+                  <div class="option-secondary">{{ cliente.identificacion }}</div>
+                </mat-option>
+                }
+                @if (buscandoClientes()) {
+                <mat-option disabled>Buscando clientes...</mat-option>
+                } @else if (errorBusquedaClientes()) {
+                <mat-option disabled>No fue posible realizar la búsqueda</mat-option>
+                } @else if (clientesFiltrados().length === 0 &&
+                busquedaCliente().length >= 2 && !clienteSeleccionado()) {
+                <mat-option disabled>Cliente no encontrado</mat-option>
+                } @else if (busquedaCliente().length === 1 &&
+                !clienteSeleccionado()) {
+                <mat-option disabled>Escribe al menos 2 caracteres</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            @if (puedeRegistrarCliente()) {
+            <button mat-stroked-button type="button" matTooltip="Registrar cliente" (click)="registrarCliente()">
+              <mat-icon>person_add</mat-icon>Nuevo
+            </button>
             }
-
-            @if (buscandoClientes()) {
-
-            <mat-option disabled>
-              Buscando clientes...
-            </mat-option>
-
-            } @else if (errorBusquedaClientes()) {
-
-            <mat-option disabled>
-              No fue posible realizar la búsqueda
-            </mat-option>
-
-            } @else if (
-            clientesFiltrados().length === 0 &&
-            busquedaCliente().length >= 2 &&
-            !clienteSeleccionado()
-            ) {
-
-            <mat-option disabled>
-              Cliente no encontrado
-            </mat-option>
-
-            } @else if (
-            busquedaCliente().length === 1 &&
-            !clienteSeleccionado()
-            ) {
-
-            <mat-option disabled>
-              Escriba al menos 2 caracteres
-            </mat-option>
-
+            @if (clienteSeleccionado()) {
+            <button mat-stroked-button type="button" matTooltip="Editar cliente" (click)="editarCliente()">
+              <mat-icon>edit</mat-icon>Editar
+            </button>
             }
+          </div>
 
-          </mat-autocomplete>
+          @if (clienteSeleccionado(); as cliente) {
+          <div class="ws-selected-client">
+            <mat-icon>check_circle</mat-icon>
+            <div>
+              <strong>{{ cliente.nombreCliente }}</strong>
+              <span>{{ cliente.identificacion }}</span>
+            </div>
+            <span class="ws-selected-label">Seleccionado</span>
+          </div>
+          }
+        </div>
+      </section>
 
-        </mat-form-field>
+      <!-- 02 - EQUIPO -->
+      <section class="ws-form-section">
+        <header class="ws-section-heading">
+          <span class="ws-section-icon"><mat-icon>smartphone</mat-icon></span>
+          <div>
+            <h2>Equipo recibido</h2>
+            <p>Datos del dispositivo y condición de ingreso.</p>
+          </div>
+          <span class="ws-section-number">02</span>
+        </header>
+        <div class="ws-section-body">
+          <div class="ws-fields-grid">
+            <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Modelo del dispositivo</mat-label>
+              <input matInput [formControl]="modelo" maxlength="100" placeholder="Marca y modelo">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" appearance="outline">
+              <mat-label>IMEI / Serie</mat-label>
+              <input matInput [formControl]="imei" maxlength="15" inputmode="numeric" placeholder="15 dígitos">
+              <mat-hint>Identificador del equipo</mat-hint>
+            </mat-form-field>
+          </div>
 
-        @if (puedeRegistrarCliente()) {
+          <mat-form-field floatLabel="always" appearance="outline" class="ws-full-field" subscriptSizing="dynamic">
+            <mat-label>Daño o novedad reportada</mat-label>
+            <textarea matInput [formControl]="dano" rows="2" maxlength="500"
+              placeholder="Describe lo reportado por el cliente"></textarea>
+          </mat-form-field>
 
-        <button mat-stroked-button type="button" class="client-action-btn" matTooltip="Registrar nuevo cliente"
-          (click)="registrarCliente()">
+          <div class="ws-reception-grid">
+            <div class="ws-choice-panel">
+              <div class="ws-choice-heading">
+                <mat-icon>power_settings_new</mat-icon>
+                <strong>Estado de recepción</strong>
+              </div>
+              <mat-radio-group [formControl]="estadoRecepcion">
+                <mat-radio-button value="ENCENDIDO">Encendido</mat-radio-button>
+                <mat-radio-button value="APAGADO">Apagado</mat-radio-button>
+              </mat-radio-group>
+            </div>
 
-          <mat-icon>person_add</mat-icon>
+            <div class="ws-choice-panel">
+              <div class="ws-choice-heading">
+                <mat-icon>inventory_2</mat-icon>
+                <strong>Elementos recibidos</strong>
+              </div>
+              <div class="ws-checks">
+                <mat-checkbox [formControl]="tapa">Tapa</mat-checkbox>
+                <mat-checkbox [formControl]="bateria">Batería</mat-checkbox>
+                <mat-checkbox [formControl]="banSIM">Bandeja SIM</mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          Nuevo
+      <!-- 03 - SEGURIDAD -->
+      <section class="ws-form-section">
+        <header class="ws-section-heading">
+          <span class="ws-section-icon"><mat-icon>phonelink_lock</mat-icon></span>
+          <div>
+            <h2>Seguridad del dispositivo</h2>
+            <p>Información de desbloqueo proporcionada por el cliente.</p>
+          </div>
+          <span class="ws-section-number">03</span>
+        </header>
+        <div class="ws-section-body">
+          <app-orden-trabajo-seguridad #seguridadOrden />
+        </div>
+      </section>
 
-        </button>
+      <!-- 04 - VALORES -->
+      <section class="ws-form-section">
+        <header class="ws-section-heading">
+          <span class="ws-section-icon"><mat-icon>payments</mat-icon></span>
+          <div>
+            <h2>Valores del servicio</h2>
+            <p>Presupuesto de reparación y abono inicial.</p>
+          </div>
+          <span class="ws-section-number">04</span>
+        </header>
+        <div class="ws-section-body">
+          <div class="ws-pending-option">
+            <mat-checkbox [formControl]="totalPendiente">
+              Valor por confirmar
+            </mat-checkbox>
+          </div>
+          <div class="ws-fields-grid ws-money-grid">
+            <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Valor del servicio</mat-label>
+              <span matTextPrefix>$&nbsp;</span>
+              <input matInput type="number" min="0" step="0.01" [formControl]="total" [readonly]="totalPendiente.value">
+            </mat-form-field>
+            <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Abono</mat-label>
+              <span matTextPrefix>$&nbsp;</span>
+              <input matInput type="number" min="0" step="0.01" [formControl]="abono" [readonly]="totalPendiente.value">
+            </mat-form-field>
+            <div class="ws-balance-field">
+              <span>Saldo pendiente</span>
+              <strong>
+                {{ totalPendiente.value
+                ? 'POR CONFIRMAR'
+                : (saldo() | currency:'USD':'symbol':'1.2-2') }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      <!-- 05 - EVIDENCIA FOTOGRÁFICA -->
+      <section class="ws-form-section ws-photo-section">
+        <header class="ws-section-heading">
+          <span class="ws-section-icon"><mat-icon>photo_camera</mat-icon></span>
+          <div>
+            <h2>Evidencia fotográfica</h2>
+            <p>Fotografías del equipo durante su recepción.</p>
+          </div>
+          <span class="ws-section-number">05</span>
+        </header>
+        <div class="ws-section-body">
+          <app-orden-trabajo-imagenes />
+        </div>
+      </section>
+    </main>
+
+    <!-- RESUMEN -->
+    <aside class="ws-summary">
+      <header class="ws-summary-heading">
+        <mat-icon>receipt_long</mat-icon>
+        <div>
+          <h2>Resumen de orden</h2>
+          <span>Antes de registrar</span>
+        </div>
+      </header>
+      <div class="ws-summary-body">
+        <div class="ws-summary-item">
+          <span>Cliente</span>
+          <strong>{{ clienteSeleccionado()?.nombreCliente || 'Sin seleccionar' }}</strong>
+        </div>
+        <div class="ws-summary-item">
+          <span>Modelo</span>
+          <strong>{{ modelo.value || '-' }}</strong>
+        </div>
+        <div class="ws-summary-item">
+          <span>IMEI</span>
+          <strong>{{ imei.value || '-' }}</strong>
+        </div>
+        <div class="ws-summary-item">
+          <span>Recepción</span>
+          <strong>{{ estadoRecepcion.value || '-' }}</strong>
+        </div>
+        @if (totalPendiente.value) {
+        <div class="ws-summary-total">
+          <span>Servicio</span>
+          <strong class="ws-pending-label">Por confirmar</strong>
+        </div>
+        } @else {
+        <div class="ws-summary-item">
+          <span>Servicio</span>
+          <strong>{{ total.value | currency:'USD':'symbol':'1.2-2' }}</strong>
+        </div>
+        <div class="ws-summary-item">
+          <span>Abono</span>
+          <strong>{{ abono.value | currency:'USD':'symbol':'1.2-2' }}</strong>
+        </div>
+        <div class="ws-summary-total">
+          <span>Saldo</span>
+          <strong>{{ saldo() | currency:'USD':'symbol':'1.2-2' }}</strong>
+        </div>
         }
-
-        @if (clienteSeleccionado()) {
-
-        <button mat-stroked-button type="button" class="client-action-btn edit"
-          matTooltip="Actualizar datos del cliente" (click)="editarCliente()">
-
-          <mat-icon>edit</mat-icon>
-
-          Editar
-
+      </div>
+      <div class="ws-summary-actions">
+        <button mat-flat-button type="button" class="ws-primary-button" [disabled]="guardando()" (click)="guardar()">
+          <mat-icon>{{ guardando() ? 'hourglass_top' : 'save' }}</mat-icon>
+          {{ guardando() ? 'Guardando...' : 'Registrar orden' }}
         </button>
-
-        }
-
       </div>
-
-    </section>
-
-    <!-- EQUIPO RECIBIDO -->
-
-    <section class="card form-card">
-
-      <div class="section-header">
-
-        <div class="section-icon">
-          <mat-icon>smartphone</mat-icon>
-        </div>
-
-        <div class="section-heading">
-          <h2>Equipo recibido</h2>
-          <p>Información y estado del dispositivo.</p>
-        </div>
-
-      </div>
-
-      <div class="form-grid">
-
-        <mat-form-field appearance="outline">
-
-          <input matInput [formControl]="modelo" maxlength="100" placeholder="Modelo del dispositivo">
-
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-
-          <input matInput [formControl]="imei" maxlength="15" inputmode="numeric" placeholder="IMEI">
-
-          <mat-hint>15 dígitos</mat-hint>
-
-        </mat-form-field>
-
-      </div>
-
-      <mat-form-field appearance="outline" class="full-width">
-
-        <mat-label>
-          Daño o novedad reportada
-        </mat-label>
-
-        <textarea matInput [formControl]="dano" rows="2" maxlength="500"></textarea>
-
-      </mat-form-field>
-
-      <div class="form-block">
-
-        <label class="field-label">
-          Estado de recepción
-        </label>
-
-        <mat-radio-group [formControl]="estadoRecepcion" class="radio-group">
-
-          <mat-radio-button value="ENCENDIDO">
-            Encendido
-          </mat-radio-button>
-
-          <mat-radio-button value="APAGADO">
-            Apagado
-          </mat-radio-button>
-
-        </mat-radio-group>
-
-      </div>
-
-      <div class="form-block last-block">
-
-        <label class="field-label">
-          Elementos recibidos
-        </label>
-
-        <div class="checkbox-group">
-
-          <mat-checkbox [formControl]="tapa">
-            Tapa
-          </mat-checkbox>
-
-          <mat-checkbox [formControl]="bateria">
-            Batería
-          </mat-checkbox>
-
-          <mat-checkbox [formControl]="banSIM">
-            Bandeja SIM
-          </mat-checkbox>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- VALORES -->
-
-    <section class="card form-card">
-
-      <div class="section-header">
-
-        <div class="section-icon">
-          <mat-icon>payments</mat-icon>
-        </div>
-
-        <div class="section-heading">
-          <h2>Valores</h2>
-          <p>Valor estimado y abono recibido.</p>
-        </div>
-
-      </div>
-
-      <div class="pending-container">
-
-        <mat-checkbox [formControl]="totalPendiente" class="pending-check">
-          Valor por confirmar
-        </mat-checkbox>
-
-      </div>
-
-      <div class="form-grid three-columns">
-
-        <mat-form-field appearance="outline">
-
-          <mat-label>Valor servicio</mat-label>
-
-          <span matTextPrefix>$&nbsp;</span>
-
-          <input matInput type="number" min="0" step="0.01" [formControl]="total" [readonly]="totalPendiente.value">
-
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-
-          <mat-label>Abono</mat-label>
-
-          <span matTextPrefix>$&nbsp;</span>
-
-          <input matInput type="number" min="0" step="0.01" [formControl]="abono" [readonly]="totalPendiente.value">
-
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-
-          <mat-label>Saldo</mat-label>
-
-          <span matTextPrefix>$&nbsp;</span>
-
-          <input matInput readonly [value]="saldo() | number:'1.2-2'">
-
-        </mat-form-field>
-
-      </div>
-
-    </section>
-
-    <!-- ==========================================
-         EVIDENCIA FOTOGRÁFICA
-         DEBAJO DE VALORES
-    ========================================== -->
-
-    <div class="images-section">
-      <app-orden-trabajo-imagenes />
-    </div>
-
+    </aside>
   </div>
-
-  <!-- ==========================================
-       COLUMNA DERECHA - RESUMEN
-  ========================================== -->
-
-  <aside class="summary-card">
-
-    <div class="summary-title">
-
-      <mat-icon>receipt_long</mat-icon>
-
-      <span>
-        Resumen de orden
-      </span>
-
-    </div>
-
-    <div class="summary-content">
-
-      <div class="summary-row">
-
-        <span>Cliente</span>
-
-        <strong>
-          {{ clienteSeleccionado()?.nombreCliente || '-' }}
-        </strong>
-
-      </div>
-
-      <div class="summary-row">
-
-        <span>IMEI</span>
-
-        <strong>
-          {{ imei.value || '-' }}
-        </strong>
-
-      </div>
-
-      <div class="summary-row">
-
-        <span>Recepción</span>
-
-        <strong>
-          {{ estadoRecepcion.value || '-' }}
-        </strong>
-
-      </div>
-
-      @if (totalPendiente.value) {
-
-      <div class="summary-total">
-
-        <span>Valor</span>
-
-        <strong class="pending-value">
-          POR CONFIRMAR
-        </strong>
-
-      </div>
-
-      } @else {
-
-      <div class="summary-row">
-
-        <span>Servicio</span>
-
-        <strong>
-          {{
-          total.value
-          | currency:'USD':'symbol':'1.2-2'
-          }}
-        </strong>
-
-      </div>
-
-      <div class="summary-row">
-
-        <span>Abono</span>
-
-        <strong>
-          {{
-          abono.value
-          | currency:'USD':'symbol':'1.2-2'
-          }}
-        </strong>
-
-      </div>
-
-      <div class="summary-total">
-
-        <span>Saldo</span>
-
-        <strong>
-          {{
-          saldo()
-          | currency:'USD':'symbol':'1.2-2'
-          }}
-        </strong>
-
-      </div>
-
-      }
-
-    </div>
-
-    <div class="summary-footer">
-
-      <button mat-flat-button type="button" class="save-btn" [disabled]="guardando()" (click)="guardar()">
-
-        <mat-icon>
-          {{ guardando() ? 'hourglass_top' : 'save' }}
-        </mat-icon>
-
-        {{
-        guardando()
-        ? 'Guardando...'
-        : 'Registrar orden'
-        }}
-
-      </button>
-
-    </div>
-
-  </aside>
-
 </div>

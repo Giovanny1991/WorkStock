@@ -115,24 +115,26 @@
 
         </ng-container>
 
-        <!-- PROVEEDOR -->
-
-        <ng-container matColumnDef="proveedor">
-
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="proveedor">
-
-            Proveedor
-
-          </th>
-
-          <td mat-cell *matCellDef="let x">
-
-            <span class="provider-name">
-              {{ x.nombreProveedor }}
-            </span>
-
+        <!-- FECHA Y HORA DE REGISTRO -->
+        <ng-container matColumnDef="fechaIngreso">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="fechaIngreso">Fecha ingreso</th>
+          <td mat-cell *matCellDef="let equipo">
+            <small class="document-description">
+              {{ equipo.fechaIngreso ? (equipo.fechaIngreso | date:'dd/MM/yyyy HH:mm') : '—' }}
+            </small>
           </td>
+        </ng-container>
 
+        <!-- PROVEEDOR Y TIPO DE DOCUMENTO -->
+        <ng-container matColumnDef="proveedor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="proveedor">Proveedor</th>
+          <td mat-cell *matCellDef="let x">
+            <span class="provider-name">{{ x.nombreProveedor }}</span>
+            <span class="document-badge" [class.invoice]="x.factura === 'SI'"
+              [class.sales-note]="x.factura !== 'SI'">
+              {{ x.factura === 'SI' ? 'Factura' : 'Nota de venta' }}
+            </span>
+          </td>
         </ng-container>
 
         <!-- MODELO -->
@@ -155,7 +157,7 @@
 
               {{ x.ram }} RAM -
               {{ x.almacenamiento }} GB - {{ x.color }}
-   
+
               <span class="device-condition">
                 / {{ x.estadoCelular }}
               </span>
@@ -189,32 +191,6 @@
             </small>
 
             }
-
-          </td>
-
-        </ng-container>
-
-        <!-- DOCUMENTO -->
-
-        <ng-container matColumnDef="documento">
-
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="documento" class="document-column">
-
-            Documento
-
-          </th>
-
-          <td mat-cell *matCellDef="let x" class="document-column">
-
-            <span class="document-badge" [class.invoice]="x.factura === 'SI'" [class.sales-note]="x.factura !== 'SI'">
-
-              {{
-              x.factura === 'SI'
-              ? 'Factura'
-              : 'Nota de venta'
-              }}
-
-            </span>
 
           </td>
 
@@ -270,28 +246,6 @@
 
         </ng-container>
 
-        <!-- ESTADO -->
-
-        <ng-container matColumnDef="estado">
-
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="estado" class="status-column">
-
-            Estado
-
-          </th>
-
-          <td mat-cell *matCellDef="let x" class="status-column">
-
-            <span class="status" [class.available]="x.estado === 'INGRESADO'"
-              [class.unavailable]="x.estado !== 'INGRESADO'">
-
-              {{ descripcionEstado(x) }}
-
-            </span>
-
-          </td>
-
-        </ng-container>
 
         <!-- ACCIONES -->
 

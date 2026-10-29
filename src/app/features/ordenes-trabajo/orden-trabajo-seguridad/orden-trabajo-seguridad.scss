@@ -1,0 +1,386 @@
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    color: var(--app-text);
+}
+
+.ws-lock {
+    display: grid;
+    gap: 15px;
+    width: 100%;
+    min-width: 0;
+}
+
+.ws-lock-modes {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.ws-lock-modes-title,
+.ws-lock-field-heading,
+.ws-lock-preview-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.ws-lock-modes-title {
+    color: var(--app-text);
+    font-size: 12px;
+    font-weight: 700;
+
+    mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+        color: var(--app-primary);
+    }
+}
+
+.ws-lock-options {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    padding: 7px 12px;
+    border: 1px solid var(--app-border);
+    border-radius: 10px;
+    background: var(--app-card-secondary);
+
+    mat-radio-button {
+        flex: 0 0 auto;
+    }
+}
+
+.ws-lock-preview-heading {
+    padding: 11px 13px;
+    border-radius: 9px;
+    background: var(--app-primary-soft);
+    color: var(--app-primary);
+
+    mat-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 22px;
+    }
+
+    div {
+        display: grid;
+        gap: 3px;
+    }
+
+    strong {
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    span {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+}
+
+.ws-lock-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 13px;
+    border-radius: 9px;
+    font-size: 12px;
+    line-height: 1.45;
+
+    mat-icon {
+        flex: 0 0 20px;
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+    }
+
+    div {
+        display: grid;
+        gap: 3px;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    span {
+        font-size: 11px;
+    }
+
+    &.success {
+        background: color-mix(in srgb, var(--app-success) 9%, var(--app-card));
+        color: var(--app-success);
+    }
+
+    &.neutral {
+        background: var(--app-card-secondary);
+        color: var(--app-text-muted);
+    }
+}
+
+.ws-lock-password,
+.ws-lock-pattern {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+}
+
+.ws-lock-field-heading {
+    mat-icon {
+        width: 21px;
+        height: 21px;
+        font-size: 21px;
+        color: var(--app-primary);
+    }
+
+    div {
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+    }
+
+    strong {
+        color: var(--app-text);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    span {
+        color: var(--app-text-muted);
+        font-size: 11px;
+        line-height: 1.4;
+    }
+}
+
+.ws-lock-input {
+    width: 100%;
+    max-width: 420px;
+}
+
+.ws-lock-help {
+    margin: 0;
+    color: var(--app-text-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.ws-lock-saved-password {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    max-width: 460px;
+    padding: 8px 12px;
+    border: 1px solid var(--app-border);
+    border-radius: 9px;
+    background: var(--app-card);
+
+    span {
+        flex: 0 0 auto;
+        color: var(--app-text-muted);
+        font-size: 11px;
+    }
+
+    strong {
+        flex: 1 1 auto;
+        min-width: 0;
+        color: var(--app-text);
+        font-size: 14px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    button {
+        flex-shrink: 0;
+    }
+}
+
+.ws-lock-pattern-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 252px) minmax(0, 1fr);
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
+}
+
+.ws-lock-canvas-panel {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 252px;
+    aspect-ratio: 1;
+    border: 1px solid var(--app-border);
+    border-radius: 15px;
+    background:
+        radial-gradient(circle at 50% 0, var(--app-primary-soft), transparent 75%),
+        var(--app-card-secondary);
+    overflow: hidden;
+
+    &.ws-lock-readonly {
+        background: var(--app-card-secondary);
+    }
+}
+
+.ws-lock-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    user-select: none;
+    cursor: crosshair;
+}
+
+.ws-lock-readonly .ws-lock-canvas {
+    cursor: default;
+    pointer-events: none;
+}
+
+.ws-lock-node {
+    fill: var(--app-card);
+    stroke: var(--app-text-muted);
+    stroke-width: 2.4;
+    transition: fill 130ms ease, stroke 130ms ease;
+
+    &.active {
+        fill: var(--app-primary);
+        stroke: var(--app-primary);
+    }
+}
+
+.ws-lock-line {
+    stroke: var(--app-primary);
+    stroke-width: 5.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+.ws-lock-line-pending {
+    opacity: .35;
+}
+
+.ws-lock-node-number {
+    fill: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.ws-lock-pattern-info {
+    display: grid;
+    justify-items: start;
+    align-content: center;
+    gap: 13px;
+    min-width: 0;
+}
+
+.ws-lock-pattern-stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    mat-icon {
+        color: var(--app-primary);
+        width: 23px;
+        height: 23px;
+        font-size: 23px;
+    }
+
+    div {
+        display: grid;
+        gap: 2px;
+    }
+
+    strong {
+        color: var(--app-text);
+        font-size: 19px;
+        font-weight: 750;
+    }
+
+    span {
+        color: var(--app-text-muted);
+        font-size: 11px;
+    }
+}
+
+.ws-lock-clear {
+    height: 37px;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+}
+
+@media (max-width: 650px) {
+    .ws-lock-pattern-grid {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        gap: 12px;
+    }
+
+    .ws-lock-pattern-info {
+        width: 100%;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .ws-lock-options {
+        gap: 2px 10px;
+    }
+}
+
+@media (max-width: 440px) {
+    .ws-lock-options {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .ws-lock-canvas-panel {
+        max-width: 232px;
+    }
+
+    .ws-lock-saved-password {
+        flex-wrap: wrap;
+    }
+}
+
+/* Compacto WorkStock */
+.ws-lock {
+    gap: 8px;
+}
+
+.ws-lock-modes {
+    gap: 5px;
+}
+
+.ws-lock-options {
+    padding: 2px 8px;
+    gap: 0 12px;
+    border-radius: 7px;
+}
+
+.ws-lock-pattern-grid {
+    grid-template-columns: minmax(0, 188px) minmax(0, 1fr);
+    gap: 13px;
+}
+
+.ws-lock-canvas-panel {
+    max-width: 188px;
+    border-radius: 10px;
+}
+
+.ws-lock-password {
+    gap: 5px;
+}
+
+.ws-lock-input {
+    max-width: 390px;
+}
+
+@media (max-width: 650px) {
+    .ws-lock-pattern-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

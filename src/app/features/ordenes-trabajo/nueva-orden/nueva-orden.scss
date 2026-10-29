@@ -1,330 +1,341 @@
-/* ==========================================
-   PAGE HEADER
-========================================== */
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 16px;
-  margin-bottom: 16px;
-
-  h1 {
-    margin: 0;
-    color: var(--app-text);
-    font-size: 21px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    line-height: 1.3;
-  }
-
-  p {
-    margin: 4px 0 0;
-    color: var(--app-text-muted);
-    font-size: 12px;
-    line-height: 1.5;
-  }
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--app-text);
 }
 
-
-/* ==========================================
-   LAYOUT GENERAL
-========================================== */
-
-.order-layout {
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr) 290px;
-
-  align-items: start;
-  gap: 16px;
-
+.ws-page {
   width: 100%;
   min-width: 0;
 }
 
-
-/* ==========================================
-   COLUMNA PRINCIPAL
-========================================== */
-
-.main-column {
+.ws-page-heading {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
 
-  gap: 14px;
+.ws-page-identity {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   min-width: 0;
-}
 
+  h1 {
+    margin: 0;
+    color: var(--app-text);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
 
-/* ==========================================
-   TARJETAS
-========================================== */
-
-.card {
-  background: var(--app-card);
-  border: 1px solid var(--app-border);
-
-  border-radius: 10px;
-
-  box-shadow:
-    0 1px 3px rgba(16, 24, 40, .04);
-
-  transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.form-card {
-  padding: 16px 18px;
-
-  &:focus-within {
-    border-color: var(--app-border);
+  p {
+    margin: 2px 0 0;
+    color: var(--app-text-muted);
+    font-size: 11px;
   }
 }
 
+.ws-page-symbol {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 8px;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
 
-/* ==========================================
-   CABECERA DE SECCIONES
-========================================== */
+  mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+}
 
-.section-header {
+.ws-page-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: 1px solid var(--app-border);
+  border-radius: 7px;
+  background: var(--app-card);
+  color: var(--app-primary);
+  font-size: 10px;
+  font-weight: 700;
+
+  mat-icon {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+}
+
+.ws-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 265px;
+  align-items: start;
+  gap: 11px;
+  min-width: 0;
+}
+
+.ws-form-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ws-form-section {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 9px;
+  background: var(--app-card);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .035);
+}
+
+.ws-section-heading {
   display: flex;
   align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--app-border-soft);
 
-  gap: 10px;
-  margin-bottom: 16px;
-
-  .section-heading {
+  >div {
     flex: 1;
     min-width: 0;
   }
 
   h2 {
     margin: 0;
-
     color: var(--app-text);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
-    line-height: 1.3;
   }
 
   p {
-    margin: 3px 0 0;
-
+    margin: 2px 0 0;
     color: var(--app-text-muted);
-    font-size: 11px;
-    line-height: 1.4;
+    font-size: 10px;
+    line-height: 1.35;
   }
 }
 
-
-/* ==========================================
-   ICONOS DE SECCIÓN
-========================================== */
-
-.section-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-
-  border-radius: 9px;
-
+.ws-section-icon {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+  border-radius: 7px;
   background: var(--app-primary-soft);
   color: var(--app-primary);
 
   mat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 20px;
-    height: 20px;
-
-    font-size: 20px;
-    line-height: 20px;
-
-    margin: 0;
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
   }
 }
 
-
-/* ==========================================
-   SELECTOR DE CLIENTE
-========================================== */
-
-.client-selector {
-  display: flex;
-  align-items: flex-start;
-
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
-}
-
-.autocomplete-field {
-  flex: 1 1 auto;
-  width: 100%;
-  min-width: 0;
-}
-
-.client-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  height: 40px;
-  min-width: 86px;
-
-  padding: 0 12px !important;
-
-  border-radius: 7px !important;
-
-  color: var(--app-text);
-  font-size: 12px;
-  font-weight: 600;
-
-  mat-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    line-height: 18px;
-    margin-right: 5px;
-  }
-
-  &:hover {
-    background: var(--app-card-secondary);
-  }
-}
-
-.client-action-btn.edit {
-  color: var(--app-primary);
-}
-
-
-/* ==========================================
-   AUTOCOMPLETE
-========================================== */
-
-.option-main {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 17px;
-}
-
-.option-secondary {
-  margin-top: 2px;
-
-  color: var(--app-text-muted);
+.ws-section-number {
+  flex: 0 0 auto;
   font-size: 10px;
-  line-height: 14px;
+  font-weight: 700;
+  color: var(--app-text-muted);
 }
 
-
-/* ==========================================
-   FORMULARIOS
-========================================== */
-
-.form-grid {
+.ws-section-body {
   display: grid;
+  gap: 9px;
+  padding: 11px 12px;
+  min-width: 0;
+}
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 12px;
-  width: 100%;
+.ws-client-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
   min-width: 0;
 
   mat-form-field {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  >button {
+    flex: 0 0 auto;
+    min-width: 76px;
+    height: 37px;
+    padding: 0 10px !important;
+    border-radius: 7px !important;
+    font-size: 11px;
+
+    mat-icon {
+      width: 17px;
+      height: 17px;
+      font-size: 17px;
+    }
+  }
+}
+
+.ws-selected-client {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--app-border-soft);
+  border-radius: 7px;
+  background: var(--app-card-secondary);
+
+  >mat-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    font-size: 18px;
+    color: var(--app-success);
+  }
+
+  >div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  strong {
+    color: var(--app-text);
+    font-size: 11px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  span {
+    color: var(--app-text-muted);
+    font-size: 10px;
+  }
+
+  .ws-selected-label {
+    flex: 0 0 auto;
+    color: var(--app-success);
+    font-size: 10px;
+  }
+}
+
+.ws-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  min-width: 0;
+
+  mat-form-field {
+    display: block;
     width: 100%;
     min-width: 0;
   }
 }
 
-.three-columns {
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-}
-
-.full-width {
+.ws-full-field {
   display: block;
-  width: 100%;
-}
-
-.form-block {
-  margin-top: 2px;
-  margin-bottom: 14px;
-}
-
-.form-block.last-block {
-  margin-bottom: 0;
-}
-
-.field-label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  color: var(--app-text);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-
-/* ==========================================
-   RADIO BUTTONS Y CHECKBOXES
-========================================== */
-
-.radio-group,
-.checkbox-group {
-  display: flex;
-  align-items: center;
-
-  flex-wrap: wrap;
-  gap: 8px 18px;
-
-  min-height: 34px;
-}
-
-
-/* ==========================================
-   VALOR PENDIENTE
-========================================== */
-
-.pending-container {
-  display: flex;
-  align-items: center;
-
-  margin-bottom: 12px;
-  padding: 7px 10px;
-
-  background: var(--app-card-secondary);
-  border: 1px solid var(--app-border-soft);
-  border-radius: 8px;
-}
-
-.pending-check {
-  display: block;
-}
-
-
-/* ==========================================
-   SECCIÓN DE IMÁGENES
-========================================== */
-
-.images-section {
-  display: block;
-
   width: 100%;
   min-width: 0;
+}
+
+.ws-reception-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 9px;
+  min-width: 0;
+}
+
+.ws-choice-panel {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--app-border-soft);
+  border-radius: 7px;
+  background: var(--app-card-secondary);
+
+  mat-radio-group,
+  .ws-checks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1px 9px;
+    margin-top: 4px;
+  }
+}
+
+.ws-choice-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    color: var(--app-primary);
+  }
+
+  strong {
+    color: var(--app-text);
+    font-size: 11px;
+    font-weight: 600;
+  }
+}
+
+.ws-pending-option {
+  padding: 4px 9px;
+  border: 1px solid var(--app-border-soft);
+  border-radius: 7px;
+  background: var(--app-card-secondary);
+}
+
+.ws-money-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+}
+
+.ws-balance-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+  background: var(--app-card-secondary);
+
+  span {
+    font-size: 10px;
+    color: var(--app-text-muted);
+  }
+
+  strong {
+    font-size: 13px;
+    line-height: 1.15;
+    font-weight: 700;
+    color: var(--app-success);
+    overflow-wrap: anywhere;
+  }
+}
+
+.ws-photo-section {
+  .ws-section-body {
+    padding: 9px 10px;
+  }
 
   app-orden-trabajo-imagenes {
     display: block;
@@ -333,333 +344,227 @@
   }
 }
 
-
-/* ==========================================
-   RESUMEN DE ORDEN
-========================================== */
-
-.summary-card {
+.ws-summary {
   position: sticky;
-  top: 16px;
-
+  top: 10px;
   width: 100%;
   min-width: 0;
-
-  background: var(--app-card);
-  border: 1px solid var(--app-border);
-
-  border-radius: 10px;
-
-  box-shadow:
-    0 2px 8px rgba(16, 24, 40, .05);
-
   overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 9px;
+  background: var(--app-card);
+  box-shadow: 0 2px 7px rgba(16, 24, 40, .04);
 }
 
-
-/* ==========================================
-   TÍTULO DEL RESUMEN
-========================================== */
-
-.summary-title {
+.ws-summary-heading {
   display: flex;
   align-items: center;
-  gap: 9px;
-
-  padding: 15px 16px;
-
-  background: var(--app-card-secondary);
-  border-bottom: 1px solid var(--app-border);
-
-  color: var(--app-text);
-
-  font-size: 13px;
-  font-weight: 700;
-
-  mat-icon {
-    width: 20px;
-    height: 20px;
-
-    color: var(--app-primary);
-
-    font-size: 20px;
-    line-height: 20px;
-    margin: 0;
-  }
-}
-
-
-/* ==========================================
-   CONTENIDO DEL RESUMEN
-========================================== */
-
-.summary-content {
-  padding: 8px 16px 12px;
-}
-
-.summary-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-
-  gap: 12px;
-  padding: 10px 0;
-
+  gap: 8px;
+  padding: 11px 12px;
   border-bottom: 1px solid var(--app-border-soft);
+  background: var(--app-card-secondary);
 
-  color: var(--app-text-muted);
-  font-size: 12px;
-  line-height: 1.4;
+  >mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+    color: var(--app-primary);
+  }
 
-  &:last-child {
-    border-bottom: none;
+  h2 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
   }
 
   span {
+    display: block;
+    margin-top: 2px;
+    font-size: 10px;
+    color: var(--app-text-muted);
+  }
+}
+
+.ws-summary-body {
+  padding: 4px 12px 10px;
+}
+
+.ws-summary-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--app-border-soft);
+
+  span {
     flex: 0 0 auto;
+    font-size: 10px;
+    color: var(--app-text-muted);
   }
 
   strong {
-    max-width: 60%;
-
-    color: var(--app-text);
-
-    font-size: 12px;
+    min-width: 0;
+    max-width: 65%;
+    font-size: 11px;
     font-weight: 600;
+    line-height: 1.35;
     text-align: right;
-
+    color: var(--app-text);
     overflow-wrap: anywhere;
   }
 }
 
-
-/* ==========================================
-   TOTAL DEL RESUMEN
-========================================== */
-
-.summary-total {
+.ws-summary-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  gap: 10px;
-
-  margin-top: 12px;
-  padding: 14px 0 4px;
-
+  gap: 8px;
+  margin-top: 8px;
+  padding: 9px 0 2px;
   border-top: 1px solid var(--app-border);
 
-  color: var(--app-text);
-  font-size: 13px;
-  font-weight: 700;
+  span {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--app-text);
+  }
 
   strong {
-    color: var(--app-success);
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     text-align: right;
+    color: var(--app-success);
   }
 
-  .pending-value {
+  .ws-pending-label {
+    font-size: 11px;
     color: var(--app-warning);
-    font-size: 12px;
   }
 }
 
-
-/* ==========================================
-   PIE DEL RESUMEN
-========================================== */
-
-.summary-footer {
-  padding: 12px 16px 16px;
-
+.ws-summary-actions {
+  padding: 10px 12px;
   border-top: 1px solid var(--app-border-soft);
+  background: var(--app-card-secondary);
 }
 
-
-/* ==========================================
-   BOTÓN GUARDAR
-========================================== */
-
-.save-btn {
+.ws-primary-button {
   display: flex;
   align-items: center;
   justify-content: center;
-
+  gap: 6px;
   width: 100%;
-  height: 42px;
-
-  margin: 0;
-
-  border-radius: 8px !important;
-
+  height: 39px;
+  border-radius: 7px !important;
   background: var(--app-primary) !important;
-  color: #ffffff !important;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  transition:
-    filter 150ms ease,
-    box-shadow 150ms ease;
-
-  mat-icon {
-    width: 19px;
-    height: 19px;
-    font-size: 19px;
-  }
-
-  &:hover:not(:disabled) {
-    filter: brightness(1.08);
-
-    box-shadow:
-      0 4px 12px rgba(7, 93, 176, .15);
-  }
+  color: #fff !important;
+  font-size: 11px;
+  font-weight: 700;
 
   &:disabled {
     opacity: .6;
-    box-shadow: none;
   }
 }
 
-
-/* ==========================================
-   ANGULAR MATERIAL - INPUTS COMPACTOS
-========================================== */
-
-:host ::ng-deep .mat-mdc-form-field {
-  font-size: 12px;
+.option-main {
+  font-size: 11px;
+  font-weight: 600;
 }
 
-:host ::ng-deep .mat-mdc-text-field-wrapper {
-  min-height: 40px;
-}
-
-:host ::ng-deep .mat-mdc-form-field-infix {
-  min-height: 40px;
-
-  padding-top: 8px !important;
-  padding-bottom: 6px !important;
-}
-
-:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+.option-secondary {
+  margin-top: 2px;
+  color: var(--app-text-muted);
   font-size: 10px;
 }
 
-:host ::ng-deep .mat-mdc-checkbox label,
-:host ::ng-deep .mat-mdc-radio-button label {
-  font-size: 12px;
+:host ::ng-deep {
+  .ws-page .mat-mdc-form-field {
+    font-size: 11px;
+  }
+
+  .ws-page .mat-mdc-text-field-wrapper {
+    min-height: 38px;
+  }
+
+  .ws-page .mat-mdc-form-field-infix {
+    min-height: 38px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+
+  .ws-page .mat-mdc-checkbox label,
+  .ws-page .mat-mdc-radio-button label {
+    font-size: 11px;
+  }
+
+  .ws-page .mat-mdc-form-field-hint {
+    font-size: 10px;
+  }
 }
 
-
-/* ==========================================
-   RESPONSIVE - TABLETS
-========================================== */
-
-@media (max-width: 1050px) {
-
-  .order-layout {
-    grid-template-columns:
-      minmax(0, 1fr) 260px;
-
-    gap: 12px;
+@media (max-width: 1060px) {
+  .ws-form-layout {
+    grid-template-columns: minmax(0, 1fr) 235px;
   }
 
-  .form-card {
-    padding: 14px;
+  .ws-money-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .three-columns {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
 }
 
-
-/* ==========================================
-   RESPONSIVE - PANTALLAS MEDIANAS
-========================================== */
-
-@media (max-width: 850px) {
-
-  .order-layout {
+@media (max-width: 840px) {
+  .ws-form-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .summary-card {
+  .ws-summary {
     position: static;
   }
 
-  .three-columns {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+  .ws-money-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
 }
 
-
-/* ==========================================
-   RESPONSIVE - MÓVILES
-========================================== */
-
 @media (max-width: 600px) {
-
-  .page-header {
-    margin-bottom: 12px;
-
-    h1 {
-      font-size: 19px;
-    }
+  .ws-page-heading {
+    margin-bottom: 9px;
   }
 
-  .main-column {
-    gap: 12px;
+  .ws-page-identity h1 {
+    font-size: 17px;
   }
 
-  .form-card {
-    padding: 13px;
+  .ws-page-status {
+    display: none;
   }
 
-  .section-header {
-    margin-bottom: 14px;
+  .ws-form-main {
+    gap: 9px;
   }
 
-  .client-selector {
-    flex-wrap: wrap;
+  .ws-section-heading {
+    padding: 8px 10px;
   }
 
-  .autocomplete-field {
-    flex: 0 0 100%;
+  .ws-section-body {
+    padding: 10px;
   }
 
-  .client-action-btn {
-    flex: 1 1 auto;
-  }
-
-  .form-grid,
-  .three-columns {
+  .ws-fields-grid,
+  .ws-reception-grid,
+  .ws-money-grid {
     grid-template-columns: minmax(0, 1fr);
-
     gap: 8px;
   }
 
-  .radio-group,
-  .checkbox-group {
-    gap: 6px 12px;
+  .ws-client-line>button {
+    flex: 1 1 auto;
   }
+}
 
-  .summary-title {
-    padding: 13px;
-  }
-
-  .summary-content {
-    padding: 8px 13px;
-  }
-
-  .summary-footer {
-    padding: 12px 13px;
-  }
-
+/* Etiquetas Material siempre flotantes: conserva su aspecto compacto */
+:host ::ng-deep .mat-mdc-form-field .mdc-floating-label--float-above {
+  font-weight: 600;
 }

@@ -29,6 +29,20 @@ export const ESTADOS_ORDEN_PENDIENTES: readonly EstadoOrdenTrabajo[] = [
 
 export const ORDEN_ESTADO_INICIAL: EstadoOrdenTrabajoNuevo = 'EN DIAGNÓSTICO';
 
+export type TipoBloqueoDispositivo =
+  'NO_REGISTRADO' | 'SIN_BLOQUEO' | 'CONTRASENA' | 'PATRON';
+
+export interface SeguridadDispositivo {
+  tipoBloqueo: TipoBloqueoDispositivo;
+  claveDispositivo?: string | null;
+  patronDispositivo?: string | null;
+}
+
+export interface SeguridadDispositivoResponse {
+  success: boolean;
+  data: SeguridadDispositivo & { idOrden: number };
+}
+
 export const esOrdenCerrada = (estado: string | null | undefined): boolean =>
   ESTADOS_ORDEN_CERRADOS.includes(
     String(estado ?? '').trim().toUpperCase() as EstadoOrdenTrabajo
@@ -52,6 +66,9 @@ export interface OrdenTrabajoRequest {
   totalPendiente: boolean;
   total: number;
   abono: number;
+  tipoBloqueo?: TipoBloqueoDispositivo;
+  claveDispositivo?: string | null;
+  patronDispositivo?: string | null;
 }
 
 export interface OrdenTrabajoActualizarRequest {
@@ -60,6 +77,9 @@ export interface OrdenTrabajoActualizarRequest {
   abono: number;
   observaciones: string;
   estado: EstadoOrdenTrabajo;
+  tipoBloqueo?: TipoBloqueoDispositivo;
+  claveDispositivo?: string | null;
+  patronDispositivo?: string | null;
 }
 
 export interface OrdenTrabajoCreada {
@@ -99,6 +119,7 @@ export interface OrdenTrabajoResumen {
   estado: EstadoOrdenTrabajo;
   fechaIngreso?: string;
   vendedor?: string;
+  tipoBloqueo?: TipoBloqueoDispositivo;
 }
 
 export interface OrdenesTrabajoResponse {

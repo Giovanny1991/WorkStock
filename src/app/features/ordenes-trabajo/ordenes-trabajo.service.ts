@@ -14,7 +14,8 @@ import {
   OrdenTrabajoCreadaResponse,
   OrdenTrabajoOperacionResponse,
   OrdenTrabajoRequest,
-  OrdenTrabajoResponse
+  OrdenTrabajoResponse,
+  SeguridadDispositivoResponse
 } from './orden-trabajo.model';
 
 export interface EnlaceSeguimientoOrden {
@@ -131,4 +132,11 @@ export class OrdenesTrabajoService {
       `${this.apiUrl}/${idOrden}/seguimiento/mensaje`, {}
     );
   }
+
+    consultarSeguridad(idOrden: number): Observable<SeguridadDispositivoResponse> {
+    return this.http.get<SeguridadDispositivoResponse>(
+      `${this.apiUrl}/${idOrden}/seguridad`
+    );
+  }
+
 }

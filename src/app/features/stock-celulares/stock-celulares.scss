@@ -1008,3 +1008,18 @@ mat-progress-bar {
   }
 }
 
+/* FECHA INGRESO - ESTILO HISTORIAL NOTAS DE VENTA */
+.mat-column-fechaIngreso {
+  min-width: 125px;
+}
+
+.document-description {
+  display: block;
+  margin-top: 3px;
+  color: var(--hist-muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}

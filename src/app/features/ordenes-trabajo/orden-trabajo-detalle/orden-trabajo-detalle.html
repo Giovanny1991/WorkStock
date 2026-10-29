@@ -1,562 +1,250 @@
 <div class="dialog-header no-print">
-
   <div>
-
     <h2>Orden de trabajo</h2>
-
     @if (orden(); as o) {
     <p>#{{ o.numeroOrden }}</p>
     }
-
   </div>
-
-  <button mat-icon-button type="button" (click)="cerrar()">
+  <button mat-icon-button type="button" aria-label="Cerrar" (click)="cerrar()">
     <mat-icon>close</mat-icon>
   </button>
-
 </div>
 
-
-@if (cargando() || cargandoEmpresa()) {
-
+@if (cargando() || cargandoEmpresa() || cargandoQR()) {
 <mat-progress-bar mode="indeterminate" class="no-print" />
-
 }
 
-
 <mat-dialog-content>
-
   @if (errorEmpresa()) {
-
-  <p class="no-print">
-    {{ errorEmpresa() }}
-  </p>
-
+  <p class="no-print">{{ errorEmpresa() }}</p>
   }
 
   @if (orden(); as o) {
-
   <div class="ticket" id="ticketOrdenTrabajo">
 
-    <!-- ==================================================
-           LOGO DINÁMICO EMPRESA
-      =================================================== -->
-
+    <!-- LOGO DINÁMICO DE LA EMPRESA -->
     @if (logoEmpresaUrl() && coincideEmpresaDocumento()) {
-
     <div class="centrado logo-container">
-
       <img [src]="logoEmpresaUrl()" alt="Logo de la empresa" class="logo">
-
     </div>
-
     }
 
-
-    <!-- ==================================================
-           INFORMACIÓN DINÁMICA DE EMPRESA
-      =================================================== -->
-
+    <!-- INFORMACIÓN ORIGINAL DE LA EMPRESA -->
     <div class="centrado business-info">
-
       @if (empresa(); as e) {
-
       @if (coincideEmpresaDocumento()) {
-
       @if (e.regimenTributario) {
-
-      <strong>
-        {{ e.regimenTributario }}
-      </strong>
-
-      <br><br>
-
+      <strong>{{ e.regimenTributario }}</strong>
+      <div class="info-separacion"></div>
       }
-
       @if (e.razonSocial || e.nombreEmpresa) {
-
-      {{ e.razonSocial || e.nombreEmpresa }}
-
-      <br>
-
+      <div>{{ e.razonSocial || e.nombreEmpresa }}</div>
       }
-
       @if (e.ruc) {
-
-      RUC: {{ e.ruc }}
-
-      <br>
-
+      <div>RUC: {{ e.ruc }}</div>
       }
-
       @if (e.direccion) {
-
-      DIRECCION: {{ e.direccion }}
-
-      <br>
-
+      <div>DIRECCIÓN: {{ e.direccion }}</div>
       }
-
       @if (e.telefono) {
-
-      TELEFONO: {{ e.telefono }}
-
-      <br>
-
+      <div>TELÉFONO: {{ e.telefono }}</div>
       }
-
       @if (e.ciudad || e.pais) {
-
-      {{ e.ciudad || '' }}
-
-      @if (e.ciudad && e.pais) {
-      -
+      <div>{{ e.ciudad || '' }}{{ e.ciudad && e.pais ? ' - ' : '' }}{{ e.pais || '' }}</div>
       }
-
-      {{ e.pais || '' }}
-
-      <br>
-
-      }
-
       @if (e.correoElectronico) {
-
-      CORREO: {{ e.correoElectronico }}
-
-      <br>
-
+      <div>CORREO: {{ e.correoElectronico }}</div>
       }
-
       @if (e.whatsApp) {
-
-      WHATSAPP: {{ e.whatsApp }}
-
-      <br>
-
+      <div>WHATSAPP: {{ e.whatsApp }}</div>
       }
-
       @if (e.nombreLocal) {
-
-      <br>
-
-      <strong class="title">
-           {{ o.vendedor }}
-      </strong>
-
-      <br>
-
+      <div class="local-title">
+        <strong class="title">{{ o.vendedor }}</strong>
+      </div>
       }
-
       @if (e.actividadComercial) {
-
-      {{ e.actividadComercial }}
-
-      <br>
-
+      <div>{{ e.actividadComercial }}</div>
       }
-
-      <!-- @if (e.obligadoLlevarContabilidad !== null) {
-
-      OBLIGADO A LLEVAR CONTABILIDAD:
-      {{ e.obligadoLlevarContabilidad ? 'SÍ' : 'NO' }}
-
-      <br>
-
-      } -->
-
       }
-
       }
-
-      <br><br>
-
-      <strong class="title">
-        ORDEN DE TRABAJO
-      </strong>
-
-      <br><br>
-
     </div>
 
+    <!-- TÍTULO DEL DOCUMENTO -->
+    <div class="ticket-heading">
+      <strong class="title">ORDEN DE TRABAJO</strong>
+    </div>
 
-    <!-- ==================================================
-           DATOS ORDEN / CLIENTE
-      =================================================== -->
-
+    <!-- DATOS DE LA ORDEN Y DEL CLIENTE -->
     <table class="info-table">
-
-      <tr>
-
-        <td>N° ORDEN:</td>
-
-        <td>
-          <strong>
-            {{ o.numeroOrden }}
-          </strong>
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>FECHA:</td>
-
-        <td>
-          {{
-          o.fechaIngreso
-          | date:'dd/MM/yyyy HH:mm'
-          }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>CAJA:</td>
-
-        <td>
-          {{ o.vendedor || '-' }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td colspan="2" class="client-title">
-          CLIENTE
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>RUC:</td>
-
-        <td>
-          {{ o.identificacion }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>NOMBRE:</td>
-
-        <td>
-          {{ o.nombreCliente }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>TELEFONO:</td>
-
-        <td>
-          {{ o.telefono || '-' }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>CORREO:</td>
-
-        <td>
-          {{ o.correo || '-' }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>DIRECCION:</td>
-
-        <td>
-          {{ o.direccion || '-' }}
-        </td>
-
-      </tr>
-
+      <tbody>
+        <tr>
+          <td>N.º ORDEN:</td>
+          <td><strong>{{ o.numeroOrden }}</strong></td>
+        </tr>
+        <tr>
+          <td>FECHA:</td>
+          <td>{{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+        <tr>
+          <td>CAJA:</td>
+          <td>{{ o.vendedor || '-' }}</td>
+        </tr>
+        <tr>
+          <td colspan="2" class="client-title">CLIENTE</td>
+        </tr>
+        <tr>
+          <td>RUC:</td>
+          <td>{{ o.identificacion }}</td>
+        </tr>
+        <tr>
+          <td>NOMBRE:</td>
+          <td>{{ o.nombreCliente }}</td>
+        </tr>
+        <tr>
+          <td>TELÉFONO:</td>
+          <td>{{ o.telefono || '-' }}</td>
+        </tr>
+        <tr>
+          <td>CORREO:</td>
+          <td>{{ o.correo || '-' }}</td>
+        </tr>
+        <tr>
+          <td>DIRECCIÓN:</td>
+          <td>{{ o.direccion || '-' }}</td>
+        </tr>
+      </tbody>
     </table>
 
-
-    <br>
-
-
-    <!-- ==================================================
-           RECEPCIÓN
-      =================================================== -->
-
-    <div class="centrado">
-
-      <strong class="section-title">
-        DATOS DE RECEPCION DEL DISPOSITIVO
-      </strong>
-
+    <!-- RECEPCIÓN DEL DISPOSITIVO -->
+    <div class="centrado reception-heading">
+      <strong class="section-title">DATOS DE RECEPCIÓN DEL DISPOSITIVO</strong>
     </div>
-
-
-    <br>
-
 
     <table class="device-table">
-
-      <tr>
-
-        <td>MODELO:</td>
-
-        <td>
-          {{ o.modeloDispositivo }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>IMEI:</td>
-
-        <td>
-          {{ o.imei }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>
-          PRENDIDO/APAGADO:
-        </td>
-
-        <td>
-          {{ estadoRecepcion(o) }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>ACCESORIOS:</td>
-
-        <td>
-          {{ accesoriosRecibidos(o) }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>
-          VALOR DE SERVICIO:
-        </td>
-
-        <td>
-
-          @if (o.totalPendiente) {
-
-          <strong>
-            NO ESTABLECIDO
-          </strong>
-
-          } @else {
-
-          <strong>
-            {{
-            o.total
-            | currency:'USD':'symbol':'1.2-2'
-            }}
-          </strong>
-
-          }
-
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>ABONO:</td>
-
-        <td>
-          {{
-          o.abono
-          | currency:'USD':'symbol':'1.2-2'
-          }}
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td>
-          SALDO PENDIENTE:
-        </td>
-
-        <td>
-
-          <strong>
-
+      <tbody>
+        <tr>
+          <td>MODELO:</td>
+          <td>{{ o.modeloDispositivo }}</td>
+        </tr>
+        <tr>
+          <td>IMEI:</td>
+          <td>{{ o.imei }}</td>
+        </tr>
+        <tr>
+          <td>PRENDIDO/APAGADO:</td>
+          <td>{{ estadoRecepcion(o) }}</td>
+        </tr>
+        <tr>
+          <td>ACCESORIOS:</td>
+          <td>{{ accesoriosRecibidos(o) }}</td>
+        </tr>
+        <tr>
+          <td>VALOR DE SERVICIO:</td>
+          <td>
             @if (o.totalPendiente) {
-
-            NO ESTABLECIDO
-
+            <strong>NO ESTABLECIDO</strong>
             } @else {
-
-            {{
-            o.saldo
-            | currency:'USD':'symbol':'1.2-2'
-            }}
-
+            <strong>{{ o.total | currency:'USD':'symbol':'1.2-2' }}</strong>
             }
-
-          </strong>
-
-        </td>
-
-      </tr>
-
-
-      <tr class="damage-title-row">
-
-        <td colspan="2">
-
-          <strong>
-            DAÑO DISPOSITIVO:
-          </strong>
-
-        </td>
-
-      </tr>
-
-
-      <tr>
-
-        <td colspan="2" class="damage-description">
-          {{ o.danoDispositivo }}
-        </td>
-
-      </tr>
-
+          </td>
+        </tr>
+        <tr>
+          <td>ABONO:</td>
+          <td>{{ o.abono | currency:'USD':'symbol':'1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td>SALDO PENDIENTE:</td>
+          <td>
+            <strong>
+              @if (o.totalPendiente) {
+              NO ESTABLECIDO
+              } @else {
+              {{ o.saldo | currency:'USD':'symbol':'1.2-2' }}
+              }
+            </strong>
+          </td>
+        </tr>
+        <tr class="damage-title-row">
+          <td colspan="2">
+            <strong>DAÑO DISPOSITIVO:</strong>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="damage-description">
+            {{ o.danoDispositivo }}
+          </td>
+        </tr>
+      </tbody>
     </table>
 
-
-    <!-- ==================================================
-           OBSERVACIONES
-      =================================================== -->
-
+    <!-- OBSERVACIONES -->
     @if (o.observaciones) {
-
     <div class="observations">
-
-      <strong>
-        OBSERVACIONES:
-      </strong>
-
-      <br>
-
-      {{ o.observaciones }}
-
+      <strong>OBSERVACIONES:</strong>
+      <div>{{ o.observaciones }}</div>
     </div>
-
     }
 
+    <!-- CÓDIGO QR DE SEGUIMIENTO -->
+    @if (qrUrl(); as imagenQR) {
+    <section class="ticket-qr">
+      <strong class="qr-title">CONSULTA EL ESTADO DE TU REPARACIÓN</strong>
+      <div class="qr-image-container">
+        <img [src]="imagenQR" alt="Código QR de seguimiento de la orden" class="qr-image">
+      </div>
+      <p>Escanea este código con la cámara de tu celular.</p>
+    </section>
+    }
 
-    <!-- ==================================================
-           NOTA ORIGINAL
-      =================================================== -->
+    <!-- CONSTANCIA Y FIRMA DEL CLIENTE -->
+    <section class="ticket-signature">
+      <strong class="signature-title">CONSTANCIA DE RECEPCIÓN</strong>
+      <p>
+        El cliente confirma la entrega del equipo al servicio técnico
+        con las condiciones indicadas en esta orden.
+      </p>
+      <div class="signature-space"></div>
+      <div class="signature-line"></div>
+      <strong class="signature-label">FIRMA DEL CLIENTE</strong>
+    </section>
 
-    <div class="note">
-
-      <strong>
-        NOTA:
-      </strong>
-
-      <span>
-        <strong>NO</strong>
-        nos hacemos responsables de su equipo
-        después de 30 días de haber ingresado
-        a nuestro local.
-      </span>
-
-    </div>
-
-
-    <!-- ==================================================
-           PIE DINÁMICO
-      =================================================== -->
-
+    <!-- AGRADECIMIENTO ORIGINAL -->
     <p class="centrado thanks">
-
       @if (empresa()?.leyendaTicket && coincideEmpresaDocumento()) {
-
       {{ empresa()?.leyendaTicket }}
-
       } @else {
-
       ¡GRACIAS POR SU PREFERENCIA!
-
       }
-
-      <br>
-
-      <!-- @if (coincideEmpresaDocumento()) {
-
-      {{ empresa()?.nombreEmpresa || '' }}
-
-      } -->
-
     </p>
 
+    <!-- TÉRMINOS Y CONDICIONES AL FINAL DEL TICKET -->
+    <section class="ticket-terms">
+      <strong class="terms-title">NOTA Y TÉRMINOS Y CONDICIONES</strong>
+      <p>
+        El equipo se recibe para diagnóstico y/o reparación, cuyo diagnóstico
+        puede tener costo. El cliente es responsable de respaldar su información.
+        La garantía cubre únicamente la reparación y los repuestos instalados;
+        excluye golpes, humedad y manipulación de terceros.
+        La empresa <strong>NO</strong> se responsabiliza por equipos no retirados
+        después de <strong>30 días de su ingreso</strong>, los cuales podrán
+        considerarse abandonados conforme a la normativa aplicable.
+        Para retirar el equipo, presente este comprobante o la identificación
+        del titular. Al entregar el equipo, el cliente acepta estas condiciones.
+      </p>
+    </section>
+
   </div>
-
   }
-
-
-
 </mat-dialog-content>
 
-
 <mat-dialog-actions align="end" class="no-print">
-
   <button mat-stroked-button type="button" (click)="cerrar()">
     Cerrar
   </button>
-
-
-  <button mat-flat-button type="button" (click)="imprimir()" [disabled]="
-      cargando()
-      ||
-      cargandoEmpresa()
-      ||
-      cargandoLogo()
-      ||
-      !orden()
-      ||
-      !empresa()
-      ||
-      !coincideEmpresaDocumento()
-    ">
-
-    <mat-icon>
-      print
-    </mat-icon>
-
+  <button mat-flat-button type="button" (click)="imprimir()"
+    [disabled]="cargando() || cargandoEmpresa() || cargandoLogo() || cargandoQR() || !orden() || !empresa() || !coincideEmpresaDocumento()">
+    <mat-icon>print</mat-icon>
     Imprimir
-
   </button>
-
 </mat-dialog-actions>

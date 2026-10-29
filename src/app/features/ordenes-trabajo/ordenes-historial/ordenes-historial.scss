@@ -922,6 +922,17 @@ table.mat-mdc-table {
   }
 }
 
+/* CONSULTAR ORDEN FINALIZADA */
+.consulta-btn {
+  background: rgba(100, 116, 139, 0.10);
+  color: #64748b;
+
+  &:hover:not(:disabled) {
+    background: rgba(100, 116, 139, 0.18);
+    color: #334155;
+  }
+}
+
 /* =====================================================
    27. SIN RESULTADOS
 ===================================================== */

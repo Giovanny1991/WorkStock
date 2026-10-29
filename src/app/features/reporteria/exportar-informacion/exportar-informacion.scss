@@ -1,636 +1,458 @@
-
-/* =====================================================
-   WORKSTOCK - EXPORTAR INFORMACIÓN
-   DISEÑO COMPACTO Y PROFESIONAL
-===================================================== */
-
+/* WORKSTOCK - REPORTERÍA COMPACTA */
 :host {
   display: block;
   width: 100%;
   min-width: 0;
-  box-sizing: border-box;
+  --rp-bg: var(--app-card, #fff);
+  --rp-border: var(--app-border, #e8edf4);
+  --rp-text: var(--app-text, #24364b);
+  --rp-muted: var(--app-text-muted, #8290a2);
 }
 
-:host * {
-  box-sizing: border-box;
-}
-
-/* =====================================================
-   ENCABEZADO - ESTILO CLIENTES
-===================================================== */
-
-.page-header {
+/* HEADER */
+:host .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-
-  h1 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--app-text);
-  }
-
-  p {
-    margin: 3px 0 0;
-    font-size: 13px;
-    color: var(--app-text-muted);
-  }
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  min-height: 0;
+  position: static;
 }
 
-/* =====================================================
-   TARJETA PRINCIPAL
-===================================================== */
+:host .page-title {
+  flex: 1;
+  min-width: 0;
+}
 
-.card {
-  position: relative;
+:host .page-header h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--rp-text);
+}
+
+:host .page-header p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--rp-muted);
+}
+
+:host .header-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 1px solid var(--rp-border);
+  border-radius: 7px;
+  background: var(--rp-bg);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rp-muted);
+}
+
+:host .header-total mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+/* CONTENEDOR */
+:host .export-container {
   width: 100%;
   min-width: 0;
   overflow: hidden;
-
-  background: var(--app-card);
-  border: 1px solid var(--app-border);
-  border-radius: 8px;
-
+  background: var(--rp-bg);
+  border: 1px solid var(--rp-border);
+  border-radius: 10px;
   box-shadow: 0 1px 3px rgba(16, 24, 40, .05);
 }
 
-.export-progress {
+:host .export-progress {
   width: 100%;
 }
 
-/* =====================================================
-   TOOLBAR
-===================================================== */
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-
-  min-height: 50px;
-  padding: 12px 16px;
-
-  border-bottom: 1px solid var(--app-border);
-}
-
-.toolbar-title {
+/* MENSAJES */
+:host .message {
   display: flex;
   align-items: center;
   gap: 8px;
-
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--app-text);
-
-  mat-icon {
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    color: var(--app-text-muted);
-  }
-}
-
-.records {
+  margin: 10px 13px 0;
+  padding: 8px 10px;
   font-size: 12px;
-  color: var(--app-text-muted);
-  white-space: nowrap;
+  border-radius: 6px;
 }
 
-/* =====================================================
-   CUADRÍCULA PRINCIPAL
-===================================================== */
-
-.reports-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  gap: 14px;
-  padding: 18px;
-
-  align-items: start;
+:host .message>mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
 }
 
-/* =====================================================
-   POSICIÓN DE PANELES
-===================================================== */
-
-.celulares-panel {
-  grid-column: 1;
-}
-
-.accesorios-panel {
-  grid-column: 2;
-}
-
-.facturas-panel {
-  grid-column: 1 / -1;
-}
-
-.general-panel {
-  grid-column: 1 / -1;
-}
-
-/* =====================================================
-   PANELES
-===================================================== */
-
-.report-panel {
-  display: flex;
-  flex-direction: column;
-
-  width: 100%;
+:host .message span {
+  flex: 1;
   min-width: 0;
-
-  background: var(--app-card);
-  border: 1px solid var(--app-border);
-  border-radius: 8px;
-
-  overflow: hidden;
-
-  transition:
-    border-color .15s ease,
-    box-shadow .15s ease;
-
-  &:hover {
-    border-color: var(--app-primary);
-    box-shadow: 0 2px 8px rgba(16, 24, 40, .045);
-  }
 }
 
-/* =====================================================
-   ENCABEZADO DE CADA PANEL
-===================================================== */
+:host .error-message {
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #fecaca;
+}
 
-.panel-heading {
+:host .success-message {
+  background: #ecfdf3;
+  color: #027a48;
+  border: 1px solid #a6f4c5;
+}
+
+/* FILTROS */
+:host .filters-panel {
   display: flex;
   align-items: center;
-  gap: 11px;
-
-  min-height: 66px;
-  padding: 12px 15px;
-
-  border-bottom: 1px solid var(--app-border-soft);
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--rp-border);
 }
 
-.panel-icon {
+:host .filter-heading,
+:host .section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+:host .filter-heading h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rp-text);
+}
+
+:host .filter-heading p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--rp-muted);
+}
+
+:host .filters-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+:host .date-field {
+  width: 140px;
+  flex: 0 0 140px;
+}
+
+:host .clear-button {
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+:host .clear-button mat-icon {
+  font-size: 17px;
+}
+
+/* INPUTS MATERIAL */
+:host ::ng-deep .date-field .mat-mdc-text-field-wrapper {
+  height: 36px !important;
+}
+
+:host ::ng-deep .date-field .mat-mdc-form-field-flex {
+  height: 36px !important;
+  align-items: center;
+}
+
+:host ::ng-deep .date-field .mat-mdc-form-field-infix {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding-top: 8px !important;
+  padding-bottom: 0 !important;
+}
+
+:host ::ng-deep .date-field input.mat-mdc-input-element {
+  font-size: 12px !important;
+  padding: 0 !important;
+}
+
+:host ::ng-deep .date-field .mat-mdc-form-field-icon-suffix {
+  padding: 0 !important;
+}
+
+:host ::ng-deep .date-field .mat-datepicker-toggle button {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 4px !important;
+}
+
+:host ::ng-deep .date-field .mdc-floating-label {
+  font-size: 12px;
+}
+
+:host ::ng-deep .date-field .mdc-floating-label--float-above {
+  transform: translateY(-26px) scale(.75) !important;
+}
+
+/* SECCIONES */
+:host .reports-section {
+  padding: 12px 13px 14px;
+}
+
+:host .inventory-section {
+  border-top: 1px solid var(--rp-border);
+}
+
+:host .section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+:host .section-title-group h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rp-text);
+}
+
+:host .section-title-group p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--rp-muted);
+}
+
+:host .section-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  flex-shrink: 0;
-
-  width: 34px;
-  height: 34px;
-
-  background: var(--app-primary-soft);
+  flex: 0 0 31px;
+  width: 31px;
+  height: 31px;
   border-radius: 7px;
-
-  color: var(--app-primary);
-
-  mat-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    line-height: 18px;
-  }
 }
 
-.panel-heading-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+:host .section-icon mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
 
-  gap: 4px;
+:host .sales-icon {
+  background: #eaf2ff;
+  color: #2563eb;
+}
+
+:host .inventory-icon {
+  background: #eaf8ef;
+  color: #15803d;
+}
+
+:host .section-count {
+  font-size: 11px;
+  color: var(--rp-muted);
+}
+
+/* TARJETAS COMPACTAS */
+:host .reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
+  gap: 10px;
   min-width: 0;
-
-  h2 {
-    margin: 0;
-
-    color: var(--app-text);
-
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1.4;
-  }
-
-  p {
-    margin: 0;
-
-    color: var(--app-text-muted);
-
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 1.5;
-  }
 }
 
-/* =====================================================
-   CONTENIDO DE PANELES
-===================================================== */
-
-.panel-content {
+:host .report-card {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 112px;
+  padding: 11px 12px;
+  border: 1px solid var(--rp-border);
+  border-radius: 8px;
+  background: var(--rp-bg);
+  transition: border-color .15s, box-shadow .15s;
+}
 
+:host .report-card:hover {
+  border-color: #b7cde9;
+  box-shadow: 0 2px 9px rgba(24, 67, 115, .06);
+}
+
+:host .report-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+:host .report-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 31px;
+  width: 31px;
+  height: 31px;
+  border-radius: 7px;
+}
+
+:host .report-icon mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+:host .sales-report-icon {
+  background: #edf4ff;
+  color: #2563eb;
+}
+
+:host .inventory-report-icon {
+  background: #eaf8ef;
+  color: #15803d;
+}
+
+:host .report-text {
   flex: 1;
   min-width: 0;
-
-  padding: 13px 15px;
 }
 
-/* =====================================================
-   FILA DE EXPORTACIÓN
-===================================================== */
+:host .report-text h3 {
+  margin: 1px 0 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rp-text);
+}
 
-.report-item {
+:host .report-text p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--rp-muted);
+}
+
+/* PIE DE TARJETAS */
+:host .report-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  gap: 14px;
-  min-height: 50px;
-  min-width: 0;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rp-border);
 }
 
-.report-info {
-  display: flex;
-  flex-direction: column;
-
-  gap: 4px;
-  min-width: 0;
-
-  strong {
-    color: var(--app-text);
-
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.45;
-  }
-
-  span {
-    color: var(--app-text-muted);
-
-    font-size: 11px;
-    line-height: 1.5;
-  }
+:host .file-format {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #15803d;
 }
 
-/* =====================================================
-   BOTONES
-===================================================== */
+:host .file-format mat-icon {
+  width: 15px;
+  height: 15px;
+  font-size: 15px;
+}
 
-.export-btn {
-  flex-shrink: 0;
-
-  min-width: 124px;
-  height: 34px;
-
-  padding: 0 11px;
-
-  border-radius: 6px !important;
-
-  color: var(--app-primary) !important;
-
+:host .export-btn {
+  min-height: 31px;
+  padding: 0 9px;
+  border: 1px solid #c9e6d3;
+  border-radius: 6px;
+  background: #f0faf3;
+  color: #15803d;
   font-size: 11px;
-  font-weight: 600;
-
-  mat-icon {
-    flex-shrink: 0;
-
-    width: 16px;
-    height: 16px;
-
-    font-size: 16px;
-    line-height: 16px;
-  }
-
-  &:not(:disabled):hover {
-    background: var(--app-primary-soft);
-  }
-
-  &:disabled {
-    opacity: .55;
-  }
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-/* =====================================================
-   FACTURAS - PANEL COMPACTO
-===================================================== */
-
-.facturas-panel .panel-heading {
-  min-height: 60px;
-  padding: 11px 15px;
+:host .export-btn mat-icon {
+  font-size: 16px;
 }
 
-.facturas-panel .panel-content {
-  padding: 10px 15px;
+:host .export-btn:not(:disabled):hover {
+  background: #dcfce7;
+  border-color: #86cba1;
 }
 
-.facturas-panel .report-item {
-  min-height: 42px;
+:host .export-btn:disabled {
+  opacity: .55;
 }
 
-/* =====================================================
-   REPORTES GENERALES - ANCHO COMPLETO
-===================================================== */
-
-.general-panel .panel-heading {
-  min-height: 74px;
-
-  padding: 15px 18px;
-
-  gap: 13px;
-}
-
-.general-panel .panel-heading-text {
-  gap: 6px;
-}
-
-.general-panel .panel-heading-text h2 {
-  line-height: 1.45;
-}
-
-.general-panel .panel-heading-text p {
-  line-height: 1.6;
-}
-
-.general-panel .panel-content {
-  padding: 16px 18px;
-}
-
-/* =====================================================
-   CUADRÍCULA REPORTES GENERALES
-===================================================== */
-
-.general-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-
-  gap: 12px;
-  align-items: stretch;
-}
-
-/* =====================================================
-   TARJETAS INTERNAS
-===================================================== */
-
-.general-item {
-  display: flex;
-  flex-direction: column;
-
-  gap: 12px;
-
-  min-width: 0;
-  min-height: 132px;
-
-  padding: 14px;
-
-  background: var(--app-card-secondary);
-  border: 1px solid var(--app-border-soft);
-  border-radius: 7px;
-}
-
-/* =====================================================
-   TÍTULOS DE REPORTES GENERALES
-===================================================== */
-
-.general-info {
+/* PIE GENERAL */
+:host .export-footer {
   display: flex;
   align-items: center;
-
   gap: 8px;
-  min-width: 0;
-
-  mat-icon {
-    flex-shrink: 0;
-
-    width: 18px;
-    height: 18px;
-
-    font-size: 18px;
-    line-height: 18px;
-
-    color: var(--app-text-muted);
-  }
-
-  span {
-    color: var(--app-text);
-
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.45;
-  }
-}
-
-/* =====================================================
-   BOTONES DE REPORTES GENERALES
-===================================================== */
-
-.general-export {
-  width: 100%;
-  min-width: 0;
-  margin-top: auto;
-
-  background: var(--app-card);
-}
-
-/* =====================================================
-   FILTRO FACTURA
-===================================================== */
-
-.filter-field {
-  display: block;
-  width: 100%;
-
-  font-size: 12px;
-}
-
-.general-item .filter-field {
-  margin-top: auto;
-}
-
-.general-item:has(.filter-field) .general-export {
-  margin-top: 0;
-}
-
-:host ::ng-deep
-.filter-field .mat-mdc-text-field-wrapper {
-  height: 34px;
-}
-
-:host ::ng-deep
-.filter-field .mat-mdc-form-field-infix {
-  min-height: 34px;
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
-}
-
-:host ::ng-deep
-.filter-field .mat-mdc-select-value {
+  padding: 10px 13px;
+  border-top: 1px solid var(--rp-border);
   font-size: 11px;
+  color: var(--rp-muted);
 }
 
-/* =====================================================
-   NOTIFICACIONES
-===================================================== */
+:host .export-footer mat-icon {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}
 
-.message {
-  display: flex;
-  align-items: center;
-
-  gap: 9px;
-  padding: 10px 16px;
-
-  border-bottom: 1px solid var(--app-border);
-
-  font-size: 12px;
-  line-height: 1.5;
-
-  mat-icon {
-    flex-shrink: 0;
-
-    width: 18px;
-    height: 18px;
-
-    font-size: 18px;
+/* RESPONSIVE */
+@media (max-width: 950px) {
+  :host .filters-actions {
+    justify-content: flex-start;
   }
 }
 
-.error-message {
-  color: var(--app-danger);
-  background: var(--app-danger-bg);
-}
-
-.success-message {
-  color: var(--app-success);
-  background: var(--app-success-bg);
-}
-
-/* =====================================================
-   PIE INFORMATIVO
-===================================================== */
-
-.card-footer {
-  display: flex;
-  align-items: flex-start;
-
-  gap: 8px;
-  padding: 12px 16px;
-
-  border-top: 1px solid var(--app-border);
-
-  background: var(--app-card-secondary);
-
-  color: var(--app-text-muted);
-
-  font-size: 11px;
-  line-height: 1.5;
-
-  mat-icon {
-    flex-shrink: 0;
-
-    width: 16px;
-    height: 16px;
-
-    font-size: 16px;
-  }
-}
-
-/* =====================================================
-   RESPONSIVE - TABLET
-===================================================== */
-
-@media (max-width: 1150px) {
-
-  .general-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 600px) {
+  :host .page-header h1 {
+    font-size: 19px;
   }
 
-}
-
-/* =====================================================
-   RESPONSIVE - PANTALLAS MEDIANAS
-===================================================== */
-
-@media (max-width: 750px) {
-
-  .reports-grid {
-    grid-template-columns: 1fr;
-
-    gap: 12px;
-    padding: 12px;
+  :host .header-total {
+    display: none;
   }
 
-  .celulares-panel,
-  .accesorios-panel,
-  .facturas-panel,
-  .general-panel {
-    grid-column: 1;
+  :host .filters-panel {
+    align-items: flex-start;
   }
 
-  .general-panel .panel-heading {
-    padding: 13px;
-  }
-
-  .general-panel .panel-content {
-    padding: 12px;
-  }
-
-}
-
-/* =====================================================
-   RESPONSIVE - MÓVIL
-===================================================== */
-
-@media (max-width: 500px) {
-
-  .page-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .toolbar {
-    padding: 11px 12px;
-  }
-
-  .records {
-    font-size: 11px;
-  }
-
-  .panel-heading {
-    padding: 12px;
-  }
-
-  .panel-content {
-    padding: 12px;
-  }
-
-  .report-item {
-    flex-direction: column;
-    align-items: stretch;
-
-    gap: 10px;
-  }
-
-  .report-item .export-btn {
+  :host .filters-actions {
     width: 100%;
   }
 
-  .general-grid {
+  :host .reports-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  }
+}
+
+@media (max-width: 440px) {
+  :host .date-field {
+    flex: 1 1 130px;
+    width: auto;
+  }
+
+  :host .reports-grid {
     grid-template-columns: 1fr;
   }
-
-  .general-item {
-    min-height: 110px;
-  }
-
-  .card-footer {
-    padding: 12px;
-  }
-
 }

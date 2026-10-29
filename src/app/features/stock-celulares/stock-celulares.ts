@@ -8,7 +8,7 @@ import {
   signal
 } from '@angular/core';
 
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import {
   FormControl,
@@ -92,7 +92,8 @@ import {
     MatFormFieldModule,
     MatInputModule,
     MatTooltipModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    DatePipe
   ],
 
   templateUrl: './stock-celulares.html',
@@ -174,10 +175,10 @@ export class StockCelulares implements OnInit {
 
     const columnas = [
       // 'id',
+      'fechaIngreso',
       'proveedor',
       'modelo',
-      'imei',
-      'documento'
+      'imei'
     ];
 
     if (this.esAdministrador()) {
@@ -186,7 +187,6 @@ export class StockCelulares implements OnInit {
 
     columnas.push(
       'venta',
-      'estado',
       'acciones'
     );
 
@@ -243,7 +243,7 @@ export class StockCelulares implements OnInit {
   // ===================================================
 
   readonly columnaOrden =
-    signal<StockOrden>('id');
+    signal<StockOrden>('fechaIngreso');
 
   readonly direccionOrden =
     signal<DireccionStock>('desc');
@@ -488,6 +488,7 @@ export class StockCelulares implements OnInit {
       'documento',
       'costo',
       'venta',
+      'fechaIngreso',
       'estadoEquipo',
       'estado'
     ];

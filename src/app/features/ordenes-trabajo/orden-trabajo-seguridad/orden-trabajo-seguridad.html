@@ -1,0 +1,75 @@
+<div class="ws-lock">
+    <div class="ws-lock-modes">
+        <div class="ws-lock-modes-title"><mat-icon>shield</mat-icon><span>Método de desbloqueo</span></div>
+        <mat-radio-group class="ws-lock-options" [formControl]="tipo" (change)="cambiarTipo($event.value)">
+            <mat-radio-button value="SIN_BLOQUEO">Sin bloqueo</mat-radio-button>
+            <mat-radio-button value="CONTRASENA">Contraseña / PIN</mat-radio-button>
+            <mat-radio-button value="PATRON">Patrón</mat-radio-button>
+            @if (tipoActual() === 'NO_REGISTRADO') { <mat-radio-button value="NO_REGISTRADO">No
+                registrado</mat-radio-button> }
+        </mat-radio-group>
+    </div>
+    @if (tipoVisible() === 'SIN_BLOQUEO') {
+    <div class="ws-lock-message success"><mat-icon>check_circle</mat-icon><span>El equipo se recibió sin bloqueo.</span>
+    </div>
+    }
+    @if (tipoVisible() === 'NO_REGISTRADO') {
+    <div class="ws-lock-message neutral"><mat-icon>info_outline</mat-icon><span>Sin información de desbloqueo
+            registrada.</span></div>
+    }
+    @if (tipoVisible() === 'CONTRASENA') {
+    <div class="ws-lock-password">
+        <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic" class="ws-lock-input">
+            <mat-label>Contraseña / PIN del dispositivo</mat-label>
+            <input matInput type="text" [formControl]="clave" maxlength="100" autocomplete="off" spellcheck="false"
+                placeholder="Contraseña o PIN" (input)="cambiarClave()">
+        </mat-form-field>
+        @if (!soloLectura) {<span class="ws-lock-help">Puedes modificar la clave directamente; guardar la orden
+            actualizará el dato.</span>}
+    </div>
+    }
+    @if (tipoVisible() === 'PATRON') {
+    <div class="ws-lock-pattern">
+        <div class="ws-lock-pattern-grid">
+            <div class="ws-lock-canvas-panel" [class.ws-lock-readonly]="soloLectura">
+                <svg #lienzo viewBox="0 0 220 220" class="ws-lock-canvas" role="img"
+                    aria-label="Patrón gráfico del dispositivo" (pointerdown)="iniciarPatron($event)"
+                    (pointermove)="moverPatron($event)" (pointerup)="terminarPatron($event)"
+                    (pointercancel)="terminarPatron($event)">
+                    @for (punto of puntosVisibles(); track punto; let i = $index) {
+                    @if (i > 0) {
+                    <line class="ws-lock-line" [attr.x1]="puntoX(puntosVisibles()[i-1])"
+                        [attr.y1]="puntoY(puntosVisibles()[i-1])" [attr.x2]="puntoX(punto)" [attr.y2]="puntoY(punto)" />
+                    }
+                    }
+                    @if (dibujando() && posicion() && puntos().length) {
+                    <line class="ws-lock-line ws-lock-line-pending" [attr.x1]="puntoX(puntos()[puntos().length-1])"
+                        [attr.y1]="puntoY(puntos()[puntos().length-1])" [attr.x2]="posicion()!.x"
+                        [attr.y2]="posicion()!.y" />
+                    }
+                    @for (nodo of nodos; track nodo.numero) {
+                    <circle class="ws-lock-node" [class.active]="puntosVisibles().includes(nodo.numero)"
+                        [attr.cx]="nodo.x" [attr.cy]="nodo.y" r="13" />
+                    @if (puntosVisibles().includes(nodo.numero)) {
+                    <text class="ws-lock-node-number" [attr.x]="nodo.x" [attr.y]="nodo.y+4" text-anchor="middle">{{
+                        puntosVisibles().indexOf(nodo.numero)+1 }}</text>
+                    }
+                    }
+                </svg>
+            </div>
+            <div class="ws-lock-pattern-info">
+                <div class="ws-lock-pattern-stat"><mat-icon>gesture</mat-icon>
+                    <div><strong>{{ puntosVisibles().length }} / 9</strong><span>Puntos conectados</span></div>
+                </div>
+                @if (soloLectura) {<p class="ws-lock-help">Patrón registrado (solo lectura).</p>}
+                @else {
+                <p class="ws-lock-help">El patrón guardado se muestra aquí. Para reemplazarlo, dibuja directamente otro
+                    recorrido de al menos cuatro puntos.</p>
+                <button mat-stroked-button type="button" class="ws-lock-clear"
+                    (click)="limpiarPatron()"><mat-icon>restart_alt</mat-icon>Limpiar patrón</button>
+                }
+            </div>
+        </div>
+    </div>
+    }
+</div>

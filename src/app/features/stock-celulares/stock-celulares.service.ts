@@ -22,6 +22,7 @@ export type StockOrden =
   | 'documento'
   | 'costo'
   | 'venta'
+  | 'fechaIngreso'
   | 'estadoEquipo'
   | 'estado';
 

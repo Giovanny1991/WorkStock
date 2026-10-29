@@ -310,44 +310,41 @@
 
           <td mat-cell *matCellDef="let x" class="col-actions">
 
+
             <div class="actions-container">
 
-              <!-- VISUALIZAR -->
-
-              <button mat-icon-button type="button" class="action-btn view-btn" matTooltip="Visualizar orden"
-                aria-label="Visualizar orden" (click)="visualizar(x)">
-
-                <mat-icon>visibility</mat-icon>
-
-              </button>
-
-              <!-- GESTIONAR -->
-
+              <!-- GESTIONAR: ÓRDENES ABIERTAS -->
               @if (puedeGestionar(x)) {
-
-              <button mat-icon-button type="button" class="action-btn edit-btn" matTooltip="Gestionar orden"
-                aria-label="Gestionar orden" (click)="gestionar(x)">
-
+              <button mat-icon-button type="button" class="action-btn edit-btn" matTooltip="Gestionar orden de trabajo"
+                aria-label="Gestionar orden de trabajo" (click)="gestionar(x)">
                 <mat-icon>edit</mat-icon>
-
               </button>
-
               }
 
-              <!-- ELIMINAR -->
+              <!-- CONSULTAR INFORMACIÓN COMPLETA: ÓRDENES CERRADAS -->
+              @if (esFinalizada(x)) {
+              <button mat-icon-button type="button" class="action-btn consulta-btn"
+                matTooltip="Consultar orden finalizada" aria-label="Consultar orden finalizada" (click)="verGestion(x)">
+                <mat-icon>receipt_long</mat-icon>
+              </button>
+              }
 
+              <!-- VISUALIZAR TICKET: TODAS LAS ÓRDENES -->
+              <button mat-icon-button type="button" class="action-btn view-btn"
+                matTooltip="Visualizar ticket de la orden" aria-label="Visualizar ticket de la orden"
+                (click)="visualizar(x)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+
+              <!-- ELIMINAR: SOLO CUANDO ESTÁ PERMITIDO -->
               @if (puedeEliminar(x)) {
-
               <button mat-icon-button type="button" class="action-btn delete-btn" matTooltip="Eliminar orden"
                 aria-label="Eliminar orden" [disabled]="eliminandoId() !== null" (click)="eliminar(x)">
-
                 <mat-icon>delete_outline</mat-icon>
-
               </button>
-
               }
-
             </div>
+
 
           </td>
 
