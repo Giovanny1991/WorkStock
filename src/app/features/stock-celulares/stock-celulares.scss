@@ -1,3 +1,4 @@
+@use '../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - STOCK DE CELULARES
    ESTILO COMPACTO, UNIFICADO Y RESPONSIVE
@@ -1023,3 +1024,6 @@ mat-progress-bar {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

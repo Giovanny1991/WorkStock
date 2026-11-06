@@ -1,4 +1,3 @@
-
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
@@ -6,25 +5,33 @@ import { adminGuard } from './core/guards/admin.guard';
 import { tipoCuentaGuard } from './core/guards/tipo-cuenta.guard';
 
 export const routes: Routes = [
-  // SEGUIMIENTO PÚBLICO DE ÓRDENES - SIN LOGIN
   {
     path: 'seguimiento/:token',
     loadComponent: () => import('./features/ordenes-trabajo/seguimiento-orden-publica/seguimiento-orden-publica').then(m => m.SeguimientoOrdenPublicaComponent),
     data: { title: 'Seguimiento de reparación' }
   },
-  // LOGIN PERSONALIZADO
+  {
+    path: 'servicio-tecnico/qr-fotos/:token',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/ordenes-trabajo/orden-trabajo-qr/orden-trabajo-qr-carga').then(m => m.OrdenTrabajoQrCarga),
+    data: { title: 'Fotografías de orden de trabajo' }
+  },
+  {
+    path: 'servicio-tecnico/qr-borrador/:token',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/ordenes-trabajo/orden-trabajo-qr/orden-trabajo-qr-borrador-carga').then(m => m.OrdenTrabajoQrBorradorCarga),
+    data: { title: 'Fotografías para nueva orden' }
+  },
   {
     path: 'login/:codigoEmpresa',
     canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },
-  // LOGIN GENERAL
   {
     path: 'login',
     canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },
-  // SISTEMA AUTENTICADO
   {
     path: '',
     canActivate: [authGuard],
@@ -122,6 +129,12 @@ export const routes: Routes = [
         path: 'administracion',
         canActivate: [adminGuard],
         loadComponent: () => import('./features/administracion/administracion').then(m => m.Administracion)
+      },
+      {
+        path: 'configuracion/formas-pago',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/configuracion/formas-pago/formas-pago').then(m => m.FormasPago),
+        data: { title: 'Formas de pago' }
       },
       {
         path: 'configuracion/iva',

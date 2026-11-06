@@ -1,0 +1,30 @@
+<main class="ws-mobile-page"><section class="ws-mobile-card">
+  <header><span class="ws-icon"><mat-icon>photo_camera</mat-icon></span><div><h1>Cargar fotografías</h1><p>WORKSTOCK · SERVICIO TÉCNICO</p></div></header>
+  @if (consultando() || subiendo()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (sesion(); as s) {
+    <div class="ws-order-info"><strong>Orden #{{ s.NumeroOrden }}</strong><span>{{s.FotografiasCargadas}} de {{s.MaxFotografias}} fotografías</span></div>
+    <p class="ws-instructions">Las fotografías se guardarán directamente en esta orden al pulsar Enviar imágenes.</p>
+    <div class="ws-actions">
+      <label class="ws-photo-button" [class.disabled]="subiendo() || s.FotografiasCargadas + pendientes().length >= s.MaxFotografias || pendientes().length >= 5"><mat-icon>photo_camera</mat-icon><span>Tomar fotografía</span><input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" [disabled]="subiendo() || s.FotografiasCargadas + pendientes().length >= s.MaxFotografias || pendientes().length >= 5" (change)="seleccionar($event)"></label>
+      <label class="ws-photo-button ws-secondary" [class.disabled]="subiendo() || s.FotografiasCargadas + pendientes().length >= s.MaxFotografias || pendientes().length >= 5"><mat-icon>collections</mat-icon><span>Elegir de la galería</span><input type="file" accept="image/jpeg,image/png,image/webp" multiple [disabled]="subiendo() || s.FotografiasCargadas + pendientes().length >= s.MaxFotografias || pendientes().length >= 5" (change)="seleccionar($event)"></label>
+    </div>
+    @if (pendientes().length) {
+      <section class="ws-pending-section" aria-label="Fotografías por enviar"><h2>Previsualización · {{pendientes().length}} fotografía(s)</h2>
+        <div class="ws-preview-grid">@for (foto of pendientes(); track foto.url; let i=$index) {
+          <div class="ws-preview-item"><img [src]="foto.url" [alt]="foto.archivo.name"><span [title]="foto.archivo.name">{{foto.archivo.name}}</span><button type="button" class="ws-remove-photo" [disabled]="subiendo()" (click)="quitar(i)" [attr.aria-label]="'Quitar '+foto.archivo.name"><mat-icon>delete_outline</mat-icon><span>Quitar</span></button></div>
+        }</div>
+      </section>
+    }
+    
+    @if (s.imagenes?.length) {
+      <p class="ws-instructions">Fotografías enviadas por este QR:</p>
+      <ul class="ws-photo-list">@for(f of s.imagenes; track f.id) {
+        <li><mat-icon>check_circle</mat-icon><span class="ws-sent-name">{{f.nombreOriginal}}</span><button type="button" class="ws-remove-sent" [disabled]="subiendo() || eliminando() !== null" (click)="eliminarEnviada(f.id,f.nombreOriginal)"><mat-icon>delete_outline</mat-icon>Eliminar</button></li>
+      }</ul>
+    }
+    <button mat-flat-button type="button" class="ws-send" [disabled]="subiendo() || consultando() || !pendientes().length" (click)="enviar()"><mat-icon>send</mat-icon>{{subiendo() ? 'Enviando fotografías...' : 'Enviar imágenes'}}</button>
+  } @else if (!consultando() && !error()) {<p class="ws-instructions">La sesión ya no está disponible.</p>}
+  @if (mensaje()) {<div class="ws-message ws-success" role="status"><mat-icon>check_circle</mat-icon>{{mensaje()}}</div>}
+  @if (error()) {<div class="ws-message ws-error" role="alert"><mat-icon>error_outline</mat-icon>{{error()}}</div>}
+  <button mat-stroked-button type="button" class="ws-refresh" [disabled]="consultando() || subiendo()" (click)="consultar()"><mat-icon>refresh</mat-icon> Consultar recibidas</button>
+</section><p class="ws-footnote">Acceso exclusivo con sesión activa de WorkStock. QR temporal de 15 minutos.</p></main>

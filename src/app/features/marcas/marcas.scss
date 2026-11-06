@@ -1,3 +1,4 @@
+@use '../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - MARCAS DE DISPOSITIVOS
    DISEÑO ESTÁNDAR COMPACTO Y RESPONSIVE
@@ -473,8 +474,8 @@ table.mat-mdc-table {
 ===================================================== */
 
 .mat-column-estado {
-  width: 150px;
-  min-width: 125px;
+  width: 84px;
+  min-width: 84px;
 }
 
 .col-status {
@@ -491,35 +492,6 @@ table.mat-mdc-table {
    ETIQUETAS DE ESTADO
 ===================================================== */
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 82px;
-  padding: 4px 9px;
-
-  border-radius: 20px;
-
-  background: var(--hist-bg-soft);
-  color: var(--hist-muted);
-
-  font-size: 10px;
-  font-weight: 650;
-  line-height: 1.4;
-
-  white-space: nowrap;
-}
-
-.status.active {
-  background: var(--hist-success-bg);
-  color: var(--hist-success);
-}
-
-.status.inactive {
-  background: var(--hist-danger-bg);
-  color: var(--hist-danger);
-}
 
 /* =====================================================
    MARCAS INACTIVAS
@@ -548,9 +520,9 @@ table.mat-mdc-table {
 ===================================================== */
 
 .mat-column-acciones {
-  width: 120px;
-  min-width: 120px;
-  max-width: 120px;
+  width: 86px;
+  min-width: 86px;
+  max-width: 86px;
 }
 
 .col-actions {
@@ -792,3 +764,6 @@ mat-progress-bar {
     min-width: 580px;
   }
 }
+
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

@@ -17,9 +17,10 @@ import {
 import {
   AuthService
 } from '../auth/auth.service';
+import { rutaQrSegura } from '../auth/qr-return-url';
 
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
 
   // =====================================================
   // SERVICIOS
@@ -64,9 +65,10 @@ export const authGuard: CanActivateFn = () => {
         // Redirigir usando UrlTree para evitar
         // navegaciones innecesarias dentro del guard.
 
-        return of(
-          router.parseUrl(rutaLogin)
-        );
+        const destino = rutaQrSegura(state.url);
+        const redireccion = router.parseUrl(rutaLogin);
+        if (destino) redireccion.queryParams = { ...redireccion.queryParams, returnUrl: destino };
+        return of(redireccion);
 
       })
 

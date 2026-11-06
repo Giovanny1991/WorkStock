@@ -35,7 +35,7 @@
         <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
 
           <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
-            placeholder="Cédula, RUC o nombre..." autocomplete="off">
+            placeholder="Cédula, RUC, P..., LOCAL... o nombre" autocomplete="off">
 
           <mat-icon matSuffix>search</mat-icon>
 
@@ -118,6 +118,8 @@
         }
 
       </div>
+
+      <app-cliente-seleccionado [cliente]="clienteSeleccionado()" />
 
     </div>
 
@@ -225,9 +227,9 @@
 
       </div>
 
-      <div class="table-wrapper">
+      <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Detalle de factura">
 
-        <table mat-table [dataSource]="detalle()">
+        <table class="ws-table ws-table--compact ws-table--actions" mat-table [dataSource]="detalle()">
 
           <!-- EQUIPO -->
 
@@ -344,6 +346,8 @@
 
     </div>
 
+    <!-- FORMAS DE PAGO: dentro de la columna izquierda, debajo del detalle -->
+    <app-pagos-editor [total]="total()" (pagosChange)="actualizarPagos($event)"></app-pagos-editor>
   </div>
 
   <!-- ==================================================

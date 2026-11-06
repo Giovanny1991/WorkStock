@@ -1,5 +1,6 @@
 <section class="imagenes-orden">
   <div class="imagenes-titulo">
+    @if (mostrarTitulo) {
     <div class="titulo-contenido">
       <div class="titulo-icono"><mat-icon>photo_library</mat-icon></div>
       <div>
@@ -7,6 +8,7 @@
         <p>Fotografías del equipo, daños y reparación.</p>
       </div>
     </div>
+    }
     @if (!soloLectura) {
     <div class="imagenes-herramientas">
       <label class="selector-imagenes selector-camara" [class.inhabilitado]="procesando()">
@@ -21,6 +23,15 @@
         <input type="file" accept="image/jpeg,image/png,image/webp" multiple [disabled]="procesando()"
           (change)="seleccionar($event)">
       </label>
+      @if (mostrarQr) {
+      <button type="button" class="selector-imagenes selector-qr" [disabled]="qrDeshabilitado"
+        (click)="solicitarQr.emit()" aria-label="Fotografías por QR"
+        title="Cargar fotografías desde un celular autenticado">
+        <mat-icon>qr_code_2</mat-icon>
+        <span>{{ qrProcesando ? 'Generando QR...' : 'Fotografías por QR' }}</span>
+      </button>
+      }
+
     </div>
     }
   </div>
@@ -29,7 +40,7 @@
   <mat-progress-bar mode="indeterminate" />
   }
 
-  @if (imagenes().length || previsualizaciones().length) {
+  @if (imagenes().length || previsualizaciones().length || qrPrevisualizaciones().length) {
   <div class="imagenes-grid">
     @for (imagen of imagenes(); track imagen.id) {
     <div class="imagen-tarjeta">
@@ -54,6 +65,24 @@
     </div>
     }
 
+    @for (foto of qrPrevisualizaciones(); track foto.id) {
+    <div class="imagen-tarjeta pendiente">
+      <span class="badge-pendiente">RECIBIDA QR</span>
+      <button type="button" class="imagen-preview" (click)="ampliar(foto.url, foto.nombre)" aria-label="Ampliar fotografía QR">
+        <img [src]="foto.url" [alt]="foto.nombre">
+        <span class="zoom-icon"><mat-icon>zoom_in</mat-icon></span>
+      </button>
+      <div class="imagen-pie">
+        <span [title]="foto.nombre">{{ foto.nombre }}</span>
+        @if (!soloLectura && tokenQr && !idOrden) {
+        <button mat-icon-button type="button" class="btn-eliminar" aria-label="Eliminar fotografía QR"
+          title="Eliminar fotografía QR" [disabled]="procesando() || qrDeshabilitado" (click)="eliminarFotoQr(foto)">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+        }
+      </div>
+    </div>
+    }
     @for (url of previsualizaciones(); track url; let i = $index) {
     <div class="imagen-tarjeta pendiente">
       <span class="badge-pendiente">PENDIENTE</span>

@@ -1,0 +1,54 @@
+:host{display:block;min-width:0}
+.pagos-card{background:var(--app-card);border:1px solid var(--app-border);border-radius:8px;padding:14px 16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+.pagos-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-width:0}
+.pagos-icon{width:32px;height:32px;border-radius:7px;flex:none;display:grid;place-items:center;background:var(--app-primary-soft);color:var(--app-primary);mat-icon{width:19px;height:19px;font-size:19px}}
+.pagos-head-text{min-width:0;flex:1;h2{margin:0;color:var(--app-text);font-size:14px;line-height:19px;font-weight:700}p{margin:2px 0 0;color:var(--app-text-muted);font-size:11px;line-height:15px}}
+.pagos-count{border:1px solid var(--app-border);background:var(--app-card-secondary);color:var(--app-text-muted);border-radius:20px;padding:3px 9px;font-size:11px;white-space:nowrap}
+.pagos-form{display:grid;grid-template-columns:minmax(170px,1.4fr) minmax(150px,1fr) auto;gap:9px 10px;align-items:end}
+.pago-field{min-width:0;display:flex;flex-direction:column;gap:5px;label{font-size:11px;font-weight:600;line-height:14px;color:var(--app-text-muted)}}
+.pago-control{box-sizing:border-box;display:block;width:100%;min-width:0;height:40px;border-radius:6px;border:1px solid var(--app-border);background:var(--app-card);padding:0 11px;color:var(--app-text);font:inherit;font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+.pago-control::placeholder{color:var(--app-text-muted);opacity:.8}
+.pago-control:focus{border-color:var(--app-primary);box-shadow:0 0 0 2px var(--app-primary-soft)}
+.pago-select-wrap,.pago-valor-wrap{position:relative;min-width:0}
+.pago-select{appearance:none;-webkit-appearance:none;padding-right:35px;cursor:pointer}
+.pago-select-wrap>mat-icon{pointer-events:none;position:absolute;right:9px;top:50%;transform:translateY(-50%);width:18px;height:18px;font-size:18px;color:var(--app-text-muted)}
+.pago-valor{padding-left:23px;padding-right:49px;font-variant-numeric:tabular-nums}
+.pago-prefix{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--app-text-muted);pointer-events:none}
+.pago-todo{position:absolute;right:5px;top:5px;height:30px;padding:0 8px;border:0;border-radius:5px;background:var(--app-primary-soft);color:var(--app-primary);font-size:11px;font-weight:700;cursor:pointer}
+.pago-todo:hover{filter:brightness(.96)}
+.pago-obligatorio{color:var(--app-danger,#c82e2e)}.pago-opcional{font-weight:400}
+.pago-referencia{grid-column:1;grid-row:2}.pago-banco{grid-column:2/4;grid-row:2}
+.pago-add{grid-column:3;grid-row:1;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;height:40px;padding:0 14px;border:1px solid var(--app-primary);border-radius:6px;background:var(--app-primary);color:#fff;cursor:pointer;font-weight:600;font-size:12px;transition:filter .15s;mat-icon{width:17px;height:17px;font-size:17px}}
+.pago-add:hover:not(:disabled){filter:brightness(.93)}.pago-add:disabled{opacity:.45;cursor:not-allowed}
+.pagos-aviso{margin:0 0 10px;color:var(--app-text-muted);font-size:12px;line-height:18px}
+.pagos-reintentar{padding:0;border:0;background:none;color:var(--app-primary);font-weight:700;cursor:pointer}
+.pagos-lista{margin-top:12px;border-top:1px solid var(--app-border)}
+.pago-linea{display:flex;align-items:center;gap:10px;min-height:43px;border-bottom:1px solid var(--app-border-soft,var(--app-border));padding:5px 0;color:var(--app-text);font-size:12px}
+.pago-datos{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;flex:1;min-width:0;strong{font-size:12px}.pago-referencia-texto{color:var(--app-text-muted);font-size:11px;overflow-wrap:anywhere}}
+.pago-importe{font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pago-quitar{width:28px;height:28px;display:grid;place-items:center;flex:none;border:0;border-radius:5px;background:transparent;color:var(--app-danger,#d92d20);cursor:pointer;mat-icon{width:18px;height:18px;font-size:18px}}
+.pago-quitar:hover{background:var(--app-danger-bg,#fff0ed)}
+.pagos-resumen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid var(--app-border);padding-top:12px;margin-top:12px}
+.pagos-dato{display:flex;flex-direction:column;gap:5px;min-width:0;span{font-size:11px;color:var(--app-text-muted);line-height:14px}strong{font-size:15px;color:var(--app-text);font-variant-numeric:tabular-nums;line-height:19px}}
+.pagos-dato.con-saldo strong{color:#b54708}.pagos-dato.saldo-completo strong{color:#07835f}.pagos-dato.saldo-excedido strong{color:var(--app-danger,#d92d20)}
+.pagos-error{margin:9px 0 0;color:var(--app-danger,#d92d20);font-size:11px}
+@media(max-width:740px){.pagos-form{grid-template-columns:repeat(2,minmax(0,1fr))}.pago-referencia{grid-column:1;grid-row:auto}.pago-banco{grid-column:2;grid-row:auto}.pago-add{grid-column:1/-1;grid-row:auto;justify-self:stretch}}
+@media(max-width:470px){.pagos-card{padding:12px}.pagos-form{grid-template-columns:1fr}.pago-referencia,.pago-banco,.pago-add{grid-column:1;grid-row:auto}.pagos-head-text p{font-size:10px}.pagos-count{padding:3px 6px}.pagos-resumen{gap:6px}.pagos-dato span{font-size:10px}.pagos-dato strong{font-size:13px}}
+
+/* OT: editor integrado sin tarjetas ni encabezados duplicados */
+.pagos-card-integrado{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.pagos-movimientos{margin-top:12px}
+.pagos-movimientos-titulo{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0 6px;color:var(--app-text);font-size:11px;font-weight:700}
+.pagos-movimientos-titulo span+span{color:var(--app-text-muted);font-size:10px;font-weight:500}
+.pagos-movimientos .pagos-lista{margin-top:0}
+.pago-estado{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:68px;min-height:21px;box-sizing:border-box;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:650;white-space:nowrap;background:var(--app-card-secondary);color:var(--app-text-muted);border:1px solid var(--app-border)}
+.pago-estado-registrado{color:#08785a;background:#eaf8f3;border-color:#bde6d8}
+.pago-estado-pendiente{color:#975a05;background:#fff4dc;border-color:#f6d99d}
+.pago-estado-anulado{color:var(--app-text-muted);background:var(--app-card-secondary);border-color:var(--app-border)}
+.pago-estado-historico{color:var(--app-text-muted)}
+.pago-linea-pendiente{background:color-mix(in srgb,var(--app-primary-soft) 28%,transparent);padding-inline:6px;border-radius:5px}
+.pago-linea-anulado{opacity:.62}
+.pago-linea-anulado .pago-datos strong,.pago-linea-anulado .pago-importe{text-decoration:line-through}
+.pagos-nota{display:flex;align-items:center;gap:5px;margin:8px 0 0;color:var(--app-text-muted);font-size:11px;line-height:1.4}
+.pagos-nota mat-icon{width:15px;height:15px;font-size:15px;flex:none;color:var(--app-primary)}
+@media(max-width:600px){.pago-linea{flex-wrap:wrap;gap:5px 8px}.pago-estado{min-width:0}.pago-datos{flex-basis:55%}.pago-importe{margin-left:auto}}

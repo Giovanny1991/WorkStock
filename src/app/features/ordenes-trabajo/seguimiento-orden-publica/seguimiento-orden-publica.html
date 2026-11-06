@@ -1,124 +1,337 @@
-<div class="seguimiento-page">
-    <main class="seguimiento-container">
-        <header class="site-header">
-            <div class="brand-mark">
-                @if (logoUrl() && !errorLogo()) {
-                <img [src]="logoUrl()" (error)="falloLogo()" alt="Logo de la empresa">
-                } @else {
-                <mat-icon>phonelink_setup</mat-icon>
-                }
-            </div>
-            <div class="brand-text">
-                <strong>{{ orden()?.empresa || 'Servicio técnico' }}</strong>
-                <span>Seguimiento de órdenes de trabajo</span>
-            </div>
-        </header>
-
-        @if (cargando()) {
-        <section class="message-card" role="status">
-            <mat-icon class="loading-icon">sync</mat-icon>
-            <h2>Consultando tu orden</h2>
-            <p>Estamos verificando el estado actualizado de tu dispositivo.</p>
-        </section>
-        } @else if (error()) {
-        <section class="message-card" role="alert">
-            <mat-icon class="error-icon">link_off</mat-icon>
-            <h2>Seguimiento no disponible</h2>
-            <p>{{ error() }}</p>
-        </section>
-        } @else if (orden(); as o) {
-        <section class="order-card">
-            <div class="order-heading">
-                <div>
-                    <span class="eyebrow">ORDEN DE TRABAJO</span>
-                    <h1>#{{ o.numeroOrden }}</h1>
-                    <p>Consulta el avance de la reparación de tu equipo.</p>
-                </div>
-                <mat-icon class="heading-icon">assignment_turned_in</mat-icon>
-            </div>
-
-            <div class="status-panel" [attr.data-estado]="estadoActual()">
-                <span class="eyebrow">ESTADO ACTUAL</span>
-                <div class="status-name">
-                    <mat-icon>{{ iconoEstado() }}</mat-icon>
-                    <strong>{{ estadoActual() }}</strong>
-                </div>
-                <p>{{ descripcionEstado() }}</p>
-            </div>
-
-            <section class="details-section">
-                <h2><mat-icon>smartphone</mat-icon> Información del equipo</h2>
-                <div class="details-grid">
-                    <div class="detail">
-                        <span>Modelo</span>
-                        <strong>{{ o.modeloDispositivo || 'No disponible' }}</strong>
-                    </div>
-                    <div class="detail">
-                        <span>Fecha de ingreso</span>
-                        <strong>{{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</strong>
-                    </div>
-                    <div class="detail">
-                        <span>Empresa</span>
-                        <strong>{{ o.empresa }}</strong>
-                    </div>
-                    <div class="detail">
-                        <span>Número de orden</span>
-                        <strong>#{{ o.numeroOrden }}</strong>
-                    </div>
-                </div>
-            </section>
-
-            <section class="timeline-section">
-                <div class="timeline-heading">
-                    <mat-icon>history</mat-icon>
-                    <div>
-                        <h2>Historial de reparación</h2>
-                        <p>Cambios registrados durante el servicio técnico.</p>
-                    </div>
-                </div>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-marker inicial"><mat-icon>inventory_2</mat-icon></div>
-                        <div class="timeline-content">
-                            <strong>Equipo recibido</strong>
-                            <span>{{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</span>
-                        </div>
-                    </div>
-
-                    @for (item of o.historial || []; track $index) {
-                    <div class="timeline-item">
-                        <div class="timeline-marker" [attr.data-estado]="item.estado">
-                            <mat-icon>check</mat-icon>
-                        </div>
-                        <div class="timeline-content">
-                            <span class="timeline-status" [attr.data-estado]="item.estado">
-                                {{ item.estado }}
-                            </span>
-                            <span>{{ item.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</span>
-                        </div>
-                    </div>
-                    }
-                </div>
-            </section>
-
-            <div class="footer-actions">
-                <div class="consulted-at">
-                    <mat-icon>schedule</mat-icon>
-                    @if (ultimaConsulta(); as fecha) {
-                    <span>Actualizado {{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
-                    }
-                </div>
-                <button mat-flat-button type="button" (click)="actualizar()" [disabled]="cargando()">
-                    <mat-icon>refresh</mat-icon>
-                    Actualizar estado
-                </button>
-            </div>
-        </section>
+<div class="tracking-page">
+  <main class="tracking-shell">
+    <header class="masthead">
+      <div class="identity">
+        @if (logoUrl() && !errorLogo()) {
+          <div class="identity-logo">
+            <img
+              [src]="logoUrl()"
+              (error)="falloLogo()"
+              [alt]="'Logo de ' + (orden()?.empresa || 'la empresa')">
+          </div>
+        } @else {
+          <div class="identity-fallback">
+            <mat-icon>handyman</mat-icon>
+          </div>
         }
 
-        <footer class="site-footer">
-            <mat-icon>verified_user</mat-icon>
-            <span>Consulta de seguimiento de servicio técnico</span>
+        <div class="identity-text">
+          <strong>{{ orden()?.empresa || 'Servicio técnico' }}</strong>
+          <span>Portal de seguimiento de órdenes</span>
+        </div>
+      </div>
+
+      <div class="header-seal">
+        <mat-icon>verified_user</mat-icon>
+        <span>Consulta segura de tu servicio</span>
+      </div>
+    </header>
+
+    @if (cargando()) {
+      <section class="feedback" role="status">
+        <div class="feedback-icon loading-icon"><mat-icon class="spinning">sync</mat-icon></div>
+        <span class="eyebrow">SEGUIMIENTO DE SERVICIO TÉCNICO</span>
+        <h1>Consultando tu orden</h1>
+        <p>Estamos recuperando la información actualizada de tu servicio.</p>
+      </section>
+    } @else if (error()) {
+      <section class="feedback" role="alert">
+        <div class="feedback-icon error-icon"><mat-icon>link_off</mat-icon></div>
+        <span class="eyebrow">NO SE PUDO CARGAR LA INFORMACIÓN</span>
+        <h1>Seguimiento no disponible</h1>
+        <p>{{ error() }}</p>
+      </section>
+    } @else if (orden(); as o) {
+      <article class="sheet">
+        <section class="hero" aria-label="Resumen de la orden">
+          <div class="hero-main">
+            <span class="hero-kicker"><span class="kicker-dot"></span> SEGUIMIENTO DE SERVICIO TÉCNICO</span>
+            <h1>Orden <span>#{{ o.numeroOrden }}</span></h1>
+
+            <div class="hero-details">
+              <span><mat-icon>calendar_month</mat-icon>Ingreso: {{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</span>
+              <span><mat-icon>devices</mat-icon>{{ o.modeloDispositivo || 'Equipo registrado' }}</span>
+            </div>
+          </div>
+
+          <div class="status-card" [attr.data-estado]="estadoActual()">
+            <div class="status-card-top">
+              <span>ESTADO ACTUAL</span>
+              <mat-icon>track_changes</mat-icon>
+            </div>
+            <div class="status-value">
+              <mat-icon>{{ iconoEstado() }}</mat-icon>
+              <strong>{{ estadoActual() }}</strong>
+            </div>
+            <p>{{ descripcionEstado() }}</p>
+          </div>
+        </section>
+
+        <section class="finance-strip" aria-label="Resumen económico">
+          <div class="finance-item">
+            <div class="finance-icon"><mat-icon>receipt_long</mat-icon></div>
+            <div class="finance-copy">
+              <span>Total del servicio</span>
+              <strong>{{ o.totalPendiente === true || o.total === null || o.total === undefined ? 'Por confirmar' : (o.total | currency:'USD':'symbol':'1.2-2') }}</strong>
+            </div>
+          </div>
+          <div class="finance-item">
+            <div class="finance-icon"><mat-icon>payments</mat-icon></div>
+            <div class="finance-copy">
+              <span>Abono recibido</span>
+              <strong>{{ o.abono === null || o.abono === undefined ? 'No registrado' : (o.abono | currency:'USD':'symbol':'1.2-2') }}</strong>
+            </div>
+          </div>
+          <div class="finance-item finance-balance">
+            <div class="finance-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+            <div class="finance-copy">
+              <span>Saldo pendiente</span>
+              <strong>{{ valorCobrar() === null ? 'Por confirmar' : (valorCobrar() | currency:'USD':'symbol':'1.2-2') }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="priority-details" aria-label="Información principal del servicio">
+          <div class="priority-fault">
+            <div class="priority-heading">
+              <div class="priority-icon fault-icon"><mat-icon>report_problem</mat-icon></div>
+              <div>
+                <span class="eyebrow">DIAGNÓSTICO INICIAL</span>
+                <h2>Falla reportada</h2>
+              </div>
+            </div>
+            <p>{{ fallaPrincipal() }}</p>
+          </div>
+
+          <div class="technical-note priority-note" aria-label="Última observación técnica">
+            <div class="priority-icon note-icon"><mat-icon>engineering</mat-icon></div>
+            <div class="note-copy">
+              <span class="eyebrow">ACTUALIZACIÓN DEL TÉCNICO</span>
+              <h2>Última observación</h2>
+              <p>{{ observacionPrincipal().texto }}</p>
+              @if (observacionPrincipal().fecha) {
+                <time>{{ observacionPrincipal().fecha | date:'dd/MM/yyyy HH:mm' }}</time>
+              }
+            </div>
+          </div>
+        </section>
+
+        <div class="sections-grid">
+          <section class="info-card" aria-labelledby="cliente-title">
+            <div class="section-heading">
+              <div class="section-icon"><mat-icon>person_outline</mat-icon></div>
+              <div class="section-title-copy">
+                <span class="eyebrow">DATOS REGISTRADOS</span>
+                <h2 id="cliente-title">Información del cliente</h2>
+              </div>
+            </div>
+
+            <div class="fields-grid">
+              @for (campo of cliente(); track campo.etiqueta) {
+                <div class="info-field">
+                  <span>{{ campo.etiqueta }}</span>
+                  <strong>{{ campo.valor }}</strong>
+                </div>
+              }
+              @if (cliente().length === 0) {
+                <p class="empty-copy">Información del cliente no disponible.</p>
+              }
+            </div>
+          </section>
+
+          <section class="info-card" aria-labelledby="equipo-title">
+            <div class="section-heading">
+              <div class="section-icon"><mat-icon>smartphone</mat-icon></div>
+              <div class="section-title-copy">
+                <span class="eyebrow">IDENTIFICACIÓN</span>
+                <h2 id="equipo-title">Datos del equipo</h2>
+              </div>
+            </div>
+
+            <div class="fields-grid">
+              @for (campo of datosEquipo(); track campo.etiqueta) {
+                <div class="info-field">
+                  <span>{{ campo.etiqueta }}</span>
+                  <strong>{{ campo.valor }}</strong>
+                </div>
+              }
+              @if (datosEquipo().length === 0) {
+                <p class="empty-copy">Sin datos adicionales del equipo.</p>
+              }
+            </div>
+          </section>
+        </div>
+
+        <section class="info-card full-card" aria-labelledby="recepcion-title">
+          <div class="section-heading">
+            <div class="section-icon"><mat-icon>fact_check</mat-icon></div>
+            <div class="section-title-copy">
+              <span class="eyebrow">AL MOMENTO DEL INGRESO</span>
+              <h2 id="recepcion-title">Recepción del equipo</h2>
+            </div>
+          </div>
+
+          @if (recepcion().length) {
+            <div class="fields-grid reception-fields">
+              @for (campo of recepcion(); track campo.etiqueta) {
+                <div class="info-field" [class.long-field]="campo.etiqueta === 'Observaciones de ingreso'">
+                  <span>{{ campo.etiqueta }}</span>
+                  <strong>{{ campo.valor }}</strong>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="tags-grid" [class.no-separator]="!recepcion().length">
+            <div class="tags-group">
+              <h3><mat-icon>inventory_2</mat-icon>Elementos recibidos</h3>
+              <div class="tags">
+                @for (elemento of elementos(); track $index) {
+                  <span class="tag">{{ elemento }}</span>
+                } @empty {
+                  <span class="empty-copy">No se registraron elementos adicionales.</span>
+                }
+              </div>
+            </div>
+
+            <div class="tags-group">
+              <h3><mat-icon>build_circle</mat-icon>Condiciones físicas del equipo</h3>
+              <div class="tags">
+                @for (condicion of condiciones(); track $index) {
+                  <span class="tag condition">{{ condicion }}</span>
+                } @empty {
+                  <span class="empty-copy">No se registraron condiciones físicas adicionales.</span>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-card full-card history-section" aria-labelledby="historial-title">
+          <div class="section-heading">
+            <div class="section-icon"><mat-icon>timeline</mat-icon></div>
+            <div class="section-title-copy">
+              <span class="eyebrow">TRAZABILIDAD DE LA REPARACIÓN</span>
+              <h2 id="historial-title">Historial de seguimiento</h2>
+            </div>
+            <span class="count-pill">{{ historial().length }} actualizaciones</span>
+          </div>
+
+          <div class="timeline">
+            @for (item of historial(); track item.id ?? $index; let primero = $first) {
+              <div class="timeline-row">
+                <div class="timeline-rail">
+                  <span class="timeline-dot" [class.latest]="primero">
+                    <mat-icon>{{ primero ? 'check' : 'circle' }}</mat-icon>
+                  </span>
+                </div>
+                <div class="timeline-content">
+                  <div class="event-header">
+                    <h3>{{ item.estado }}</h3>
+                    @if (primero) {
+                      <span class="latest-pill">Más reciente</span>
+                    }
+                    @if (item.fechaRegistro) {
+                      <time>{{ item.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</time>
+                    }
+                  </div>
+                  <p>{{ item.observacion || 'Sin observación registrada en esta actualización.' }}</p>
+                  @if (item.usuario) {
+                    <span class="event-author"><mat-icon>person</mat-icon>{{ item.usuario }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="timeline-row">
+              <div class="timeline-rail">
+                <span class="timeline-dot initial"><mat-icon>inventory_2</mat-icon></span>
+              </div>
+              <div class="timeline-content">
+                <div class="event-header">
+                  <h3>Recepción del equipo</h3>
+                  <time>{{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</time>
+                </div>
+                <p>Equipo ingresado al servicio técnico.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        @if (imagenes().length > 0) {
+          <section class="info-card full-card gallery-section" aria-labelledby="fotos-title">
+            <div class="section-heading">
+              <div class="section-icon"><mat-icon>photo_library</mat-icon></div>
+              <div class="section-title-copy">
+                <span class="eyebrow">REGISTRO VISUAL</span>
+                <h2 id="fotos-title">Evidencia fotográfica</h2>
+              </div>
+              <span class="count-pill">{{ imagenes().length }} fotos</span>
+            </div>
+
+            <div class="gallery">
+              @for (imagen of imagenes(); track imagen.id) {
+                @if (imagenUrl(imagen); as url) {
+                  <button
+                    type="button"
+                    class="gallery-item"
+                    (click)="abrirImagen(imagen)"
+                    [attr.aria-label]="'Ampliar fotografía ' + (imagen.nombreOriginal || '')">
+                    <div class="gallery-image">
+                      <img [src]="url" [alt]="imagen.nombreOriginal || 'Fotografía de recepción'" loading="lazy">
+                      <span class="gallery-zoom"><mat-icon>zoom_in</mat-icon></span>
+                    </div>
+                    <strong>{{ imagen.nombreOriginal || 'Fotografía del equipo' }}</strong>
+                    @if (imagen.fechaRegistro) {
+                      <time>{{ imagen.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</time>
+                    }
+                  </button>
+                }
+              }
+            </div>
+          </section>
+        }
+
+        <footer class="sheet-footer">
+          <span>
+            @if (ultimaConsulta(); as fecha) {
+              <mat-icon>schedule</mat-icon>Última consulta: {{ fecha | date:'dd/MM/yyyy HH:mm' }}
+            }
+          </span>
+          <button mat-flat-button type="button" (click)="actualizar()" [disabled]="cargando()">
+            <mat-icon>refresh</mat-icon>Actualizar seguimiento
+          </button>
         </footer>
-    </main>
+      </article>
+    }
+
+    <footer class="site-footer">
+      <span>Portal de seguimiento técnico</span>
+      <i></i>
+      <strong>WorkStock</strong>
+    </footer>
+  </main>
 </div>
+
+@if (imagenSeleccionada(); as imagen) {
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada" (click)="cerrarImagen()">
+    <div class="lightbox-window" (click)="$event.stopPropagation()">
+      <header>
+        <div>
+          <strong>{{ imagen.nombreOriginal || 'Fotografía del equipo' }}</strong>
+          @if (imagen.fechaRegistro) {
+            <span>{{ imagen.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</span>
+          }
+        </div>
+        <button mat-icon-button type="button" (click)="cerrarImagen()" aria-label="Cerrar imagen">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+      @if (imagenUrl(imagen); as url) {
+        <div class="lightbox-content">
+          <img [src]="url" [alt]="imagen.nombreOriginal || 'Fotografía ampliada'">
+        </div>
+      }
+    </div>
+  </div>
+}

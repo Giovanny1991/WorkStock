@@ -28,7 +28,7 @@
             <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
               <mat-label>Buscar cliente</mat-label>
               <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente" autocomplete="off"
-                placeholder="Identificación o nombre">
+                placeholder="Cédula, RUC, P..., LOCAL... o nombre">
               <mat-icon matSuffix>search</mat-icon>
               <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="mostrarCliente"
                 (optionSelected)="seleccionarCliente($event.option.value)">
@@ -63,16 +63,7 @@
             }
           </div>
 
-          @if (clienteSeleccionado(); as cliente) {
-          <div class="ws-selected-client">
-            <mat-icon>check_circle</mat-icon>
-            <div>
-              <strong>{{ cliente.nombreCliente }}</strong>
-              <span>{{ cliente.identificacion }}</span>
-            </div>
-            <span class="ws-selected-label">Seleccionado</span>
-          </div>
-          }
+          <app-cliente-seleccionado [cliente]="clienteSeleccionado()" />
         </div>
       </section>
 
@@ -87,6 +78,21 @@
           <span class="ws-section-number">02</span>
         </header>
         <div class="ws-section-body">
+          <div class="ws-catalogo-row">
+            <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
+              <mat-label>Tipo de dispositivo</mat-label>
+              <mat-select [formControl]="idTipoDispositivo" placeholder="Seleccione tipo">
+                @for (tipo of tiposDispositivo(); track tipo.id) { <mat-option [value]="tipo.id">{{ tipo.tipoDispositivo
+                  }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+            @if (esAdministrador()) {
+            <button mat-icon-button type="button" class="ws-catalogo-compact" title="Administrar tipos de dispositivo"
+              aria-label="Administrar tipos de dispositivo" (click)="gestionarCatalogo('tipos')">
+              <mat-icon>settings</mat-icon>
+            </button>
+            }
+          </div>
           <div class="ws-fields-grid">
             <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
               <mat-label>Modelo del dispositivo</mat-label>
@@ -94,7 +100,7 @@
             </mat-form-field>
             <mat-form-field floatLabel="always" appearance="outline">
               <mat-label>IMEI / Serie</mat-label>
-              <input matInput [formControl]="imei" maxlength="15" inputmode="numeric" placeholder="15 dígitos">
+              <input matInput [formControl]="imei" maxlength="20" placeholder="Opcional · máximo 20 caracteres">
               <mat-hint>Identificador del equipo</mat-hint>
             </mat-form-field>
           </div>
@@ -121,12 +127,32 @@
               <div class="ws-choice-heading">
                 <mat-icon>inventory_2</mat-icon>
                 <strong>Elementos recibidos</strong>
+                @if (esAdministrador()) { <button mat-icon-button type="button" class="ws-catalogo-compact"
+                  title="Administrar elementos" aria-label="Administrar elementos"
+                  (click)="gestionarCatalogo('elementos')"><mat-icon>settings</mat-icon></button> }
               </div>
               <div class="ws-checks">
-                <mat-checkbox [formControl]="tapa">Tapa</mat-checkbox>
-                <mat-checkbox [formControl]="bateria">Batería</mat-checkbox>
-                <mat-checkbox [formControl]="banSIM">Bandeja SIM</mat-checkbox>
+                @for (elemento of elementosCatalogo(); track elemento.id) {
+                <mat-checkbox [checked]="elementosSeleccionados().includes(elemento.id)"
+                  (change)="seleccionarElemento(elemento.id, $event.checked)">{{ elemento.elemento }}</mat-checkbox>
+                }
+                @if (!elementosCatalogo().length) { <span>No hay elementos configurados</span> }
               </div>
+
+            </div>
+            <div class="ws-choice-panel ws-physical-conditions">
+              <div class="ws-choice-heading"><mat-icon>fact_check</mat-icon><strong>Condiciones físicas del
+                  equipo</strong>@if (esAdministrador()) { <button mat-icon-button type="button"
+                  class="ws-catalogo-compact" title="Administrar condiciones" aria-label="Administrar condiciones"
+                  (click)="gestionarCatalogo('condiciones')"><mat-icon>settings</mat-icon></button> }</div>
+              <div class="ws-checks">
+                @for (item of condicionesCatalogo(); track item.id) {
+                <mat-checkbox [checked]="condicionesSeleccionadas().includes(item.id)"
+                  (change)="seleccionarCondicion(item.id, $event.checked)">{{ item.condicion }}</mat-checkbox>
+                }
+                @if (!condicionesCatalogo().length) { <span>No hay condiciones configuradas</span> }
+              </div>
+
             </div>
           </div>
         </div>
@@ -172,7 +198,7 @@
             <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
               <mat-label>Abono</mat-label>
               <span matTextPrefix>$&nbsp;</span>
-              <input matInput type="number" min="0" step="0.01" [formControl]="abono" [readonly]="totalPendiente.value">
+              <input matInput type="number" [value]="abono.value" readonly aria-label="Abonos recibidos" title="Calculado automáticamente desde las formas de pago">
             </mat-form-field>
             <div class="ws-balance-field">
               <span>Saldo pendiente</span>
@@ -184,6 +210,9 @@
             </div>
           </div>
         </div>
+        @if (!totalPendiente.value) {
+          <app-pagos-editor #pagosInicial [total]="total.value" (pagosChange)="onPagosChange($event)" />
+        }
       </section>
 
       <!-- 05 - EVIDENCIA FOTOGRÁFICA -->
@@ -197,7 +226,21 @@
           <span class="ws-section-number">05</span>
         </header>
         <div class="ws-section-body">
-          <app-orden-trabajo-imagenes />
+          @if (resumenQr()?.FotografiasCargadas) {
+          <div class="ws-qr-images-summary"><mat-icon>check_circle</mat-icon><span>{{ resumenQr()!.FotografiasCargadas
+              }} fotografía(s) recibida(s) mediante QR. Se asociarán al registrar la orden.</span></div>
+          }
+          @if (vinculacionesPendientes(); as pendiente) {
+          <div class="ws-qr-pending">
+            <span>Orden #{{pendiente.idOrden}} registrada. Hay fotografías QR pendientes de vincular.</span>
+            <button mat-stroked-button type="button" [disabled]="vinculandoQr()"
+              (click)="reintentarVinculacion()"><mat-icon>sync</mat-icon> Reintentar vinculación</button>
+          </div>
+          }
+          <app-orden-trabajo-imagenes [mostrarTitulo]="false" [mostrarQr]="true" [fotosQr]="resumenQr()?.imagenes ?? []"
+            [tokenQr]="qrActivo()?.token ?? null" [qrProcesando]="creandoQrBorrador()"
+            [qrDeshabilitado]="guardando() || creandoQrBorrador() || vinculandoQr()" (solicitarQr)="abrirQrFotos()"
+            (fotoQrEliminada)="actualizarFotografiasQr()" />
         </div>
       </section>
     </main>

@@ -446,3 +446,17 @@
         display: none !important;
     }
 }
+/* Acción QR integrada con los botones de cámara y galería */
+.selector-qr {
+    font-family: inherit;
+    color: var(--app-primary, #1766aa);
+    border-color: var(--app-border, #e5eaf1);
+    background: var(--app-card-secondary, #f5f8fc);
+}
+.selector-qr:disabled { cursor: not-allowed; opacity: .5; }
+.selector-qr:hover:not(:disabled) { border-color: var(--app-primary, #1766aa); }
+.selector-qr:focus-visible { outline: 2px solid var(--app-primary, #1766aa); outline-offset: 2px; }
+.imagenes-titulo:has(.imagenes-herramientas:only-child) { justify-content: flex-end; }
+@media (max-width: 560px) {
+    .imagenes-herramientas { justify-content: flex-start; }
+}

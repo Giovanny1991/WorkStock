@@ -211,3 +211,9 @@ mat-dialog-actions {
   padding: 10px 18px 14px;
   border-top: 1px solid #eaecf0;
 }
+.ticket-pagos {margin-top:9px;padding:6px 0;border-top:1px dashed #999;border-bottom:1px dashed #999;font-size:8.5px;color:#111;}
+.ticket-pagos>strong {display:block;margin-bottom:5px;font-size:9px;}
+.ticket-pago-row {display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:3px 0;}
+.ticket-pago-row span {min-width:0;overflow-wrap:anywhere;flex:1;}
+.ticket-pago-row strong {white-space:nowrap;}
+.ticket-pagos-anulados {display:block;margin-top:5px;font-size:8px;}

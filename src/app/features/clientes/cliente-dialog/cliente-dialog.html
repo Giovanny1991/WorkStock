@@ -1,237 +1,104 @@
-<!-- ==========================================
-     WORKSTOCK - NUEVO / EDITAR CLIENTE
-========================================== -->
-
-<!-- ENCABEZADO -->
-
+<!-- WORKSTOCK - NUEVO / EDITAR CLIENTE -->
 <div class="dialog-header">
-
   <div class="header-identity">
-
     <span class="header-icon">
-      <mat-icon>
-        {{ esEdicion ? 'edit_note' : 'person_add' }}
-      </mat-icon>
+      <mat-icon>{{ esEdicion ? 'edit_note' : 'person_add' }}</mat-icon>
     </span>
-
     <div class="header-text">
-
-      <h2>
-        {{ esEdicion ? 'Editar cliente' : 'Nuevo cliente' }}
-      </h2>
-
-      <p>
-        {{
-        esEdicion
-        ? 'Actualiza la información del cliente.'
-        : 'Registra un nuevo cliente en el sistema.'
-        }}
-      </p>
-
+      <h2>{{ esEdicion ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
+      <p>{{ esEdicion ? 'Actualiza la información del cliente.' : 'Registra un nuevo cliente en el sistema.' }}</p>
     </div>
-
   </div>
-
   <button mat-icon-button type="button" class="close-button" aria-label="Cerrar formulario" [disabled]="guardando()"
     (click)="cancelar()">
-
     <mat-icon>close</mat-icon>
-
   </button>
-
 </div>
 
-
-<!-- CONTENIDO -->
-
 <mat-dialog-content class="dialog-content">
-
   <form [formGroup]="form" class="form-grid" autocomplete="off">
-
     <!-- IDENTIFICACIÓN -->
-
-    <div class="field-group">
-
-      <label class="field-label" for="cliente-identificacion">
-        Identificación
-      </label>
-
+    <div class="field-group full">
+      <label class="field-label" for="cliente-identificacion">Identificación <span
+          class="required-mark">*</span></label>
       <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <input id="cliente-identificacion" matInput type="text" formControlName="identificacion" maxlength="13"
-          inputmode="numeric" placeholder="Cédula o RUC" autocomplete="off">
-
-        @if (
-        form.controls.identificacion.hasError('required') &&
-        form.controls.identificacion.touched
-        ) {
-        <mat-error>
-          Ingrese la identificación
-        </mat-error>
+        <input id="cliente-identificacion" matInput type="text" formControlName="identificacion" maxlength="30"
+          inputmode="text" placeholder="Cédula, RUC, P123456 o LOCAL71" autocomplete="off"
+          aria-describedby="cliente-identificacion-ayuda" (input)="normalizarIdentificacionEnCampo()">
+        @if (form.controls.identificacion.hasError('required') && form.controls.identificacion.touched) {
+        <mat-error>Ingrese la identificación</mat-error>
         }
-
-        @if (
-        form.controls.identificacion.hasError('pattern') &&
-        form.controls.identificacion.touched
-        ) {
-        <mat-error>
-          Ingrese una cédula de 10 dígitos o RUC de 13 dígitos
-        </mat-error>
+        @if (form.controls.identificacion.hasError('maxlength') && form.controls.identificacion.touched) {
+        <mat-error>Máximo 30 caracteres</mat-error>
         }
-
+        @if (form.controls.identificacion.hasError('pattern') && form.controls.identificacion.touched) {
+        <mat-error>Use cédula (10 dígitos), RUC (13), P... o LOCAL...</mat-error>
+        }
       </mat-form-field>
-
+      <p id="cliente-identificacion-ayuda" class="identificacion-ayuda">
+        <mat-icon aria-hidden="true">info_outline</mat-icon>
+        <span>{{ ayudaIdentificacion }}</span>
+      </p>
     </div>
-
-
-    <!-- TELÉFONO -->
-
-    <div class="field-group">
-
-      <label class="field-label" for="cliente-telefono">
-        Teléfono
-      </label>
-
-      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <input id="cliente-telefono" matInput type="tel" formControlName="telefono" maxlength="10" inputmode="numeric"
-          placeholder="Ej. 0991234567" autocomplete="off">
-
-        @if (
-        form.controls.telefono.hasError('pattern') &&
-        form.controls.telefono.touched
-        ) {
-        <mat-error>
-          El teléfono debe contener 10 dígitos
-        </mat-error>
-        }
-
-      </mat-form-field>
-
-    </div>
-
 
     <!-- NOMBRE COMPLETO -->
-
     <div class="field-group full">
-
-      <label class="field-label" for="cliente-nombre">
-        Nombre completo
-      </label>
-
+      <label class="field-label" for="cliente-nombre">Nombre completo <span class="required-mark">*</span></label>
       <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
         <input id="cliente-nombre" matInput type="text" formControlName="nombreCliente" maxlength="50"
           placeholder="Nombre y apellido del cliente" autocomplete="off">
-
-        @if (
-        form.controls.nombreCliente.hasError('required') &&
-        form.controls.nombreCliente.touched
-        ) {
-        <mat-error>
-          Ingrese el nombre del cliente
-        </mat-error>
+        @if (form.controls.nombreCliente.hasError('required') && form.controls.nombreCliente.touched) {
+        <mat-error>Ingrese el nombre del cliente</mat-error>
         }
-
-        @if (
-        form.controls.nombreCliente.hasError('minlength') &&
-        form.controls.nombreCliente.touched
-        ) {
-        <mat-error>
-          El nombre debe contener al menos 3 caracteres
-        </mat-error>
+        @if (form.controls.nombreCliente.hasError('minlength') && form.controls.nombreCliente.touched) {
+        <mat-error>El nombre debe contener al menos 3 caracteres</mat-error>
         }
-
-        @if (
-        form.controls.nombreCliente.hasError('pattern') &&
-        form.controls.nombreCliente.touched
-        ) {
-        <mat-error>
-          Ingrese un nombre válido
-        </mat-error>
+        @if (form.controls.nombreCliente.hasError('pattern') && form.controls.nombreCliente.touched) {
+        <mat-error>Ingrese un nombre válido</mat-error>
         }
-
       </mat-form-field>
-
     </div>
 
-
-    <!-- CORREO -->
-
-    <div class="field-group full">
-
-      <label class="field-label" for="cliente-correo">
-        Correo electrónico
-      </label>
-
+    <!-- TELÉFONO -->
+    <div class="field-group">
+      <label class="field-label" for="cliente-telefono">Teléfono</label>
       <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
-
-        <input id="cliente-correo" matInput type="email" formControlName="correo" maxlength="100"
-          placeholder="Ej. cliente@correo.com" autocomplete="off">
-
-        @if (
-        form.controls.correo.hasError('email') &&
-        form.controls.correo.touched
-        ) {
-        <mat-error>
-          Ingrese un correo electrónico válido
-        </mat-error>
+        <input id="cliente-telefono" matInput type="tel" formControlName="telefono" maxlength="10" inputmode="numeric"
+          placeholder="0991234567" autocomplete="off">
+        @if (form.controls.telefono.hasError('pattern') && form.controls.telefono.touched) {
+        <mat-error>El teléfono debe contener 10 dígitos</mat-error>
         }
-
       </mat-form-field>
-
     </div>
 
+    <!-- CORREO ELECTRÓNICO -->
+    <div class="field-group">
+      <label class="field-label" for="cliente-correo">Correo electrónico</label>
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+        <input id="cliente-correo" matInput type="email" formControlName="correo" maxlength="100"
+          placeholder="cliente@correo.com" autocomplete="email">
+        @if (form.controls.correo.hasError('email') && form.controls.correo.touched) {
+        <mat-error>Ingrese un correo electrónico válido</mat-error>
+        }
+      </mat-form-field>
+    </div>
 
     <!-- DIRECCIÓN -->
-
     <div class="field-group full">
-
-      <label class="field-label" for="cliente-direccion">
-        Dirección
-      </label>
-
+      <label class="field-label" for="cliente-direccion">Dirección</label>
       <mat-form-field appearance="outline" class="compact-field textarea-field" subscriptSizing="dynamic">
-
         <textarea id="cliente-direccion" matInput formControlName="direccion" maxlength="100" rows="2"
-          placeholder="Ingrese la dirección del cliente">
-        </textarea>
-
+          placeholder="Ingrese la dirección del cliente"></textarea>
       </mat-form-field>
-
     </div>
-
   </form>
-
 </mat-dialog-content>
 
-
-<!-- ACCIONES -->
-
 <mat-dialog-actions class="dialog-actions" align="end">
-
-  <button mat-stroked-button type="button" class="cancel-btn" [disabled]="guardando()" (click)="cancelar()">
-
-    Cancelar
-
-  </button>
-
+  <button mat-stroked-button type="button" class="cancel-btn" [disabled]="guardando()"
+    (click)="cancelar()">Cancelar</button>
   <button mat-flat-button type="button" class="save-btn" [disabled]="guardando()" (click)="guardar()">
-
-    <mat-icon>
-      {{ guardando() ? 'hourglass_top' : 'save' }}
-    </mat-icon>
-
-    <span>
-      {{
-      guardando()
-      ? 'Guardando...'
-      : esEdicion
-      ? 'Actualizar cliente'
-      : 'Guardar cliente'
-      }}
-    </span>
-
+    <mat-icon>{{ guardando() ? 'hourglass_top' : 'save' }}</mat-icon>
+    <span>{{ guardando() ? 'Guardando...' : esEdicion ? 'Actualizar cliente' : 'Guardar cliente' }}</span>
   </button>
-
 </mat-dialog-actions>

@@ -540,6 +540,13 @@
         <span matListItemTitle>Actualización del IVA</span>
       </a>
 
+      <!-- FORMAS DE PAGO -->
+      <a mat-list-item routerLink="/configuracion/formas-pago" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">
+        <mat-icon matListItemIcon>payments</mat-icon>
+        <span matListItemTitle>Formas de pago</span>
+      </a>
+
       <!-- NOTIFICACIONES DE ÓRDENES -->
       <a mat-list-item routerLink="/configuracion/notificaciones-ordenes" routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }" class="submenu-item" (click)="onNavigate()">

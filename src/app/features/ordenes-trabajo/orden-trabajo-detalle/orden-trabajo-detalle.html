@@ -140,6 +140,10 @@
           <td>{{ accesoriosRecibidos(o) }}</td>
         </tr>
         <tr>
+          <td>CONDICIÓN FÍSICA:</td>
+          <td>{{ condicionesFisicas(o) }}</td>
+        </tr>
+        <tr>
           <td>VALOR DE SERVICIO:</td>
           <td>
             @if (o.totalPendiente) {
@@ -165,6 +169,15 @@
             </strong>
           </td>
         </tr>
+        @if (pagos().length || abonoHistorico() > 0) {
+          <tr><td colspan="2" class="client-title">DESGLOSE DE PAGOS</td></tr>
+          @if (abonoHistorico() > 0) {
+            <tr><td>ABONO HISTÓRICO:</td><td>{{ abonoHistorico() | currency:'USD':'symbol':'1.2-2' }} (sin forma registrada)</td></tr>
+          }
+          @for (pago of pagos(); track pago.id) {
+            <tr><td>{{ pago.formaPago }}:</td><td>{{ pago.valor | currency:'USD':'symbol':'1.2-2' }} @if (pago.referencia) { · Ref. {{ pago.referencia }} }</td></tr>
+          }
+        }
         <tr class="damage-title-row">
           <td colspan="2">
             <strong>DAÑO DISPOSITIVO:</strong>
@@ -179,12 +192,12 @@
     </table>
 
     <!-- OBSERVACIONES -->
-    @if (o.observaciones) {
+    <!-- @if (o.observaciones) {
     <div class="observations">
       <strong>OBSERVACIONES:</strong>
       <div>{{ o.observaciones }}</div>
     </div>
-    }
+    } -->
 
     <!-- CÓDIGO QR DE SEGUIMIENTO -->
     @if (qrUrl(); as imagenQR) {

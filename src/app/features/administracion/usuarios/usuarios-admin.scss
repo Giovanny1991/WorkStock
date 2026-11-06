@@ -1,3 +1,4 @@
+@use '../../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - ADMINISTRACIÓN DE USUARIOS
    DISEÑO COMPACTO Y RESPONSIVE
@@ -1101,3 +1102,5 @@ mat-progress-bar {
   }
 }
 
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

@@ -90,9 +90,9 @@
          TABLA DE INVENTARIO
     ================================================== -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Inventario de celulares">
 
-      <table mat-table [dataSource]="stock()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      <table class="ws-table ws-table--wide ws-table--actions" mat-table [dataSource]="stock()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- ID -->

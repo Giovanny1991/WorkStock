@@ -1,3 +1,4 @@
+@use '../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - CELULARES VENDIDOS
    TABLA COMPACTA DE 920PX
@@ -973,3 +974,5 @@ mat-progress-bar {
   }
 }
 
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

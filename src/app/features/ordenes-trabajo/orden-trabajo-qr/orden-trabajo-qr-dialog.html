@@ -1,0 +1,20 @@
+<div class="ws-dialog-header">
+  <div class="ws-dialog-identity"><span class="ws-dialog-icon"><mat-icon>qr_code_2</mat-icon></span><div><h2>Fotografías por QR</h2><p>Orden #{{ data.numeroOrden }} · Carga desde celular</p></div></div>
+  <button mat-icon-button type="button" (click)="cerrar()" aria-label="Cerrar"><mat-icon>close</mat-icon></button>
+</div>
+<mat-dialog-content class="ws-qr-content">
+  @if (cargando()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (error()) { <p class="ws-error">{{ error() }}</p> }
+  @if (codigoQr(); as qr) {
+    <div class="ws-qr-code"><img [src]="qr" alt="Código QR para subir fotografías a la orden" width="250" height="250"></div>
+    <p class="ws-help">Escanea el QR desde el celular. Para cargar fotografías debes iniciar sesión en WorkStock desde el celular. El QR solo permite añadir fotos a esta orden.</p>
+    <p class="ws-expires">Vigencia: {{ sesion()?.minutosVigencia }} minutos · Hasta {{ sesion()?.MaxFotografias }} fotografías</p>
+    <p class="ws-url">{{ enlace() }}</p>
+  } @else if (!cargando() && !error()) { <p class="ws-help">El código fue revocado. Puedes generar uno nuevo.</p> }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="cerrar()">Cerrar</button>
+  @if (enlace()) { <button mat-stroked-button type="button" (click)="copiar()"><mat-icon>content_copy</mat-icon> Copiar enlace</button> }
+  @if (sesion()) { <button mat-stroked-button type="button" [disabled]="revocando()" (click)="revocar()"><mat-icon>block</mat-icon> Revocar</button> }
+  @else { <button mat-flat-button type="button" [disabled]="cargando() || revocando()" (click)="generar()"><mat-icon>qr_code_2</mat-icon> Generar QR</button> }
+</mat-dialog-actions>

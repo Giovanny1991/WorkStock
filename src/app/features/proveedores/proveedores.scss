@@ -1,3 +1,4 @@
+@use '../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - PROVEEDORES
    DISEÑO ESTÁNDAR COMPACTO Y RESPONSIVE
@@ -442,8 +443,8 @@ table.mat-mdc-table {
 }
 
 .mat-column-estado {
-  width: 120px;
-  min-width: 110px;
+  width: 84px;
+  min-width: 84px;
 }
 
 .mat-column-fecha {
@@ -452,9 +453,9 @@ table.mat-mdc-table {
 }
 
 .mat-column-acciones {
-  width: 110px;
-  min-width: 110px;
-  max-width: 110px;
+  width: 84px;
+  min-width: 84px;
+  max-width: 84px;
 }
 
 /* =====================================================
@@ -506,36 +507,6 @@ table.mat-mdc-table {
   justify-content: center;
 }
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 82px;
-
-  padding: 4px 8px;
-
-  border-radius: 20px;
-
-  background: var(--hist-bg-soft);
-  color: var(--hist-muted);
-
-  font-size: 10px;
-  font-weight: 650;
-  line-height: 1.4;
-
-  white-space: nowrap;
-}
-
-.status.active {
-  background: var(--hist-success-bg);
-  color: var(--hist-success);
-}
-
-.status.inactive {
-  background: var(--hist-danger-bg);
-  color: var(--hist-danger);
-}
 
 /* =====================================================
    20. FECHA DE INGRESO
@@ -816,3 +787,5 @@ mat-progress-bar {
   }
 }
 
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

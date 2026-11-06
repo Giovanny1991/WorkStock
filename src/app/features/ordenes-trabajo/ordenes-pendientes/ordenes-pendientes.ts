@@ -961,11 +961,11 @@ export class OrdenesPendientes
 
 
     if (
-      estado !== 'INGRESADO'
+      !['INGRESADO', 'EN DIAGNÓSTICO', 'RECEPCIÓN Y DIAGNÓSTICO'].includes(estado)
     ) {
 
       this.notify.warning(
-        'Solo se pueden eliminar órdenes pendientes'
+        'Solo se pueden eliminar órdenes en recepción y diagnóstico'
       );
 
       return;

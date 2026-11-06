@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, OnDestroy, SimpleChanges, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { OrdenTrabajoImagen } from '../orden-trabajo.model';
 import { NotificationService } from '../../../core/services/notification';
 import { ConfirmDialog } from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
 import { VisorImagenDialogComponent } from './visor-imagen-dialog';
+import { OrdenTrabajoQrBorradorService, FotoBorradorQr } from '../orden-trabajo-qr/orden-trabajo-qr-borrador.service';
 
 interface VistaImagen extends OrdenTrabajoImagen {
   url?: string;
@@ -23,24 +24,36 @@ interface VistaImagen extends OrdenTrabajoImagen {
   styleUrl: './orden-trabajo-imagenes.scss'
 })
 export class OrdenTrabajoImagenesComponent implements OnChanges, OnDestroy {
+  @Input() fotosQr: FotoBorradorQr[] = [];
+  @Input() tokenQr: string | null = null;
   @Input() idOrden: number | null = null;
   @Input() soloLectura = false;
+  @Input() mostrarTitulo = true;
+  @Input() mostrarQr = false;
+  @Input() qrDeshabilitado = false;
+  @Input() qrProcesando = false;
+  @Output() solicitarQr = new EventEmitter<void>();
+  @Output() fotoQrEliminada = new EventEmitter<void>();
 
   private readonly service = inject(OrdenesTrabajoService);
+  private readonly qrService = inject(OrdenTrabajoQrBorradorService);
   private readonly notify = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
 
   readonly cargando = signal(false);
   readonly procesando = signal(false);
   readonly imagenes = signal<VistaImagen[]>([]);
+  readonly qrPrevisualizaciones = signal<{id: number; nombre: string; url: string}[]>([]);
   readonly pendientes = signal<File[]>([]);
   readonly previsualizaciones = signal<string[]>([]);
 
+  private generacionQr = 0;
   private generacion = 0;
   private archivosTemporales: string[] = [];
   private static readonly LIMITE = 2 * 1024 * 1024;
 
   ngOnChanges(cambios: SimpleChanges): void {
+    if (cambios['fotosQr'] || cambios['tokenQr']) void this.cargarFotosQr();
     if (cambios['idOrden']) {
       this.limpiarExistentes();
       if (this.idOrden) void this.cargar();
@@ -50,6 +63,7 @@ export class OrdenTrabajoImagenesComponent implements OnChanges, OnDestroy {
   ngOnDestroy(): void {
     this.generacion++;
     this.limpiarExistentes();
+    this.limpiarFotosQr();
     this.limpiarPendientes();
   }
 
@@ -59,6 +73,33 @@ export class OrdenTrabajoImagenesComponent implements OnChanges, OnDestroy {
       if (i.url) URL.revokeObjectURL(i.url);
     });
     this.imagenes.set([]);
+  }
+
+  private limpiarFotosQr(): void {
+    this.generacionQr++;
+    this.qrPrevisualizaciones().forEach(f => URL.revokeObjectURL(f.url));
+    this.qrPrevisualizaciones.set([]);
+  }
+  private async cargarFotosQr(): Promise<void> {
+    const token = this.tokenQr;
+    const lista = this.fotosQr ?? [];
+    const ids = new Set(lista.map(f => f.id));
+    const existentes = this.qrPrevisualizaciones();
+    const conservadas = existentes.filter(f => ids.has(f.id));
+    existentes.filter(f => !ids.has(f.id)).forEach(f => URL.revokeObjectURL(f.url));
+    this.qrPrevisualizaciones.set(conservadas);
+    const gen = ++this.generacionQr;
+    if (!token || !lista.length) return;
+    for (const foto of lista) {
+      if (gen !== this.generacionQr) return;
+      if (this.qrPrevisualizaciones().some(f => f.id === foto.id)) continue;
+      try {
+        const blob = await firstValueFrom(this.qrService.obtenerImagen(token, foto.id));
+        if (gen !== this.generacionQr) return;
+        const url = URL.createObjectURL(blob);
+        this.qrPrevisualizaciones.update(actual => [...actual, {id: foto.id, nombre: foto.nombreOriginal, url}]);
+      } catch { /* Fotografía temporal no disponible; conservar su nombre en el resumen. */ }
+    }
   }
 
   private limpiarPendientes(): void {
@@ -223,6 +264,32 @@ export class OrdenTrabajoImagenesComponent implements OnChanges, OnDestroy {
         e?.error?.message ?? 'No fue posible registrar las fotografías'
       );
     }
+  }
+
+  eliminarFotoQr(foto: {id: number; nombre: string}): void {
+    const token = this.tokenQr;
+    if (!token || this.idOrden || this.soloLectura || this.qrDeshabilitado || this.procesando()) return;
+    this.dialog.open(ConfirmDialog, {
+      width: '430px', maxWidth: '92vw', disableClose: true,
+      data: { title: 'Eliminar fotografía QR', message: `¿Deseas eliminar "${foto.nombre}" antes de registrar la orden?`, confirmText: 'Eliminar', type: 'delete' }
+    }).afterClosed().subscribe(async confirmado => {
+      if (!confirmado || this.procesando() || this.soloLectura || this.qrDeshabilitado || this.tokenQr !== token) return;
+      this.procesando.set(true);
+      try {
+        await firstValueFrom(this.qrService.eliminarEnviada(token, foto.id));
+        // Invalidar la carga de miniaturas en curso antes de quitar la imagen.
+        this.generacionQr++;
+        const eliminada = this.qrPrevisualizaciones().find(x => x.id === foto.id);
+        if (eliminada) URL.revokeObjectURL(eliminada.url);
+        this.qrPrevisualizaciones.update(lista => lista.filter(x => x.id !== foto.id));
+        this.fotoQrEliminada.emit();
+        this.notify.success('Fotografía QR eliminada correctamente');
+      } catch (e: any) {
+        this.notify.error(e?.error?.message ?? 'No fue posible eliminar la fotografía QR');
+      } finally {
+        this.procesando.set(false);
+      }
+    });
   }
 
   eliminar(imagen: VistaImagen): void {

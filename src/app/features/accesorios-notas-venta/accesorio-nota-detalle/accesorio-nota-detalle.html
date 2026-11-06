@@ -440,6 +440,18 @@
     </table>
 
 
+    @if (n.pagos?.length) {
+      <div class="pagos-ticket">
+        <strong>FORMAS DE PAGO</strong>
+        @for (pago of n.pagos ?? []; track pago.id) {
+          <div class="pago-ticket-fila">
+            <span>{{ pago.formaPago }} @if (pago.referencia) { · Ref. {{ pago.referencia }} } @if (pago.banco) { · {{ pago.banco }} }</span>
+            <span>{{ pago.valor | currency:'USD':'symbol':'1.2-2' }} @if (pago.estado === 'ANULADO') { (ANULADO) }</span>
+          </div>
+        }
+      </div>
+    }
+
     <!-- ==================================================
            PIE DINÁMICO
       =================================================== -->

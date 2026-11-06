@@ -185,9 +185,9 @@
          TABLA DE USUARIOS
     ================================================== -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Usuarios registrados">
 
-      <table mat-table class="compact-table" [dataSource]="usuarios()" matSort matSortDisableClear
+      <table mat-table class="compact-table ws-table ws-table--regular ws-table--actions" [dataSource]="usuarios()" matSort matSortDisableClear
         [matSortActive]="columnaOrden()" [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- ID -->
@@ -296,12 +296,9 @@
 
           <td mat-cell *matCellDef="let usuario" class="status-column">
 
-            <span class="status" [class.active]="usuario.estado === 'ACTIVO'"
-              [class.inactive]="usuario.estado !== 'ACTIVO'">
-
-              {{ usuario.estado }}
-
-            </span>
+            <app-estado-switch [activo]="usuario.estado === 'ACTIVO'" [nombre]="'usuario ' + usuario.nombreUsuario"
+              [deshabilitado]="usuario.esSuperAdmin || usuario.id === idUsuarioActual() || guardando() || eliminandoId() !== null || cambiandoEstadoId() !== null"
+              (cambiar)="cambiarEstado(usuario)"></app-estado-switch>
 
           </td>
 

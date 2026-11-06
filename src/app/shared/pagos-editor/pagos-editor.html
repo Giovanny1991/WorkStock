@@ -1,0 +1,111 @@
+<section class="pagos-card" [class.pagos-card-integrado]="integrado" [attr.aria-label]="integrado ? 'Historial y registro de cobros' : null">
+  @if (!integrado) {
+  <header class="pagos-head">
+    <span class="pagos-icon" aria-hidden="true"><mat-icon>payments</mat-icon></span>
+    <div class="pagos-head-text">
+      <h2 id="titulo-formas-pago">Formas de pago</h2>
+      <p>Registra uno o varios pagos para este documento.</p>
+    </div>
+    @if (pagos().length) { <span class="pagos-count">{{ pagos().length }} {{ pagos().length === 1 ? 'pago' : 'pagos' }}</span> }
+  </header>
+  }
+  @if (mostrarFormulario && cargando()) {
+    <p class="pagos-aviso" role="status">Cargando formas de pago...</p>
+  } @else if (mostrarFormulario && errorCarga()) {
+    <div class="pagos-aviso" role="alert">No fue posible cargar las formas de pago. <button type="button" class="pagos-reintentar" (click)="cargarFormas()">Reintentar</button></div>
+  } @else if (mostrarFormulario && !formas().length) {
+    <p class="pagos-aviso">No existen formas de pago activas. Configúralas en el menú Configuración.</p>
+  } @else if (mostrarFormulario) {
+    <div class="pagos-form">
+      <div class="pago-field pago-forma">
+        <label for="pago-forma">Forma de pago</label>
+        <div class="pago-select-wrap">
+          <select id="pago-forma" class="pago-control pago-select" name="formaPago" [ngModel]="idFormaPago" (ngModelChange)="cambiarFormaPago($event)">
+            @for (forma of formas(); track forma.id) { <option [ngValue]="forma.id">{{ forma.nombre }}</option> }
+          </select>
+          <mat-icon aria-hidden="true">expand_more</mat-icon>
+        </div>
+      </div>
+      <div class="pago-field pago-monto">
+        <label for="pago-valor">Monto (USD)</label>
+        <div class="pago-valor-wrap">
+          <span class="pago-prefix" aria-hidden="true">$</span>
+          <input id="pago-valor" class="pago-control pago-valor" type="text" inputmode="decimal" maxlength="15" name="monto" [(ngModel)]="valor" placeholder="0.00" autocomplete="off" (keydown.enter)="agregar(); $event.preventDefault()">
+          @if (saldo > 0) { <button type="button" class="pago-todo" (click)="usarSaldo()" title="Colocar saldo pendiente" aria-label="Completar monto con el saldo pendiente">Todo</button> }
+        </div>
+      </div>
+      @if (formaSeleccionada?.requiereReferencia) {
+        <div class="pago-field pago-referencia">
+          <label for="pago-referencia">Referencia <span class="pago-obligatorio">*</span></label>
+          <input id="pago-referencia" class="pago-control" type="text" maxlength="120" name="referencia" [(ngModel)]="referencia" placeholder="N.º de comprobante / voucher" autocomplete="off" required>
+        </div>
+        <div class="pago-field pago-banco">
+          <label for="pago-banco">Banco <span class="pago-opcional">(opcional)</span></label>
+          <input id="pago-banco" class="pago-control" type="text" maxlength="100" name="banco" [(ngModel)]="banco" placeholder="Nombre del banco" autocomplete="off">
+        </div>
+      }
+      <button type="button" class="pago-add" (click)="agregar()" [disabled]="saldo <= 0 || idFormaPago === null">
+        <mat-icon aria-hidden="true">add_circle_outline</mat-icon><span>Agregar pago</span>
+      </button>
+    </div>
+  }
+  @if (abonoHistorico > 0 || pagosRegistrados.length || pagos().length) {
+    <div class="pagos-movimientos">
+      <div class="pagos-movimientos-titulo">
+        <span>Movimientos de pago</span>
+        <span>{{ (abonoHistorico > 0 ? 1 : 0) + pagosRegistrados.length + pagos().length }} {{ (abonoHistorico > 0 ? 1 : 0) + pagosRegistrados.length + pagos().length === 1 ? 'registro' : 'registros' }}</span>
+      </div>
+      <div class="pagos-lista" role="list" aria-label="Movimientos de pago registrados y pendientes">
+        @if (abonoHistorico > 0) {
+          <div class="pago-linea" role="listitem">
+            <div class="pago-datos">
+              <strong>Abono anterior</strong>
+              <span class="pago-referencia-texto">Sin desglose de forma de pago</span>
+            </div>
+            <span class="pago-estado pago-estado-historico">Histórico</span>
+            <strong class="pago-importe">{{ abonoHistorico | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </div>
+        }
+        @for (pago of pagosRegistrados; track pago.id) {
+          <div class="pago-linea" [class.pago-linea-anulado]="pago.estado === 'ANULADO'" role="listitem">
+            <div class="pago-datos">
+              <strong>{{ pago.formaPago }}</strong>
+              @if (pago.referencia) { <span class="pago-referencia-texto">Ref. {{ pago.referencia }}</span> }
+              @if (pago.banco) { <span class="pago-referencia-texto">{{ pago.banco }}</span> }
+            </div>
+            <span class="pago-estado" [class.pago-estado-anulado]="pago.estado === 'ANULADO'" [class.pago-estado-registrado]="pago.estado === 'REGISTRADO'">{{ pago.estado === 'ANULADO' ? 'Anulado' : 'Registrado' }}</span>
+            <strong class="pago-importe">{{ pago.valor | currency:'USD':'symbol':'1.2-2' }}</strong>
+            @if (permitirEliminarRegistrados && pago.estado === 'REGISTRADO') {
+              <button type="button" class="pago-quitar" [disabled]="eliminandoRegistradoId !== null" [attr.aria-label]="'Eliminar definitivamente pago ' + pago.id" title="Eliminar pago registrado" (click)="eliminarRegistrado.emit(pago.id)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            }
+          </div>
+        }
+        @for (pago of pagos(); track $index; let i = $index) {
+          <div class="pago-linea pago-linea-pendiente" role="listitem">
+            <div class="pago-datos">
+              <strong>{{ nombreForma(pago.idFormaPago) }}</strong>
+              @if (pago.referencia) { <span class="pago-referencia-texto">Ref. {{ pago.referencia }}</span> }
+              @if (pago.banco) { <span class="pago-referencia-texto">{{ pago.banco }}</span> }
+            </div>
+            <span class="pago-estado pago-estado-pendiente">Por guardar</span>
+            <strong class="pago-importe">{{ pago.valor | currency:'USD':'symbol':'1.2-2' }}</strong>
+            <button type="button" class="pago-quitar" [attr.aria-label]="'Quitar pago pendiente ' + (i + 1)" title="Quitar pago pendiente" (click)="eliminar(i)"><mat-icon>delete_outline</mat-icon></button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  @if (pagos().length && avisoPendientes) {
+    <p class="pagos-nota" role="status"><mat-icon aria-hidden="true">info_outline</mat-icon> {{ avisoPendientes }}</p>
+  }
+  @if (mostrarResumen) {
+    <div class="pagos-resumen" aria-live="polite">
+      <div class="pagos-dato"><span>{{ etiquetaTotal }}</span><strong>{{ total | currency:'USD':'symbol':'1.2-2' }}</strong></div>
+      <div class="pagos-dato"><span>Pagado</span><strong>{{ totalPagado() | currency:'USD':'symbol':'1.2-2' }}</strong></div>
+      <div class="pagos-dato" [class.con-saldo]="saldo > 0" [class.saldo-completo]="saldo === 0 && total > 0" [class.saldo-excedido]="saldo < 0"><span>{{ etiquetaSaldo }}</span><strong>{{ saldo | currency:'USD':'symbol':'1.2-2' }}</strong></div>
+    </div>
+    @if (saldo < 0) { <p class="pagos-error" role="alert">El total del documento cambió. Elimina o ajusta los pagos para continuar.</p> }
+  }
+</section>

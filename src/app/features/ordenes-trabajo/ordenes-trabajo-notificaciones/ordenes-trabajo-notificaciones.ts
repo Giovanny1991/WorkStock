@@ -38,7 +38,7 @@ export class OrdenesTrabajoNotificaciones implements OnInit {
     readonly estados = ESTADOS_NOTIFICACION;
     readonly variables = VARIABLES_MENSAJE;
     readonly configuraciones = signal<OrdenEstadoConfiguracion[]>([]);
-    readonly seleccionado = signal<EstadoNotificacion>('EN DIAGNÓSTICO');
+    readonly seleccionado = signal<EstadoNotificacion>('RECEPCIÓN Y DIAGNÓSTICO');
     readonly cargando = signal(false);
     readonly guardando = signal(false);
     readonly cargado = signal(false);

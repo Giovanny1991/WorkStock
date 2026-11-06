@@ -80,9 +80,9 @@
 
     <!-- TABLA -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Marcas de productos">
 
-      <table mat-table [dataSource]="marcas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      <table class="ws-table ws-table--compact ws-table--actions" mat-table [dataSource]="marcas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- ID -->
@@ -137,11 +137,9 @@
 
           <td mat-cell *matCellDef="let item" class="col-status">
 
-            <span class="status" [class.active]="item.estado === 'ACTIVO'" [class.inactive]="item.estado !== 'ACTIVO'">
-
-              {{ item.estado }}
-
-            </span>
+            <app-estado-switch [activo]="item.estado === 'ACTIVO'" [nombre]="'marca ' + item.nombreMarca"
+              [deshabilitado]="cargando() || eliminandoId() !== null || cambiandoEstadoId() !== null"
+              (cambiar)="cambiarEstado(item)"></app-estado-switch>
 
           </td>
 
@@ -164,16 +162,17 @@
               <!-- EDITAR -->
 
               <button mat-icon-button type="button" class="action edit" matTooltip="Editar marca"
-                aria-label="Editar marca" [disabled]="eliminandoId() !== null" (click)="editar(item)">
+                aria-label="Editar marca" [disabled]="eliminandoId() !== null || cambiandoEstadoId() !== null" (click)="editar(item)">
 
                 <mat-icon>edit</mat-icon>
 
               </button>
 
+
               <!-- ELIMINAR -->
 
               <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar marca"
-                aria-label="Eliminar marca" [disabled]="eliminandoId() !== null" (click)="eliminar(item)">
+                aria-label="Eliminar marca" [disabled]="eliminandoId() !== null || cambiandoEstadoId() !== null" (click)="eliminar(item)">
 
                 <mat-icon>
                   {{

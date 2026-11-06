@@ -128,9 +128,9 @@
          TABLA DE EMPRESAS
     ================================================== -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Empresas registradas">
 
-      <table mat-table class="compact-table" [dataSource]="empresas()" matSort matSortDisableClear
+      <table mat-table class="compact-table ws-table ws-table--wide ws-table--actions" [dataSource]="empresas()" matSort matSortDisableClear
         [matSortActive]="columnaOrden()" [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- ID -->
@@ -245,11 +245,9 @@
 
           <td mat-cell *matCellDef="let empresa" class="status-column">
 
-            <span class="status" [class.active]="empresa.estado === 'ACTIVA'">
-
-              {{ empresa.estado }}
-
-            </span>
+            <app-estado-switch [activo]="empresa.estado === 'ACTIVA'" [nombre]="'empresa ' + empresa.nombreEmpresa"
+              [deshabilitado]="guardando() || eliminandoId() !== null || cambiandoEstadoId() !== null"
+              (cambiar)="cambiarEstado(empresa)"></app-estado-switch>
 
           </td>
 

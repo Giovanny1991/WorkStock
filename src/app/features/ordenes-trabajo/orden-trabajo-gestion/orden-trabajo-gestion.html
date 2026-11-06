@@ -26,51 +26,213 @@
   </div>
   }
 
-  <!-- INFORMACIÓN GENERAL -->
-  <div class="ws-details-grid">
-    <section class="ws-section">
-      <header class="ws-section-header">
-        <span class="ws-section-icon"><mat-icon>person_outline</mat-icon></span>
-        <div>
-          <h3>Cliente y orden</h3>
-          <p>Identificación y datos de recepción</p>
-        </div>
-      </header>
-      <div class="ws-section-body">
-        <div class="ws-details">
-          <div><span>N.º de orden</span><strong>#{{ o.numeroOrden }}</strong></div>
-          <div><span>Fecha de ingreso</span><strong>{{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</strong></div>
-          <div><span>Cliente</span><strong>{{ o.nombreCliente }}</strong></div>
-          <div><span>Identificación</span><strong>{{ o.identificacion }}</strong></div>
-          <div><span>Teléfono</span><strong>{{ o.telefono || '-' }}</strong></div>
-          <div><span>Correo</span><strong>{{ o.correo || '-' }}</strong></div>
-          <div><span>Vendedor / Caja</span><strong>{{ o.vendedor || '-' }}</strong></div>
-        </div>
+  <!-- 01 · CLIENTE / RESUMEN DE ORDEN -->
+  <section class="ws-section ws-client-section">
+    <header class="ws-section-header">
+      <span class="ws-section-icon ws-client-title-icon">
+        <mat-icon>person_outline</mat-icon>
+      </span>
+      <div>
+        <h3>Datos del cliente</h3>
+        <p>Información del titular y datos principales de la orden</p>
       </div>
-    </section>
+      @if (!soloLectura()) {
+      <button mat-stroked-button type="button" class="ws-edit-client" [disabled]="guardando()"
+        (click)="editarCliente()">
+        <mat-icon>edit</mat-icon>
+        <span>Editar cliente</span>
+      </button>
+      }
+    </header>
 
-    <section class="ws-section">
-      <header class="ws-section-header">
-        <span class="ws-section-icon"><mat-icon>smartphone</mat-icon></span>
-        <div>
-          <h3>Equipo recibido</h3>
-          <p>Identificación y condición del dispositivo</p>
+    <div class="ws-section-body ws-client-body">
+
+      <!-- RESUMEN SUPERIOR DE LA ORDEN -->
+      <div class="ws-order-strip">
+
+        <div class="ws-order-summary-item">
+          <span class="ws-order-summary-icon">
+            <mat-icon>tag</mat-icon>
+          </span>
+          <div class="ws-order-summary-text">
+            <span>Orden</span>
+            <strong>#{{ o.numeroOrden }}</strong>
+          </div>
         </div>
-      </header>
-      <div class="ws-section-body">
-        <div class="ws-details">
-          <div><span>Marca / Modelo</span><strong>{{ o.modeloDispositivo || '-' }}</strong></div>
-          <div><span>IMEI / Serie</span><strong>{{ o.imei || '-' }}</strong></div>
-          <div><span>Recepción</span><strong>{{ estadoRecepcion() }}</strong></div>
-          <div><span>Elementos</span><strong>{{ accesoriosRecepcion() }}</strong></div>
+
+        <div class="ws-order-summary-item">
+          <span class="ws-order-summary-icon">
+            <mat-icon>calendar_today</mat-icon>
+          </span>
+          <div class="ws-order-summary-text">
+            <span>Fecha de ingreso</span>
+            <strong>{{ o.fechaIngreso | date:'dd/MM/yyyy HH:mm' }}</strong>
+          </div>
         </div>
-        <div class="ws-description">
-          <span>Daño reportado</span>
-          <p>{{ o.danoDispositivo || 'Sin descripción' }}</p>
+
+        <div class="ws-order-summary-item">
+          <span class="ws-order-summary-icon">
+            <mat-icon>store</mat-icon>
+          </span>
+          <div class="ws-order-summary-text">
+            <span>Vendedor / Caja</span>
+            <strong>{{ o.vendedor || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="ws-order-summary-item ws-order-summary-status">
+          <span class="ws-order-status" [attr.data-estado]="o.estado || 'SIN ESTADO'">
+            <span class="ws-order-status-dot"></span>
+            {{ o.estado || 'SIN ESTADO' }}
+          </span>
+        </div>
+
+      </div>
+
+      <!-- INFORMACIÓN DEL CLIENTE -->
+      <div class="ws-client-info-grid">
+
+        <div class="ws-client-field">
+          <span class="ws-client-field-icon">
+            <mat-icon>person_outline</mat-icon>
+          </span>
+          <div class="ws-client-field-content">
+            <span>Nombre del cliente</span>
+            <strong>{{ o.nombreCliente || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="ws-client-field">
+          <span class="ws-client-field-icon">
+            <mat-icon>badge</mat-icon>
+          </span>
+          <div class="ws-client-field-content">
+            <span>Identificación</span>
+            <strong>{{ o.identificacion || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="ws-client-field">
+          <span class="ws-client-field-icon">
+            <mat-icon>phone</mat-icon>
+          </span>
+          <div class="ws-client-field-content">
+            <span>Celular</span>
+            <strong>{{ o.telefono || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="ws-client-field">
+          <span class="ws-client-field-icon">
+            <mat-icon>email</mat-icon>
+          </span>
+          <div class="ws-client-field-content">
+            <span>Correo electrónico</span>
+            <strong>{{ o.correo || '-' }}</strong>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 02 · EQUIPO: TARJETA HORIZONTAL COMO NUEVA ORDEN -->
+  <section class="ws-section ws-equipment-section">
+    <header class="ws-section-header">
+      <span class="ws-section-icon"><mat-icon>smartphone</mat-icon></span>
+      <div>
+        <h3>Equipo recibido</h3>
+        <p>Datos del dispositivo y condición de ingreso</p>
+      </div>
+    </header>
+    <div class="ws-section-body ws-equipment-body">
+      <div class="ws-catalogo-row">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
+          <mat-label>Tipo de dispositivo</mat-label>
+          <mat-select [formControl]="idTipoDispositivo" placeholder="Seleccione tipo">
+            @for (tipo of tiposDispositivo(); track tipo.id) {
+            @if (tipoDisponible(tipo)) { <mat-option [value]="tipo.id">{{ tipo.tipoDispositivo }}</mat-option> }
+            }
+          </mat-select>
+          <mat-error>Selecciona el tipo de dispositivo</mat-error>
+        </mat-form-field>
+        @if (esAdministrador() && !soloLectura()) {
+        <button mat-icon-button type="button" class="ws-catalogo-compact" title="Administrar tipos de dispositivo"
+          aria-label="Administrar tipos de dispositivo" [disabled]="guardando() || cargandoCatalogos()"
+          (click)="gestionarCatalogo('tipos')">
+          <mat-icon>settings</mat-icon>
+        </button>
+        }
+      </div>
+      <div class="ws-equipment-fields">
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
+          <mat-label>Modelo del dispositivo</mat-label>
+          <input matInput maxlength="200" [formControl]="modeloEdicion" [readonly]="soloLectura()"
+            placeholder="Marca y modelo">
+          <mat-error>El modelo es obligatorio</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic">
+          <mat-label>IMEI / Serie</mat-label>
+          <input matInput maxlength="20" [formControl]="imeiEdicion" [readonly]="soloLectura()"
+            placeholder="Opcional · máximo 20 caracteres">
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" floatLabel="always" subscriptSizing="dynamic" class="ws-equipment-damage">
+        <mat-label>Daño o novedad reportada</mat-label>
+        <textarea matInput rows="2" maxlength="1000" [formControl]="danoEdicion" [readonly]="soloLectura()"
+          placeholder="Describe lo reportado por el cliente"></textarea>
+        <mat-error>Ingresa el daño reportado</mat-error>
+      </mat-form-field>
+      <div class="ws-reception-choices">
+        <div class="ws-choice-panel">
+          <div class="ws-choice-heading"><mat-icon>power_settings_new</mat-icon><strong>Estado de recepción</strong>
+          </div>
+          <mat-radio-group class="ws-power-options" [formControl]="recepcionEdicion" aria-label="Estado de recepción">
+            <mat-radio-button value="ENCENDIDO">Encendido</mat-radio-button>
+            <mat-radio-button value="APAGADO">Apagado</mat-radio-button>
+            <mat-radio-button value="SIN DEFINIR">Sin definir</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div class="ws-choice-panel">
+          <div class="ws-choice-heading"><mat-icon>inventory_2</mat-icon><strong>Elementos recibidos</strong>@if
+            (esAdministrador() && !soloLectura()) { <button mat-icon-button type="button" class="ws-catalogo-compact"
+              title="Administrar elementos" aria-label="Administrar elementos"
+              [disabled]="guardando() || cargandoCatalogos()"
+              (click)="gestionarCatalogo('elementos')"><mat-icon>settings</mat-icon></button> }</div>
+          <div class="ws-choice-checks">
+            @for (item of elementosCatalogo(); track item.id) {
+            @if (elementoDisponible(item)) {
+            <mat-checkbox [checked]="elementoSeleccionado(item.id)" [disabled]="soloLectura() || guardando()"
+              (change)="seleccionarElemento(item.id, $event.checked)">{{ item.elemento }}</mat-checkbox>
+            }
+            }
+            @if (!cargandoCatalogos() && elementosCatalogo().length === 0) { <span>No hay elementos configurados.</span>
+            }
+          </div>
+
+        </div>
+        <div class="ws-choice-panel">
+          <div class="ws-choice-heading"><mat-icon>fact_check</mat-icon><strong>Condiciones físicas del
+              equipo</strong>@if (esAdministrador() && !soloLectura()) { <button mat-icon-button type="button"
+              class="ws-catalogo-compact" title="Administrar condiciones" aria-label="Administrar condiciones"
+              [disabled]="guardando() || cargandoCatalogos()"
+              (click)="gestionarCatalogo('condiciones')"><mat-icon>settings</mat-icon></button> }</div>
+          <div class="ws-choice-checks">
+            @for (item of condicionesCatalogo(); track item.id) {
+            @if (condicionDisponible(item)) {
+            <mat-checkbox [checked]="condicionSeleccionada(item.id)" [disabled]="soloLectura() || guardando()"
+              (change)="seleccionarCondicion(item.id, $event.checked)">{{ item.condicion }}</mat-checkbox>
+            }
+            }
+            @if (!cargandoCatalogos() && condicionesCatalogo().length === 0) { <span>No hay condiciones
+              configuradas.</span> }
+          </div>
+
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 
   <!-- SEGURIDAD DEL DISPOSITIVO -->
   <section class="ws-section">
@@ -97,7 +259,7 @@
       <span class="ws-section-icon"><mat-icon>payments</mat-icon></span>
       <div>
         <h3>Valores del servicio</h3>
-        <p>Actualiza el valor, abono y saldo de la reparación</p>
+        <p>El valor actualizado y los nuevos pagos se guardan juntos al pulsar Actualizar.</p>
       </div>
     </header>
     <div class="ws-section-body">
@@ -114,10 +276,9 @@
             [readonly]="soloLectura() || totalPendiente.value">
         </mat-form-field>
         <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Abono</mat-label>
+          <mat-label>Abonos (incluye nuevos pagos)</mat-label>
           <span matTextPrefix>$&nbsp;</span>
-          <input matInput type="number" min="0" step="0.01" [formControl]="abono"
-            [readonly]="soloLectura() || totalPendiente.value">
+          <input matInput type="number" [value]="abonoPrevisto()" readonly aria-label="Abonos anteriores más nuevos pagos">
         </mat-form-field>
         <div class="ws-balance">
           <span>Saldo pendiente</span>
@@ -130,6 +291,32 @@
           }
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- NUEVOS PAGOS: se guardan con Actualizar orden, en una transacción -->
+  <section class="ws-section">
+    <header class="ws-section-header">
+      <span class="ws-section-icon"><mat-icon>account_balance_wallet</mat-icon></span>
+      <div><h3>Cobros y formas de pago</h3><p>Agrega los abonos. Se registrarán junto con los cambios al pulsar Actualizar.</p></div>
+    </header>
+    <div class="ws-section-body">
+      @if (consultandoPagos()) { <p>Consultando historial de cobros...</p> }
+      @if (falloConsultaPagos()) { <p>No se pudo consultar el historial. <button mat-stroked-button type="button" (click)="cargarPagos()">Reintentar</button></p> }
+      @if (!consultandoPagos() && !falloConsultaPagos()) {
+        <app-pagos-editor #pagosGestion
+          [integrado]="true"
+          [mostrarFormulario]="!soloLectura() && !totalPendiente.value && (saldoDisponibleParaPago() > 0 || pagosNuevos().length > 0)"
+          [mostrarResumen]="false"
+          [total]="saldoDisponibleParaPago()"
+          [pagosRegistrados]="pagosRegistrados()"
+          [permitirEliminarRegistrados]="esAdministrador() && !soloLectura() && !guardando()"
+          [eliminandoRegistradoId]="eliminandoPagoId()"
+          (eliminarRegistrado)="eliminarPagoRegistrado($event)"
+          [abonoHistorico]="abonoHistorico()"
+          avisoPendientes="Los pagos pendientes se registrarán al pulsar Actualizar orden."
+          (pagosChange)="onPagosChange($event)" />
+      }
     </div>
   </section>
 
@@ -193,8 +380,8 @@
       }
 
       @if (accesoriosUsados().length > 0) {
-      <div class="ws-table-scroll">
-        <table mat-table [dataSource]="accesoriosUsados()" class="ws-data-table">
+      <div class="ws-table-shell ws-table-scroll" role="region" tabindex="0" aria-label="Accesorios utilizados en la orden">
+        <table mat-table [dataSource]="accesoriosUsados()" class="ws-data-table ws-table ws-table--compact ws-table--actions">
           <ng-container matColumnDef="accesorio">
             <th mat-header-cell *matHeaderCellDef>ACCESORIO</th>
             <td mat-cell *matCellDef="let accesorio">{{ accesorio.accesorio }}</td>
@@ -239,7 +426,7 @@
     <div class="ws-section-body">
       <div class="ws-technical-grid">
         <mat-form-field floatLabel="always" appearance="outline" class="ws-observations">
-          <mat-label>Observaciones realizadas</mat-label>
+          <mat-label>Nueva observacion técnica</mat-label>
           <textarea matInput rows="3" maxlength="2000" [formControl]="observaciones"
             placeholder="Detalle del diagnóstico o reparación"></textarea>
           @if (!soloLectura() && requiereObservaciones() &&
@@ -249,9 +436,9 @@
         </mat-form-field>
 
         <mat-form-field floatLabel="always" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Estado</mat-label>
+          <mat-label>Nuevo Estado</mat-label>
           <input matInput type="text" autocomplete="off" [formControl]="busquedaEstado" [matAutocomplete]="autoEstados"
-            placeholder="Buscar estado">
+            placeholder="Opcional: mantener el estado actual">
           <mat-icon matSuffix>search</mat-icon>
           <mat-autocomplete #autoEstados="matAutocomplete" (optionSelected)="seleccionarEstado($event.option.value)">
             @for (item of estadosFiltrados(); track item) {
@@ -287,7 +474,9 @@
       </div>
     </header>
     <div class="ws-section-body">
-      <app-orden-trabajo-imagenes #imagenesOrden [idOrden]="data.idOrden" [soloLectura]="soloLectura()" />
+      <app-orden-trabajo-imagenes #imagenesOrden [idOrden]="data.idOrden" [soloLectura]="soloLectura()"
+        [mostrarTitulo]="false" [mostrarQr]="!soloLectura()" [qrDeshabilitado]="guardando() || cargando()"
+        (solicitarQr)="abrirQrFotos()" />
     </div>
   </section>
 
@@ -309,22 +498,15 @@
         <span>No se encontraron cambios de estado.</span>
       </div>
       } @else {
-      <div class="ws-table-scroll">
-        <table mat-table [dataSource]="historialEstados()" class="ws-data-table">
+      <div class="ws-table-shell ws-table-scroll" role="region" tabindex="0" aria-label="Historial de estados de la orden">
+        <table mat-table [dataSource]="historialEstados()" class="ws-data-table ws-table ws-table--compact">
           <ng-container matColumnDef="fecha">
             <th mat-header-cell *matHeaderCellDef>FECHA</th>
             <td mat-cell *matCellDef="let h">
               {{ h.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}
             </td>
           </ng-container>
-          <ng-container matColumnDef="anterior">
-            <th mat-header-cell *matHeaderCellDef>ANTERIOR</th>
-            <td mat-cell *matCellDef="let h">
-              <span class="ws-state" [attr.data-estado]="h.estadoAnterior || 'SIN ESTADO'">
-                {{ h.estadoAnterior || 'Registro inicial' }}
-              </span>
-            </td>
-          </ng-container>
+
           <ng-container matColumnDef="nuevo">
             <th mat-header-cell *matHeaderCellDef>NUEVO ESTADO</th>
             <td mat-cell *matCellDef="let h">
@@ -339,9 +521,9 @@
             <th mat-header-cell *matHeaderCellDef>OBSERVACIONES</th>
             <td mat-cell *matCellDef="let h">{{ h.observaciones || '-' }}</td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="['fecha','anterior','nuevo','usuario','observacion']">
+          <tr mat-header-row *matHeaderRowDef="['fecha','nuevo','usuario','observacion']">
           </tr>
-          <tr mat-row *matRowDef="let row; columns: ['fecha','anterior','nuevo','usuario','observacion']">
+          <tr mat-row *matRowDef="let row; columns: ['fecha','nuevo','usuario','observacion']">
           </tr>
         </table>
       </div>

@@ -1,3 +1,4 @@
+import { EstadoSwitch } from '../../../shared/estado-switch/estado-switch';
 import {
   Component,
   computed,
@@ -126,7 +127,8 @@ import {
 
     MatTooltipModule,
 
-    MatProgressBarModule
+    MatProgressBarModule,
+    EstadoSwitch
 
   ],
 
@@ -212,6 +214,27 @@ export class EmpresasAdmin
       []
     );
 
+
+  readonly cambiandoEstadoId = signal<number | null>(null);
+
+  cambiarEstado(empresa: Empresa): void {
+    if (this.guardando() || this.eliminandoId() !== null || this.cambiandoEstadoId() !== null) return;
+    const estado: 'ACTIVA' | 'INACTIVA' = empresa.estado === 'ACTIVA' ? 'INACTIVA' : 'ACTIVA';
+    this.dialog.open(ConfirmDialog, { width: '450px', maxWidth: '92vw', data: {
+      title: estado === 'ACTIVA' ? 'Activar empresa' : 'Desactivar empresa',
+      message: estado === 'ACTIVA'
+        ? `¿Activar la empresa "${empresa.nombreEmpresa}"? La operación permanecerá pendiente hasta habilitarla.`
+        : `¿Desactivar la empresa "${empresa.nombreEmpresa}"? Se deshabilitará también su operación y el acceso de sus usuarios.`,
+      confirmText: estado === 'ACTIVA' ? 'Activar' : 'Desactivar'
+    }}).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmado => {
+      if (!confirmado || this.cambiandoEstadoId() !== null) return;
+      this.cambiandoEstadoId.set(empresa.id);
+      this.service.actualizarEstadoEmpresa(empresa.id, estado)
+        .pipe(finalize(() => this.cambiandoEstadoId.set(null)), takeUntilDestroyed(this.destroyRef))
+        .subscribe({ next: r => { this.notify.success(r.message ?? 'Estado actualizado'); this.cargar(); },
+          error: e => this.notify.error(e?.error?.message ?? 'No se pudo cambiar el estado') });
+    });
+  }
 
   // =====================================================
   // BÚSQUEDA

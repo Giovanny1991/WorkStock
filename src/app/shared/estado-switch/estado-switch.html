@@ -1,0 +1,9 @@
+<button type="button" class="ws-status-switch" role="switch"
+  [class.is-active]="activo"
+  [attr.aria-checked]="activo"
+  [attr.aria-label]="(activo ? 'Desactivar ' : 'Activar ') + nombre"
+  [matTooltip]="activo ? 'Activo · clic para desactivar' : 'Inactivo · clic para activar'"
+  [disabled]="deshabilitado"
+  (click)="cambiar.emit()">
+  <span class="ws-status-switch-knob" aria-hidden="true"></span>
+</button>

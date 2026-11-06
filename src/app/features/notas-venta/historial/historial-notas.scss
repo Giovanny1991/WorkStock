@@ -1,3 +1,4 @@
+@use '../../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - HISTORIAL DE NOTAS DE VENTA
    DISEÑO COMPACTO, UNIFICADO Y RESPONSIVE
@@ -1116,3 +1117,6 @@ mat-progress-bar {
     flex: 1 1 auto;
   }
 }
+
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

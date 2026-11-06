@@ -1,0 +1,8 @@
+:host{display:inline-flex;align-items:center;justify-content:center;width:38px;vertical-align:middle;}
+.ws-status-switch{display:inline-flex;position:relative;align-items:center;flex:0 0 38px;width:38px;height:22px;padding:2px;border:1px solid #c64b52;border-radius:99px;background:#d94a51;cursor:pointer;transition:background .16s,border-color .16s;}
+.ws-status-switch.is-active{background:#259b60;border-color:#208b55;}
+.ws-status-switch-knob{display:block;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transform:translateX(0);transition:transform .16s;}
+.ws-status-switch.is-active .ws-status-switch-knob{transform:translateX(16px);}
+.ws-status-switch:focus-visible{outline:2px solid var(--app-primary);outline-offset:3px;}
+.ws-status-switch:disabled{opacity:.55;cursor:not-allowed;}
+@media(prefers-reduced-motion:reduce){.ws-status-switch,.ws-status-switch-knob{transition:none;}}

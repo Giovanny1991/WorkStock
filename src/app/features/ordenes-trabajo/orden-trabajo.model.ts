@@ -1,6 +1,13 @@
 
+import type { PagoCaptura, PagoRegistrado } from '../../shared/pagos-editor/pagos-editor.model';
+export interface PagosOrdenConsulta {
+  tipoDocumento:string; idDocumento:number; totalDocumento:number; totalPagosRegistrados:number;
+  abonoAnterior:number; saldoAnterior:number; requiereRevisionHistorica:boolean; pagos:PagoRegistrado[];
+}
+export interface PagosOrdenResponse {success:boolean;data:PagosOrdenConsulta;}
 export const ESTADOS_ORDEN_TRABAJO = [
-  'EN DIAGNÓSTICO',
+  'RECEPCIÓN Y DIAGNÓSTICO',
+  'PRESUPUESTO Y AUTORIZACIÓN',
   'ESPERANDO REPUESTO',
   'REPARADO',
   'SIN REPARACIÓN',
@@ -10,7 +17,7 @@ export const ESTADOS_ORDEN_TRABAJO = [
 ] as const;
 
 export type EstadoOrdenTrabajoNuevo = typeof ESTADOS_ORDEN_TRABAJO[number];
-export type EstadoOrdenTrabajo = EstadoOrdenTrabajoNuevo | 'INGRESADO' | 'FINALIZADO';
+export type EstadoOrdenTrabajo = EstadoOrdenTrabajoNuevo | 'INGRESADO' | 'FINALIZADO' | 'EN DIAGNÓSTICO';
 
 export const ESTADOS_ORDEN_CERRADOS: readonly EstadoOrdenTrabajo[] = [
   'FINALIZADO',
@@ -22,12 +29,14 @@ export const ESTADOS_ORDEN_CERRADOS: readonly EstadoOrdenTrabajo[] = [
 export const ESTADOS_ORDEN_PENDIENTES: readonly EstadoOrdenTrabajo[] = [
   'INGRESADO',
   'EN DIAGNÓSTICO',
+  'RECEPCIÓN Y DIAGNÓSTICO',
+  'PRESUPUESTO Y AUTORIZACIÓN',
   'ESPERANDO REPUESTO',
   'REPARADO',
   'SIN REPARACIÓN'
 ];
 
-export const ORDEN_ESTADO_INICIAL: EstadoOrdenTrabajoNuevo = 'EN DIAGNÓSTICO';
+export const ORDEN_ESTADO_INICIAL: EstadoOrdenTrabajoNuevo = 'RECEPCIÓN Y DIAGNÓSTICO';
 
 export type TipoBloqueoDispositivo =
   'NO_REGISTRADO' | 'SIN_BLOQUEO' | 'CONTRASENA' | 'PATRON';
@@ -55,28 +64,39 @@ export const esOrdenPendiente = (estado: string | null | undefined): boolean =>
 
 export interface OrdenTrabajoRequest {
   idCliente: number;
+  idTipoDispositivo: number;
+  elementosRecibidos: number[];
+  condicionesFisicas: number[];
   modeloDispositivo: string;
   imei: string;
   danoDispositivo: string;
   encendido: boolean;
   apagado: boolean;
-  tapa: boolean;
-  bateria: boolean;
-  banSIM: boolean;
   totalPendiente: boolean;
   total: number;
   abono: number;
+  pagos?: PagoCaptura[];
   tipoBloqueo?: TipoBloqueoDispositivo;
   claveDispositivo?: string | null;
   patronDispositivo?: string | null;
 }
 
 export interface OrdenTrabajoActualizarRequest {
+  idTipoDispositivo?: number;
+  elementosRecibidos?: number[];
+  condicionesFisicas?: number[];
+  modeloDispositivo?: string;
+  imei?: string;
+  danoDispositivo?: string;
+  encendido?: boolean;
+  apagado?: boolean;
   totalPendiente: boolean;
   total: number;
   abono: number;
   observaciones: string;
   estado: EstadoOrdenTrabajo;
+  abonoAnterior?: number;
+  pagos?: PagoCaptura[];
   tipoBloqueo?: TipoBloqueoDispositivo;
   claveDispositivo?: string | null;
   patronDispositivo?: string | null;
@@ -104,7 +124,11 @@ export interface OrdenTrabajoResumen {
   correo?: string;
   numeroOrden: string;
   modeloDispositivo: string;
-  imei: string;
+  imei: string | null;
+  idTipoDispositivo?: number | null;
+  tipoDispositivo?: string | null;
+  elementosRecibidos?: { idElemento: number; elemento: string }[];
+  condicionesFisicas?: { idCondicion: number; condicion: string }[];
   danoDispositivo: string;
   encendido: boolean;
   apagado: boolean;

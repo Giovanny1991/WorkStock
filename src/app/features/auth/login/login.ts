@@ -44,6 +44,7 @@ import {
 import {
   AuthService
 } from '../../../core/auth/auth.service';
+import { rutaQrSegura } from '../../../core/auth/qr-return-url';
 
 // =====================================================
 // IDENTIDAD VISUAL DE EMPRESA
@@ -503,7 +504,7 @@ export class Login implements OnDestroy {
         this.cargando.set(false);
 
         void this.router.navigateByUrl(
-          this.authService.rutaInicio(),
+          rutaQrSegura(this.route.snapshot.queryParamMap.get('returnUrl')) ?? this.authService.rutaInicio(),
           {
             replaceUrl: true
           }

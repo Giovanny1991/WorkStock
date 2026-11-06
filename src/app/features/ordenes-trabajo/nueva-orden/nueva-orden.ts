@@ -5,7 +5,7 @@ import {
 import { CurrencyPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
-  catchError, debounceTime, distinctUntilChanged,
+  catchError, debounceTime, distinctUntilChanged, firstValueFrom, interval,
   filter, finalize, map, of, switchMap, tap
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,32 +17,50 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { AuthService } from '../../../core/auth/auth.service';
+import { CatalogosOrdenService, CatalogoOrden, TipoDispositivoOrden, ElementoRecibidoOrden, CondicionFisicaOrden } from '../catalogos-orden/catalogos-orden.service';
+import { CatalogosOrdenDialog } from '../catalogos-orden/catalogos-orden-dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Cliente } from '../../clientes/cliente.model';
 import { ClientesService } from '../../clientes/clientes.service';
 import { ClienteDialog } from '../../clientes/cliente-dialog/cliente-dialog';
+import { identificacionClienteFormatoValido } from '../../clientes/cliente-identificacion';
+import { ClienteSeleccionadoComponent } from '../../clientes/cliente-seleccionado/cliente-seleccionado';
 import { NotificationService } from '../../../core/services/notification';
 import { ConfirmDialog } from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
 import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { OrdenTrabajoDetalleComponent } from '../orden-trabajo-detalle/orden-trabajo-detalle';
 import { OrdenTrabajoImagenesComponent } from '../orden-trabajo-imagenes/orden-trabajo-imagenes';
 import { OrdenTrabajoSeguridadComponent } from '../orden-trabajo-seguridad/orden-trabajo-seguridad';
+import { OrdenTrabajoQrBorradorDialog } from '../orden-trabajo-qr/orden-trabajo-qr-borrador-dialog';
+import { PagosEditorComponent } from '../../../shared/pagos-editor/pagos-editor';
+import type { PagoCaptura } from '../../../shared/pagos-editor/pagos-editor.model';
+import { ConsultaBorradorQr, OrdenTrabajoQrBorradorService, SesionBorradorQr } from '../orden-trabajo-qr/orden-trabajo-qr-borrador.service';
 
 @Component({
   selector: 'app-nueva-orden',
   standalone: true,
   imports: [
+    ClienteSeleccionadoComponent,
+    PagosEditorComponent,
     OrdenTrabajoImagenesComponent,
     OrdenTrabajoSeguridadComponent,
     CurrencyPipe, ReactiveFormsModule,
     MatAutocompleteModule, MatButtonModule, MatCheckboxModule,
     MatDialogModule, MatFormFieldModule, MatIconModule,
-    MatInputModule, MatRadioModule, MatTooltipModule
+    MatInputModule, MatRadioModule, MatSelectModule, MatTooltipModule
   ],
   templateUrl: './nueva-orden.html',
   styleUrl: './nueva-orden.scss'
 })
 export class NuevaOrden implements OnInit {
+  @ViewChild('pagosInicial') pagosInicial?: PagosEditorComponent;
+  readonly pagosCapturados = signal<PagoCaptura[]>([]);
+  onPagosChange(pagos: PagoCaptura[]): void {
+    this.pagosCapturados.set(pagos);
+    this.abono.setValue(Number((pagos.reduce((s,p)=>s+Math.round(p.valor*100),0)/100).toFixed(2)));
+  }
   @ViewChild(OrdenTrabajoImagenesComponent)
   galeria?: OrdenTrabajoImagenesComponent;
 
@@ -54,6 +72,44 @@ export class NuevaOrden implements OnInit {
   private readonly notify = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly catalogos = inject(CatalogosOrdenService);
+  private readonly authService = inject(AuthService);
+  private readonly qrBorradorService = inject(OrdenTrabajoQrBorradorService);
+  readonly esAdministrador = computed(() => this.authService.usuario()?.rol?.toUpperCase() === 'ADMINISTRADOR');
+  readonly tiposDispositivo = signal<TipoDispositivoOrden[]>([]);
+  readonly elementosCatalogo = signal<ElementoRecibidoOrden[]>([]);
+  readonly elementosSeleccionados = signal<number[]>([]);
+  readonly condicionesCatalogo = signal<CondicionFisicaOrden[]>([]);
+  readonly condicionesSeleccionadas = signal<number[]>([]);
+  readonly cargandoCatalogos = signal(false);
+  readonly idTipoDispositivo = new FormControl<number | null>(null);
+  cargarCatalogos(): void {
+    this.cargandoCatalogos.set(true);
+    this.catalogos.listarTipos().pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.cargandoCatalogos.set(false)))
+      .subscribe({ next: r => this.tiposDispositivo.set(r.data), error: e => this.notify.error(e?.error?.message ?? 'No se cargaron los tipos de dispositivo') });
+    this.catalogos.listarElementos().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: r => this.elementosCatalogo.set(r.data), error: e => this.notify.error(e?.error?.message ?? 'No se cargaron los elementos recibidos') });
+    this.catalogos.listarCondiciones().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: r => this.condicionesCatalogo.set(r.data), error: e => this.notify.error(e?.error?.message ?? 'No se cargaron las condiciones físicas') });
+  }
+  gestionarCatalogo(tipo: CatalogoOrden): void {
+    if (!this.esAdministrador()) return;
+    this.dialog.open(CatalogosOrdenDialog, { width: '620px', maxWidth: '95vw', autoFocus: false, data: tipo })
+      .afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(cambio => {
+        if (cambio) {
+          const tipoSeleccionado = this.idTipoDispositivo.value;
+          this.cargarCatalogos();
+          if (tipo === 'tipos') this.idTipoDispositivo.setValue(tipoSeleccionado);
+        }
+      });
+  }
+  seleccionarElemento(id: number, seleccionado: boolean): void {
+    this.elementosSeleccionados.update(actual => seleccionado ? [...new Set([...actual, id])] : actual.filter(x => x !== id));
+  }
+
+  seleccionarCondicion(id: number, seleccionado: boolean): void {
+    this.condicionesSeleccionadas.update(actual => seleccionado ? [...new Set([...actual, id])] : actual.filter(x => x !== id));
+  }
 
   // CLIENTES
   readonly clientes = signal<Cliente[]>([]);
@@ -68,6 +124,79 @@ export class NuevaOrden implements OnInit {
 
   // ESTADO GENERAL
   readonly guardando = signal(false);
+  readonly ultimaOrdenRegistrada = signal<number | null>(null);
+
+  readonly creandoQrBorrador = signal(false);
+  readonly sesionesBorrador = signal<SesionBorradorQr[]>([]);
+  readonly qrActivo = signal<SesionBorradorQr | null>(null);
+  readonly resumenQr = signal<ConsultaBorradorQr | null>(null);
+  readonly vinculacionesPendientes = signal<{idOrden:number; sesiones:SesionBorradorQr[]} | null>(null);
+  readonly vinculandoQr = signal(false);
+  constructor() {
+    interval(5000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const activo=this.qrActivo();
+      if (!activo || this.guardando() || this.vinculandoQr()) return;
+      this.qrBorradorService.consultar(activo.token).pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({next:r=>this.resumenQr.set(r.data),error:()=>{}});
+    });
+  }
+  actualizarFotografiasQr(): void {
+    const activa = this.qrActivo();
+    if (!activa || this.guardando() || this.vinculandoQr()) return;
+    this.qrBorradorService.consultar(activa.token).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: respuesta => {
+        if (this.qrActivo()?.token === activa.token) this.resumenQr.set(respuesta.data);
+      },
+      error: error => this.notify.warning(error?.error?.message ?? 'No se pudo actualizar la lista de fotografías QR')
+    });
+  }
+  abrirQrFotos(): void {
+    if (this.guardando() || this.vinculandoQr() || this.creandoQrBorrador()) return;
+    const sesion=this.qrActivo();
+    if (sesion && new Date(sesion.FechaExpiracion).getTime() > Date.now()) { this.mostrarDialogoQr(sesion); return; }
+    this.generarQrNuevo();
+  }
+  generarQrNuevo(): void {
+    if (this.creandoQrBorrador() || this.guardando() || this.vinculandoQr()) return;
+    if (this.vinculacionesPendientes()) {this.notify.warning('Primero vincula las fotografías pendientes a la orden anterior.');return;}
+    this.creandoQrBorrador.set(true);
+    this.qrBorradorService.crear().pipe(finalize(()=>this.creandoQrBorrador.set(false)),takeUntilDestroyed(this.destroyRef)).subscribe({
+      next:r=>{
+        const sesion=r.data;
+        if(!sesion?.token || !sesion.idSesion){this.notify.error('El servidor no devolvió una sesión QR válida.');return;}
+        this.sesionesBorrador.update(actual=>[...actual,sesion]);
+        this.qrActivo.set(sesion);this.resumenQr.set(null);this.mostrarDialogoQr(sesion);
+      },error:e=>this.notify.error(e?.error?.message??'No fue posible crear el QR temporal')
+    });
+  }
+  private mostrarDialogoQr(sesion:SesionBorradorQr):void {
+    this.dialog.open(OrdenTrabajoQrBorradorDialog,{width:'440px',maxWidth:'95vw',autoFocus:false,data:sesion});
+  }
+  reintentarVinculacion():void {
+    const pendiente=this.vinculacionesPendientes();
+    if (!pendiente || this.vinculandoQr()) return;
+    void this.vincularSesiones(pendiente.idOrden,pendiente.sesiones,true);
+  }
+  private async vincularSesiones(idOrden:number,sesiones:SesionBorradorQr[],reintento=false):Promise<boolean> {
+    if (!sesiones.length) {this.vinculacionesPendientes.set(null);return true;}
+    this.vinculandoQr.set(true);
+    let vinculadas=0;
+    const restantes:SesionBorradorQr[]=[];
+    for (let i=0;i<sesiones.length;i++) {
+      try {const respuesta=await firstValueFrom(this.qrBorradorService.vincular(sesiones[i].idSesion,idOrden));vinculadas+=respuesta.data?.fotografiasVinculadas??0;}
+      catch {restantes.push(...sesiones.slice(i));break;}
+    }
+    this.vinculandoQr.set(false);
+    if(restantes.length){
+      this.vinculacionesPendientes.set({idOrden,sesiones:restantes});
+      this.notify.warning(`Orden #${idOrden} guardada. Hay fotografías QR pendientes de vincular. Usa Reintentar vinculación; NO vuelvas a registrar la orden.`);
+      return false;
+    }
+    this.vinculacionesPendientes.set(null);
+    this.sesionesBorrador.set([]);this.qrActivo.set(null);this.resumenQr.set(null);
+    if (reintento) this.notify.success(`${vinculadas} fotografía(s) QR vinculadas a la orden #${idOrden}`);
+    return true;
+  }
 
   // EQUIPO RECIBIDO
   readonly modelo = new FormControl('', { nonNullable: true });
@@ -76,9 +205,6 @@ export class NuevaOrden implements OnInit {
   readonly estadoRecepcion = new FormControl<'ENCENDIDO' | 'APAGADO' | null>(null);
 
   // ELEMENTOS RECIBIDOS
-  readonly tapa = new FormControl(false, { nonNullable: true });
-  readonly bateria = new FormControl(false, { nonNullable: true });
-  readonly banSIM = new FormControl(false, { nonNullable: true });
 
   // VALORES
   readonly totalPendiente = new FormControl(false, { nonNullable: true });
@@ -102,11 +228,8 @@ export class NuevaOrden implements OnInit {
 
   readonly puedeRegistrarCliente = computed(() => {
     const valor = this.busquedaCliente().trim().toUpperCase();
-    const esCedula = /^\d{10}$/.test(valor);
-    const esRuc = /^\d{13}$/.test(valor);
-    const esPasaporte = /^P[A-Z0-9]{1,12}$/.test(valor);
     return (
-      (esCedula || esRuc || esPasaporte) &&
+      identificacionClienteFormatoValido(valor) &&
       !this.buscandoClientes() &&
       !this.errorBusquedaClientes() &&
       !this.clienteExiste() &&
@@ -115,6 +238,7 @@ export class NuevaOrden implements OnInit {
   });
 
   ngOnInit(): void {
+    this.cargarCatalogos();
     this.configurarBusquedaClientes();
     this.configurarValorPendiente();
   }
@@ -274,6 +398,7 @@ export class NuevaOrden implements OnInit {
       .subscribe(pendiente => {
         if (pendiente) {
           this.total.setValue(0, { emitEvent: false });
+          this.pagosInicial?.limpiar();
           this.abono.setValue(0, { emitEvent: false });
         }
       });
@@ -281,7 +406,8 @@ export class NuevaOrden implements OnInit {
 
   // CONFIRMAR REGISTRO
   guardar(): void {
-    if (this.guardando()) return;
+    if (this.guardando() || this.vinculandoQr()) return;
+    if (this.vinculacionesPendientes()) { this.notify.warning('Debes resolver primero las fotografías pendientes de la orden ya guardada.'); return; }
 
     const error = this.validar();
     if (error) {
@@ -331,17 +457,18 @@ export class NuevaOrden implements OnInit {
     this.guardando.set(true);
     this.service.crear({
       idCliente: this.idCliente(),
+      idTipoDispositivo: this.idTipoDispositivo.value!,
+      elementosRecibidos: this.elementosSeleccionados(),
+      condicionesFisicas: this.condicionesSeleccionadas(),
       modeloDispositivo: this.modelo.value.trim(),
       imei: this.imei.value.trim(),
       danoDispositivo: this.dano.value.trim(),
       encendido: recepcion === 'ENCENDIDO',
       apagado: recepcion === 'APAGADO',
-      tapa: this.tapa.value,
-      bateria: this.bateria.value,
-      banSIM: this.banSIM.value,
       totalPendiente: this.totalPendiente.value,
       total: this.totalPendiente.value ? 0 : Number(this.total.value),
       abono: this.totalPendiente.value ? 0 : Number(this.abono.value),
+      pagos: this.pagosCapturados(),
       ...seguridad
     })
       .pipe(
@@ -351,18 +478,14 @@ export class NuevaOrden implements OnInit {
       .subscribe({
         next: async response => {
           const idOrden = response.data.idOrden;
+          this.ultimaOrdenRegistrada.set(idOrden);
 
-          try {
-            await this.galeria?.guardarPendientes(idOrden);
-          } catch {
-            this.notify.warning(
-              `Orden ${idOrden} registrada, pero no se pudieron subir las fotografías. ` +
-              'Puedes agregarlas desde Gestionar orden.'
-            );
-            this.guardando.set(false);
-            return;
-          }
-
+          let falloFotosLocales=false;
+          try {await this.galeria?.guardarPendientes(idOrden);}
+          catch {falloFotosLocales=true;}
+          const qrVinculado=await this.vincularSesiones(idOrden,this.sesionesBorrador());
+          if (falloFotosLocales) this.notify.warning(`Orden #${idOrden} registrada, pero algunas fotografías seleccionadas en el computador no se subieron.`);
+          if (!qrVinculado) { this.limpiar(); this.visualizarOrden(idOrden); return; }
           this.notify.success(
             `${response.message} - N.º ${idOrden}`
           );
@@ -383,13 +506,13 @@ export class NuevaOrden implements OnInit {
   private validar(): string | null {
     if (this.idCliente() <= 0) return 'Seleccione un cliente';
 
+    if (!this.idTipoDispositivo.value || !this.tiposDispositivo().some(t => t.id === this.idTipoDispositivo.value)) return 'Seleccione un tipo de dispositivo válido';
+
     if (this.modelo.value.trim().length < 3) {
       return 'El modelo debe tener mínimo 3 caracteres';
     }
 
-    if (!/^\d{15}$/.test(this.imei.value.trim())) {
-      return 'El IMEI debe contener 15 dígitos';
-    }
+    if (this.imei.value.length > 20) return 'El IMEI o número de serie admite máximo 20 caracteres';
 
     if (this.dano.value.trim().length < 3) {
       return 'Ingrese el daño reportado del dispositivo';
@@ -427,16 +550,17 @@ export class NuevaOrden implements OnInit {
     this.errorBusquedaClientes.set(false);
     this.clienteTexto.setValue('', { emitEvent: false });
 
+    this.idTipoDispositivo.setValue(null);
+    this.elementosSeleccionados.set([]);
+    this.condicionesSeleccionadas.set([]);
     this.modelo.setValue('');
     this.imei.setValue('');
     this.dano.setValue('');
     this.estadoRecepcion.setValue(null);
-    this.tapa.setValue(false);
-    this.bateria.setValue(false);
-    this.banSIM.setValue(false);
     this.totalPendiente.setValue(false, { emitEvent: false });
     this.total.setValue(0);
     this.abono.setValue(0);
+    this.pagosInicial?.limpiar();
 
     // REINICIAR SEGURIDAD
     this.seguridadOrden?.reiniciar();

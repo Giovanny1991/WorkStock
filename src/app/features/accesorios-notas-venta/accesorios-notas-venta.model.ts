@@ -1,3 +1,5 @@
+import { PagoCaptura, PagoRegistrado } from '../../shared/pagos-editor/pagos-editor.model';
+
 export interface AccesorioNotaVentaDetalleRequest {
 
   idProducto: number;
@@ -15,6 +17,7 @@ export interface CrearAccesorioNotaVentaRequest {
 
   detalle:
     AccesorioNotaVentaDetalleRequest[];
+  pagos: PagoCaptura[];
 
 }
 
@@ -88,6 +91,7 @@ export interface AccesorioNotaVenta
 
   detalle:
     AccesorioNotaVentaDetalle[];
+  pagos?: PagoRegistrado[];
 
 }
 

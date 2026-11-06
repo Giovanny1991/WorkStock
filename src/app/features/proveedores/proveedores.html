@@ -80,9 +80,9 @@
 
     <!-- TABLA -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Proveedores registrados">
 
-      <table mat-table [dataSource]="proveedores()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      <table class="ws-table ws-table--regular ws-table--actions" mat-table [dataSource]="proveedores()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- ID -->
@@ -137,11 +137,9 @@
 
           <td mat-cell *matCellDef="let x" class="col-status">
 
-            <span class="status" [class.active]="x.estado === 'ACTIVO'" [class.inactive]="x.estado !== 'ACTIVO'">
-
-              {{ x.estado }}
-
-            </span>
+            <app-estado-switch [activo]="x.estado === 'ACTIVO'" [nombre]="'proveedor ' + x.nombreProveedor"
+              [deshabilitado]="cargando() || eliminandoId() !== null || cambiandoEstadoId() !== null"
+              (cambiar)="cambiarEstado(x)"></app-estado-switch>
 
           </td>
 
@@ -185,16 +183,17 @@
               <!-- EDITAR -->
 
               <button mat-icon-button type="button" class="action edit" matTooltip="Editar proveedor"
-                aria-label="Editar proveedor" [disabled]="eliminandoId() !== null" (click)="editar(x)">
+                aria-label="Editar proveedor" [disabled]="eliminandoId() !== null || cambiandoEstadoId() !== null" (click)="editar(x)">
 
                 <mat-icon>edit</mat-icon>
 
               </button>
 
+
               <!-- ELIMINAR -->
 
               <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar proveedor"
-                aria-label="Eliminar proveedor" [disabled]="eliminandoId() !== null" (click)="eliminar(x)">
+                aria-label="Eliminar proveedor" [disabled]="eliminandoId() !== null || cambiandoEstadoId() !== null" (click)="eliminar(x)">
 
                 <mat-icon>
                   {{

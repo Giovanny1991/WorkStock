@@ -134,9 +134,9 @@
 
     <!-- TABLA -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Historial de notas de accesorios">
 
-      <table mat-table [dataSource]="registros()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      <table class="ws-table ws-table--regular ws-table--actions" mat-table [dataSource]="registros()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- NÚMERO Y FECHA -->

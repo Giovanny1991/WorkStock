@@ -135,9 +135,9 @@
          TABLA DE FACTURAS
     ================================================ -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Historial de facturas">
 
-      <table mat-table [dataSource]="facturas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      <table class="ws-table ws-table--wide ws-table--actions" mat-table [dataSource]="facturas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- NÚMERO FACTURA -->

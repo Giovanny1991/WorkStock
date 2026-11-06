@@ -1,0 +1,112 @@
+// WorkStock - Estilos comunes para tablas de pantalla.
+// NO usar en tickets/impresiones termicas: conservan su maquetacion de 80 mm.
+@mixin aplicar() {
+  :host { min-width: 0; max-width: 100%; }
+  .ws-table-shell {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--app-border, #d4dbe6) transparent;
+    &:focus-visible { outline: 2px solid var(--app-primary, #2563eb); outline-offset: -2px; }
+    &::-webkit-scrollbar { height: 8px; }
+    &::-webkit-scrollbar-thumb { background: var(--app-border, #cbd5e1); border-radius: 10px; }
+  }
+  .ws-table-shell .ws-table {
+    width: 100%;
+    max-width: none;
+    border-collapse: collapse;
+    background: var(--app-card, #fff);
+    color: var(--app-text, #14213a);
+    font-size: 12px;
+    table-layout: auto;
+  }
+  .ws-table-shell .ws-table--compact { min-width: 540px; }
+  .ws-table-shell .ws-table--regular { min-width: 720px; }
+  .ws-table-shell .ws-table--wide { min-width: 920px; }
+  .ws-table-shell .ws-table--xwide { min-width: 1080px; }
+  .ws-table-shell .ws-table > thead > tr,
+  .ws-table-shell .ws-table .mat-mdc-header-row {
+    height: 42px;
+    background: var(--app-card-secondary, #f6f8fb);
+  }
+  .ws-table-shell .ws-table > tbody > tr,
+  .ws-table-shell .ws-table .mat-mdc-row {
+    height: 44px;
+    transition: background-color .15s ease;
+  }
+  .ws-table-shell .ws-table > thead > tr > th,
+  .ws-table-shell .ws-table .mat-mdc-header-cell {
+    box-sizing: border-box;
+    padding: 10px 12px;
+    color: var(--app-text-muted, #627087);
+    background: var(--app-card-secondary, #f6f8fb);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-transform: uppercase;
+    letter-spacing: .015em;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--app-border, #dfe4eb);
+  }
+  .ws-table-shell .ws-table > tbody > tr > td,
+  .ws-table-shell .ws-table .mat-mdc-cell {
+    box-sizing: border-box;
+    padding: 9px 12px;
+    color: var(--app-text, #14213a);
+    font-size: 12px;
+    line-height: 1.4;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--app-border-soft, #edf0f3);
+  }
+  .ws-table-shell .ws-table > tbody > tr:not(.mat-mdc-no-data-row):not(.row-inactive):hover,
+  .ws-table-shell .ws-table .mat-mdc-row:not(.row-inactive):hover {
+    background: var(--app-hover, var(--app-card-secondary, #f6f8fb));
+  }
+  .ws-table-shell .ws-table > tbody > tr:last-child > td,
+  .ws-table-shell .ws-table .mat-mdc-row:last-child .mat-mdc-cell { border-bottom-color: transparent; }
+  .ws-table-shell .ws-table .mat-mdc-header-cell .mat-sort-header-container { gap: 4px; }
+  .ws-table-shell .ws-table app-estado-switch { display: inline-flex; vertical-align: middle; }
+  .ws-table-shell .ws-table .mat-mdc-icon-button { flex-shrink: 0; }
+  .ws-table-shell .ws-table .mat-column-acciones,
+  .ws-table-shell .ws-table th.actions-col,
+  .ws-table-shell .ws-table td.actions-col,
+  .ws-table-shell .ws-table th.actions-title {
+    text-align: right;
+    white-space: nowrap;
+  }
+  @media (max-width: 780px) {
+    .ws-table-shell .ws-table--actions .mat-column-acciones,
+    .ws-table-shell .ws-table--actions th.actions-col,
+    .ws-table-shell .ws-table--actions td.actions-col,
+    .ws-table-shell .ws-table--actions th.actions-title {
+      position: sticky;
+      right: 0;
+      z-index: 1;
+      background: var(--app-card, #fff);
+      box-shadow: -1px 0 0 var(--app-border-soft, #edf0f3);
+    }
+    .ws-table-shell .ws-table--actions .mat-mdc-header-cell.mat-column-acciones,
+    .ws-table-shell .ws-table--actions th.actions-title {
+      z-index: 2;
+      background: var(--app-card-secondary, #f6f8fb);
+    }
+  }
+  @media (max-width: 560px) {
+    .ws-table-shell .ws-table > thead > tr > th,
+    .ws-table-shell .ws-table .mat-mdc-header-cell { padding: 9px 10px; }
+    .ws-table-shell .ws-table > tbody > tr > td,
+    .ws-table-shell .ws-table .mat-mdc-cell { padding: 8px 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ws-table-shell .ws-table > tbody > tr,
+    .ws-table-shell .ws-table .mat-mdc-row { transition: none; }
+  }
+}

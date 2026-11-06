@@ -143,9 +143,9 @@
          TABLA DE NOTAS DE VENTA
     ================================================ -->
 
-    <div class="table-wrapper">
+    <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Historial de notas de venta">
 
-      <table mat-table [dataSource]="notas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+      <table class="ws-table ws-table--wide ws-table--actions" mat-table [dataSource]="notas()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
         [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- NÚMERO Y FECHA -->

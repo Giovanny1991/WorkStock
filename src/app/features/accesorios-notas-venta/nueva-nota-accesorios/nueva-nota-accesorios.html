@@ -39,7 +39,7 @@
         <mat-form-field appearance="outline" class="autocomplete-field" subscriptSizing="dynamic">
 
           <input matInput [formControl]="clienteTexto" [matAutocomplete]="autoCliente"
-            placeholder="Cédula, RUC o nombre..." autocomplete="off">
+            placeholder="Cédula, RUC, P..., LOCAL... o nombre" autocomplete="off">
 
           <mat-icon matSuffix>search</mat-icon>
 
@@ -120,6 +120,7 @@
         }
 
       </div>
+      <app-cliente-seleccionado [cliente]="clienteSeleccionado()" />
     </div>
 
     <!-- ================================================
@@ -231,9 +232,9 @@
 
       <!-- CONTENEDOR CON SCROLL HORIZONTAL -->
 
-      <div class="table-wrapper" role="region" aria-label="Detalle de nota de venta de accesorios" tabindex="0">
+      <div class="ws-table-shell table-wrapper" role="region" aria-label="Detalle de nota de venta de accesorios" tabindex="0">
 
-        <table mat-table class="sale-table" [dataSource]="detalle()">
+        <table mat-table class="sale-table ws-table ws-table--wide ws-table--actions" [dataSource]="detalle()">
 
           <!-- ========================================
                ACCESORIO
@@ -470,6 +471,9 @@
       </div>
 
     </div>
+
+    <!-- FORMAS DE PAGO: mismo espacio y estructura que Notas de Venta de celulares -->
+    <app-pagos-editor [total]="total()" (pagosChange)="actualizarPagos($event)" />
 
   </div>
 

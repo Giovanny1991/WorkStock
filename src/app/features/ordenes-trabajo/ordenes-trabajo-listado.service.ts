@@ -13,7 +13,8 @@ export const FILTROS_ESTADO_ORDEN: ReadonlyArray<{
     value: FiltroEstadoOrden;
     label: string;
 }> = [
-        { value: 'EN DIAGNÓSTICO', label: 'En diagnóstico' },
+        { value: 'RECEPCIÓN Y DIAGNÓSTICO', label: 'Recepción y diagnóstico' },
+        { value: 'PRESUPUESTO Y AUTORIZACIÓN', label: 'Presupuesto y autorización' },
         { value: 'PENDIENTES', label: 'Pendientes' },
         { value: 'ESPERANDO REPUESTO', label: 'Esperando repuesto' },
         { value: 'SIN REPARACIÓN', label: 'Sin reparación' },

@@ -5,6 +5,7 @@ import {
   DestroyRef,
   inject,
   OnInit,
+  ViewChild,
   signal
 } from '@angular/core';
 
@@ -48,7 +49,11 @@ import { FacturasService } from '../facturas.service';
 import { NotificationService } from '../../../core/services/notification';
 import { ConfirmDialog } from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
 import { ClienteDialog } from '../../clientes/cliente-dialog/cliente-dialog';
+import { identificacionClienteFormatoValido } from '../../clientes/cliente-identificacion';
+import { ClienteSeleccionadoComponent } from '../../clientes/cliente-seleccionado/cliente-seleccionado';
 import { FacturaDetalleComponent } from '../factura-detalle/factura-detalle';
+import { PagosEditorComponent } from '../../../shared/pagos-editor/pagos-editor';
+import { PagoCaptura } from '../../../shared/pagos-editor/pagos-editor.model';
 
 interface ProductoFactura extends StockCelular {
   precioTotal: number;
@@ -68,7 +73,9 @@ interface ProductoFactura extends StockCelular {
     MatInputModule,
     MatProgressBarModule,
     MatTableModule,
-    MatTooltipModule
+    MatTooltipModule,
+    PagosEditorComponent,
+    ClienteSeleccionadoComponent
   ],
   templateUrl: './facturacion.html',
   styleUrl: './facturacion.scss'
@@ -148,6 +155,10 @@ export class Facturacion implements OnInit {
 
   readonly detalle = signal<ProductoFactura[]>([]);
   readonly ivaPorcentaje = signal(0);
+  @ViewChild(PagosEditorComponent) pagosEditor?: PagosEditorComponent;
+  readonly pagos = signal<PagoCaptura[]>([]);
+  readonly totalPagosCentavos = computed(() => this.pagos().reduce((s,p)=>s+Math.round(p.valor*100),0));
+  actualizarPagos(pagos: PagoCaptura[]): void { this.pagos.set(pagos); }
 
   // =====================================================
   // CLIENTE EXISTENTE
@@ -176,12 +187,9 @@ export class Facturacion implements OnInit {
       .trim()
       .toUpperCase();
 
-    const esCedula = /^\d{10}$/.test(valor);
-    const esRuc = /^\d{13}$/.test(valor);
-    const esPasaporte = /^P[A-Z0-9]{1,12}$/.test(valor);
 
     return (
-      (esCedula || esRuc || esPasaporte) &&
+      identificacionClienteFormatoValido(valor) &&
       !this.buscandoClientes() &&
       !this.errorBusquedaClientes() &&
       !this.clienteExiste() &&
@@ -236,6 +244,8 @@ export class Facturacion implements OnInit {
   readonly puedeFacturar = computed(() =>
     this.idCliente() > 0 &&
     this.detalle().length > 0 &&
+    this.pagos().length > 0 &&
+    this.totalPagosCentavos() === Math.round(this.total()*100) &&
     this.detalle().every(producto => {
 
       const precio = Number(producto.precioTotal);
@@ -923,6 +933,10 @@ export class Facturacion implements OnInit {
 
     }
 
+    if(!this.pagos().length || this.totalPagosCentavos() !== Math.round(this.total()*100)) {
+      this.notify.warning('Las formas de pago deben sumar exactamente el total de la factura');
+      return;
+    }
     this.dialog.open(
       ConfirmDialog,
       {
@@ -964,7 +978,8 @@ export class Facturacion implements OnInit {
       detalle: this.detalle().map(x => ({
         idProducto: x.id,
         precioTotal: Number(x.precioTotal)
-      }))
+      })),
+      pagos: this.pagos()
 
     };
 
@@ -1090,6 +1105,8 @@ export class Facturacion implements OnInit {
     this.idCliente.set(0);
     this.clienteSeleccionado.set(null);
     this.detalle.set([]);
+    this.pagosEditor?.limpiar();
+    this.pagos.set([]);
 
     this.clienteTexto.setValue(
       '',

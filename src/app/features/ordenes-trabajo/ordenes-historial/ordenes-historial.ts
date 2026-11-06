@@ -60,7 +60,7 @@ export class OrdenesHistorial implements OnInit {
   readonly eliminandoId = signal<number | null>(null);
   readonly ordenes = signal<OrdenTrabajoResumen[]>([]);
   readonly busqueda = signal('');
-  readonly filtroEstado = signal<FiltroEstadoOrden>('EN DIAGNÓSTICO');
+  readonly filtroEstado = signal<FiltroEstadoOrden>('RECEPCIÓN Y DIAGNÓSTICO');
   readonly filtrosEstado = FILTROS_ESTADO_ORDEN;
   readonly contadores = signal<Record<string, number | null>>({});
   readonly cargandoContadores = signal(false);
@@ -69,6 +69,8 @@ export class OrdenesHistorial implements OnInit {
   readonly aparienciaEstado: Record<string, { clase: string; icono: string }> = {
     'TODOS': { clase: 'todos', icono: 'apps' },
     'PENDIENTES': { clase: 'pendientes', icono: 'pending_actions' },
+    'RECEPCIÓN Y DIAGNÓSTICO': { clase: 'diagnostico', icono: 'troubleshoot' },
+    'PRESUPUESTO Y AUTORIZACIÓN': { clase: 'presupuesto', icono: 'request_quote' },
     'EN DIAGNÓSTICO': { clase: 'diagnostico', icono: 'troubleshoot' },
     'ESPERANDO REPUESTO': { clase: 'repuesto', icono: 'hourglass_top' },
     'REPARADO': { clase: 'reparado', icono: 'build_circle' },
@@ -85,7 +87,7 @@ export class OrdenesHistorial implements OnInit {
   }
 
   nombreEstado(valor: string): string {
-    return valor === 'INGRESADO' ? 'EN DIAGNÓSTICO' : valor === 'FINALIZADO' ? 'ENTREGADO' : valor;
+    return valor === 'INGRESADO' || valor === 'EN DIAGNÓSTICO' ? 'RECEPCIÓN Y DIAGNÓSTICO' : valor === 'FINALIZADO' ? 'ENTREGADO' : valor;
   }
 
 
@@ -95,7 +97,7 @@ export class OrdenesHistorial implements OnInit {
 
   readonly buscarControl = new FormControl('', { nonNullable: true });
   readonly estadoControl = new FormControl<FiltroEstadoOrden>(
-    'EN DIAGNÓSTICO',
+    'RECEPCIÓN Y DIAGNÓSTICO',
     { nonNullable: true }
   );
 
@@ -343,11 +345,11 @@ export class OrdenesHistorial implements OnInit {
 
   limpiarFiltros(): void {
     this.buscarControl.setValue('', { emitEvent: false });
-    this.estadoControl.setValue('EN DIAGNÓSTICO', { emitEvent: false });
+    this.estadoControl.setValue('RECEPCIÓN Y DIAGNÓSTICO', { emitEvent: false });
     this.fechaInicialControl.setValue(null, { emitEvent: false });
     this.fechaFinalControl.setValue(null, { emitEvent: false });
     this.busqueda.set('');
-    this.filtroEstado.set('EN DIAGNÓSTICO');
+    this.filtroEstado.set('RECEPCIÓN Y DIAGNÓSTICO');
     this.fechasAplicadas.set({ inicial: null, final: null });
     this.columnaOrden.set('fechaIngreso');
     this.direccionOrden.set('desc');

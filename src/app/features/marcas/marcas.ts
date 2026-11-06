@@ -1,3 +1,4 @@
+import { EstadoSwitch } from '../../shared/estado-switch/estado-switch';
 import {
 
   Component,
@@ -173,6 +174,8 @@ import {
 // COMPONENTE
 // =====================================================
 
+import { CatalogosEstadoService, EstadoCatalogo } from '../../core/services/catalogos-estado.service';
+
 @Component({
 
   selector:
@@ -182,6 +185,7 @@ import {
     true,
 
   imports: [
+    EstadoSwitch,
 
     ReactiveFormsModule,
 
@@ -221,6 +225,9 @@ export class Marcas
   // =====================================================
   // SERVICIOS
   // =====================================================
+
+  private readonly estadosService = inject(CatalogosEstadoService);
+  readonly cambiandoEstadoId = signal<number | null>(null);
 
   private readonly service =
     inject(
@@ -970,6 +977,35 @@ export class Marcas
   // =====================================================
   // ELIMINAR
   // =====================================================
+
+  // Cambio de estado sin modificar el registro ni sus referencias históricas.
+  cambiarEstado(item: Marca): void {
+    if (this.cambiandoEstadoId() !== null || this.eliminandoId() !== null) return;
+    const anterior: EstadoCatalogo = item.estado === 'ACTIVO' ? 'ACTIVO' : 'INACTIVO';
+    const nuevo: EstadoCatalogo = anterior === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+    const accion = nuevo === 'ACTIVO' ? 'Activar' : 'Desactivar';
+    this.dialog.open(ConfirmDialog, {
+      width: '420px', maxWidth: '92vw', disableClose: true,
+      data: {
+        title: `${accion} marca`,
+        message: `¿Deseas ${accion.toLowerCase()} "${item.nombreMarca}"? ${nuevo === 'INACTIVO' ? 'El registro se conservará para consultas históricas.' : 'Volverá a estar disponible para uso.'}`,
+        confirmText: accion
+      }
+    }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmado => {
+      if (!confirmado || this.cambiandoEstadoId() !== null || this.eliminandoId() !== null) return;
+      this.cambiandoEstadoId.set(item.id);
+      this.estadosService.actualizar('MARCAS', item.id, anterior, nuevo).pipe(
+        finalize(() => this.cambiandoEstadoId.set(null)),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
+        next: response => { this.notify.success(response.message); this.cargar(); },
+        error: error => {
+          this.notify.error(error?.error?.message ?? 'No fue posible actualizar el estado');
+          this.cargar();
+        }
+      });
+    });
+  }
 
   eliminar(
     marca: Marca

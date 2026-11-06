@@ -15,7 +15,7 @@ import {
   OrdenTrabajoOperacionResponse,
   OrdenTrabajoRequest,
   OrdenTrabajoResponse,
-  SeguridadDispositivoResponse
+  SeguridadDispositivoResponse, PagosOrdenResponse
 } from './orden-trabajo.model';
 
 export interface EnlaceSeguimientoOrden {
@@ -77,6 +77,12 @@ export class OrdenesTrabajoService {
   }
   actualizar(id: number, data: OrdenTrabajoActualizarRequest): Observable<OrdenTrabajoOperacionResponse> {
     return this.http.put<OrdenTrabajoOperacionResponse>(`${this.apiUrl}/${id}`, data);
+  }
+  obtenerPagos(id: number): Observable<PagosOrdenResponse> {
+    return this.http.get<PagosOrdenResponse>(`/api/pagos/ORDEN_TRABAJO/${id}`);
+  }
+  eliminarPagoRegistrado(idOrden: number, idPago: number): Observable<{success:boolean;message:string;data:{idOrden:number;idPago:number;abono:number;saldo:number}}> {
+    return this.http.delete<{success:boolean;message:string;data:{idOrden:number;idPago:number;abono:number;saldo:number}}>(`${this.apiUrl}/${idOrden}/pagos/${idPago}`);
   }
   eliminar(id: number): Observable<OrdenTrabajoOperacionResponse> {
     return this.http.delete<OrdenTrabajoOperacionResponse>(`${this.apiUrl}/${id}`);

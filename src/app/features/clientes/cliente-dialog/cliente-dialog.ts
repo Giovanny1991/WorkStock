@@ -40,6 +40,7 @@ import {
   Cliente,
   ClienteRequest
 } from '../cliente.model';
+import { AYUDA_IDENTIFICACION_CLIENTE, PATRON_IDENTIFICACION_CLIENTE } from '../cliente-identificacion';
 
 import {
   ClientesService
@@ -101,6 +102,8 @@ export class ClienteDialog {
   readonly esEdicion =
     !!this.data?.cliente;
 
+  readonly ayudaIdentificacion = AYUDA_IDENTIFICACION_CLIENTE;
+
   readonly guardando =
     signal(false);
 
@@ -118,11 +121,9 @@ export class ClienteDialog {
       [
         Validators.required,
 
-        // Cédula: 10 dígitos
-        // RUC: 13 dígitos
-        Validators.pattern(/^(?:\d{10}|\d{13})$/),
-
-        Validators.maxLength(13)
+        // Cédula, RUC, pasaporte P o identificación interna LOCAL
+        Validators.pattern(PATRON_IDENTIFICACION_CLIENTE),
+        Validators.maxLength(30)
       ]
     ],
 
@@ -169,6 +170,17 @@ export class ClienteDialog {
     ]
 
   });
+
+
+  // =====================================================
+  // IDENTIFICACIÓN EN MAYÚSCULAS
+  // =====================================================
+
+  normalizarIdentificacionEnCampo(): void {
+    const control = this.form.controls.identificacion;
+    const valor = control.value.toUpperCase();
+    if (control.value !== valor) control.setValue(valor, { emitEvent: false });
+  }
 
 
   // =====================================================

@@ -5,7 +5,8 @@ import {
   DestroyRef,
   inject,
   OnInit,
-  signal
+  signal,
+  ViewChild
 } from '@angular/core';
 
 import { CurrencyPipe } from '@angular/common';
@@ -37,6 +38,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Cliente } from '../../clientes/cliente.model';
 import { ClientesService } from '../../clientes/clientes.service';
 import { ClienteDialog } from '../../clientes/cliente-dialog/cliente-dialog';
+import { identificacionClienteFormatoValido } from '../../clientes/cliente-identificacion';
+import { ClienteSeleccionadoComponent } from '../../clientes/cliente-seleccionado/cliente-seleccionado';
 
 import { AccesorioStock } from '../../accesorios-stock/accesorio-stock.model';
 import { AccesoriosStockService } from '../../accesorios-stock/accesorios-stock.service';
@@ -46,6 +49,8 @@ import { AccesoriosNotasVentaService } from '../accesorios-notas-venta.service';
 import { NotificationService } from '../../../core/services/notification';
 import { ConfirmDialog } from '../../../shared/dialogs/confirm-dialog/confirm-dialog';
 import { AccesorioNotaDetalle } from '../accesorio-nota-detalle/accesorio-nota-detalle';
+import { PagosEditorComponent } from '../../../shared/pagos-editor/pagos-editor';
+import { PagoCaptura } from '../../../shared/pagos-editor/pagos-editor.model';
 
 // =====================================================
 // PRODUCTO VENTA
@@ -81,7 +86,9 @@ interface ProductoVenta {
     MatInputModule,
     MatProgressBarModule,
     MatTableModule,
-    MatTooltipModule
+    MatTooltipModule,
+    PagosEditorComponent,
+    ClienteSeleccionadoComponent
   ],
   templateUrl: './nueva-nota-accesorios.html',
   styleUrl: './nueva-nota-accesorios.scss'
@@ -159,6 +166,10 @@ export class NuevaNotaAccesorios implements OnInit {
   // ===================================================
 
   readonly detalle = signal<ProductoVenta[]>([]);
+  @ViewChild(PagosEditorComponent) pagosEditor?: PagosEditorComponent;
+  readonly pagos = signal<PagoCaptura[]>([]);
+  readonly totalPagosCentavos = computed(() => this.pagos().reduce((s,p) => s + Math.round(p.valor * 100), 0));
+  actualizarPagos(pagos: PagoCaptura[]): void { this.pagos.set(pagos); }
 
   // ===================================================
   // COLUMNAS
@@ -212,12 +223,9 @@ export class NuevaNotaAccesorios implements OnInit {
       .trim()
       .toUpperCase();
 
-    const esCedula = /^\d{10}$/.test(valor);
-    const esRuc = /^\d{13}$/.test(valor);
-    const esPasaporte = /^P[A-Z0-9]{1,12}$/.test(valor);
 
     return (
-      (esCedula || esRuc || esPasaporte) &&
+      identificacionClienteFormatoValido(valor) &&
       !this.buscandoClientes() &&
       !this.errorBusquedaClientes() &&
       !this.clienteExiste() &&
@@ -275,7 +283,9 @@ export class NuevaNotaAccesorios implements OnInit {
         precio >= pvp1
       );
 
-    })
+    }) &&
+    this.pagos().length > 0 &&
+    this.totalPagosCentavos() === Math.round(this.total() * 100)
   );
 
   // ===================================================
@@ -1039,6 +1049,7 @@ export class NuevaNotaAccesorios implements OnInit {
 
     this.service.crear({
       idCliente: this.idCliente(),
+      pagos: [...this.pagos()],
 
       detalle: this.detalle().map(producto => ({
         idProducto: producto.id,
@@ -1174,6 +1185,9 @@ export class NuevaNotaAccesorios implements OnInit {
 
     }
 
+    if (!this.pagos().length || this.totalPagosCentavos() !== Math.round(this.total() * 100)) {
+      return 'Registre las formas de pago por el valor total de la nota';
+    }
     return null;
 
   }
@@ -1189,6 +1203,8 @@ export class NuevaNotaAccesorios implements OnInit {
     this.idCliente.set(0);
     this.clienteSeleccionado.set(null);
     this.detalle.set([]);
+    this.pagosEditor?.limpiar();
+    this.pagos.set([]);
 
     this.busquedaCliente.set('');
 

@@ -1,3 +1,4 @@
+@use '../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - MODELOS DE CELULARES
    DISEÑO ESTÁNDAR COMPACTO Y RESPONSIVE
@@ -558,7 +559,7 @@ table.mat-mdc-table {
 ===================================================== */
 
 .mat-column-estado {
-  min-width: 105px;
+  min-width: 84px;
 }
 
 .status-column {
@@ -571,36 +572,6 @@ table.mat-mdc-table {
   justify-content: center;
 }
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 78px;
-
-  padding: 4px 8px;
-
-  border-radius: 20px;
-
-  background: var(--hist-bg-soft);
-  color: var(--hist-muted);
-
-  font-size: 10px;
-  font-weight: 650;
-  line-height: 1.4;
-
-  white-space: nowrap;
-}
-
-.status.active {
-  background: var(--hist-success-bg);
-  color: var(--hist-success);
-}
-
-.status.inactive {
-  background: var(--hist-danger-bg);
-  color: var(--hist-danger);
-}
 
 /* =====================================================
    23. FILAS INACTIVAS
@@ -630,9 +601,9 @@ table.mat-mdc-table {
 
 .mat-column-acciones,
 .col-actions {
-  width: 105px;
-  min-width: 105px;
-  max-width: 105px;
+  width: 86px;
+  min-width: 86px;
+  max-width: 86px;
 
   padding-left: 6px !important;
   padding-right: 6px !important;
@@ -891,3 +862,5 @@ mat-progress-bar {
   }
 }
 
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

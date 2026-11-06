@@ -115,9 +115,9 @@
        TABLA
   ================================================== -->
 
-  <div class="table-wrapper">
+  <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Órdenes de trabajo pendientes">
 
-    <table mat-table [dataSource]="ordenes()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+    <table class="ws-table ws-table--regular ws-table--actions" mat-table [dataSource]="ordenes()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
       [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
       <!-- =============================================

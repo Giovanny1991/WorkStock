@@ -1,3 +1,4 @@
+import { EstadoSwitch } from '../../../shared/estado-switch/estado-switch';
 import {
   Component,
   computed,
@@ -151,8 +152,8 @@ import {
 
     MatTooltipModule,
 
-    MatProgressBarModule
-
+    MatProgressBarModule,
+    EstadoSwitch
   ],
 
   templateUrl:
@@ -331,6 +332,27 @@ export class UsuariosAdmin
       []
     );
 
+
+  readonly cambiandoEstadoId = signal<number | null>(null);
+
+  cambiarEstado(usuario: UsuarioEmpresa): void {
+    if (usuario.esSuperAdmin || usuario.id === this.idUsuarioActual() || this.guardando() ||
+      this.eliminandoId() !== null || this.cambiandoEstadoId() !== null) return;
+    const estado: 'ACTIVO' | 'INACTIVO' = usuario.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO';
+    this.dialog.open(ConfirmDialog, { width: '450px', maxWidth: '92vw', data: {
+      title: estado === 'ACTIVO' ? 'Activar usuario' : 'Desactivar usuario',
+      message: `¿${estado === 'ACTIVO' ? 'Activar' : 'Desactivar'} al usuario "${usuario.nombreUsuario}"?` +
+        (estado === 'INACTIVO' ? ' No podrá iniciar sesión mientras esté inactivo.' : ''),
+      confirmText: estado === 'ACTIVO' ? 'Activar' : 'Desactivar'
+    }}).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmado => {
+      if (!confirmado || this.cambiandoEstadoId() !== null) return;
+      this.cambiandoEstadoId.set(usuario.id);
+      this.service.actualizarEstadoUsuario(usuario.id, estado, this.idParaApi())
+        .pipe(finalize(() => this.cambiandoEstadoId.set(null)), takeUntilDestroyed(this.destroyRef))
+        .subscribe({ next: r => { this.notify.success(r.message ?? 'Estado actualizado'); this.cargar(); },
+          error: e => this.notify.error(e?.error?.message ?? 'No se pudo cambiar el estado') });
+    });
+  }
 
   // =====================================================
   // COLUMNAS

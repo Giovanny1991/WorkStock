@@ -479,6 +479,19 @@
 
     </table>
 
+    @if (f.pagos?.length) {
+    <section class="ticket-pagos" aria-label="Formas de pago">
+      <strong>FORMAS DE PAGO</strong>
+      @for (pago of f.pagos; track pago.id) {
+      <div class="ticket-pago-row">
+        <span>{{ pago.formaPago }} @if (pago.referencia) { · Ref. {{ pago.referencia }} } @if (pago.banco) { · {{ pago.banco }} }</span>
+        <strong>{{ pago.valor | currency:'USD':'symbol':'1.2-2' }}</strong>
+      </div>
+      }
+      @if (f.estado === 'ANULADA') { <span class="ticket-pagos-anulados">Factura anulada: pagos históricos sin vigencia.</span> }
+    </section>
+    }
+
     <!-- ==================================================
            GARANTÍA - SIN MODIFICACIONES
       =================================================== -->

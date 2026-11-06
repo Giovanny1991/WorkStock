@@ -16,6 +16,7 @@ import {
 import {
     AuthService
 } from '../auth/auth.service';
+import { rutaQrSegura } from '../auth/qr-return-url';
 
 
 /* =====================================================
@@ -27,13 +28,14 @@ import {
    Si existe una sesión activa, redirige a /inicio.
 ===================================================== */
 
-export const guestGuard: CanActivateFn = () => {
+export const guestGuard: CanActivateFn = (_route, state) => {
 
     const authService =
         inject(AuthService);
 
     const router =
         inject(Router);
+    const destino = rutaQrSegura(router.parseUrl(state.url).queryParams['returnUrl']);
 
 
     /*
@@ -43,9 +45,7 @@ export const guestGuard: CanActivateFn = () => {
      */
     if (authService.autenticado()) {
 
-        return router.createUrlTree([
-            authService.rutaInicio()
-        ]);
+        return router.parseUrl(destino ?? authService.rutaInicio());
 
     }
 
@@ -73,9 +73,7 @@ export const guestGuard: CanActivateFn = () => {
              * No mostramos el login.
              */
             map(() =>
-                router.createUrlTree([
-                    authService.rutaInicio()
-                ])
+                router.parseUrl(destino ?? authService.rutaInicio())
             ),
 
 

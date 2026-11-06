@@ -12,6 +12,7 @@ import { OrdenesTrabajoService } from '../ordenes-trabajo.service';
 import { NotificationService } from '../../../core/services/notification';
 import { AdministracionService } from '../../administracion/administracion.service';
 import { Empresa } from '../../administracion/administracion.model';
+import type { PagoRegistrado } from '../../../shared/pagos-editor/pagos-editor.model';
 
 interface OrdenTrabajoDetalleData {
   idOrden: number;
@@ -37,6 +38,17 @@ export class OrdenTrabajoDetalleComponent implements OnInit, OnDestroy {
   readonly data = inject<OrdenTrabajoDetalleData>(MAT_DIALOG_DATA);
   readonly cargando = signal(false);
   readonly orden = signal<OrdenTrabajoResumen | null>(null);
+  readonly pagos = signal<PagoRegistrado[]>([]);
+  readonly abonoHistorico = signal(0);
+  readonly cargandoPagos = signal(false);
+  readonly errorPagos = signal(false);
+  private cargarPagos(idOrden:number):void {
+    this.cargandoPagos.set(true);this.errorPagos.set(false);
+    this.service.obtenerPagos(idOrden).pipe(finalize(()=>this.cargandoPagos.set(false)),takeUntilDestroyed(this.destroyRef)).subscribe({
+      next:r=>{const activos=(r.data?.pagos??[]).filter(p=>p.estado==='REGISTRADO');this.pagos.set(activos);this.abonoHistorico.set(Math.max(0,Number(r.data?.abonoAnterior??0)-activos.reduce((s,p)=>s+Number(p.valor),0)));},
+      error:()=>{this.errorPagos.set(true);this.notify.warning('No fue posible consultar el desglose de pagos del comprobante.');}
+    });
+  }
   readonly empresa = signal<Empresa | null>(null);
   readonly cargandoEmpresa = signal(false);
   readonly errorEmpresa = signal<string | null>(null);
@@ -52,6 +64,7 @@ export class OrdenTrabajoDetalleComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargar(this.data.idOrden);
+    this.cargarPagos(this.data.idOrden);
     this.cargarDatosEmpresa();
     this.cargarLogoEmpresa();
   }
@@ -60,9 +73,13 @@ export class OrdenTrabajoDetalleComponent implements OnInit, OnDestroy {
     this.ref.close();
   }
 
+  condicionesFisicas(orden: OrdenTrabajoResumen): string {
+    return (orden.condicionesFisicas ?? []).map(item => item.condicion).join(', ') || 'SIN OBSERVACIONES REGISTRADAS';
+  }
+
   imprimir(): void {
     if (
-      this.cargando() ||
+      this.cargando() || this.cargandoPagos() || this.errorPagos() ||
       this.cargandoEmpresa() ||
       this.cargandoLogo() ||
       this.cargandoQR() ||

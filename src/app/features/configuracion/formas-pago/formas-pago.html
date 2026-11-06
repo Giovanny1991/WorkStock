@@ -1,0 +1,45 @@
+<!-- WORKSTOCK - CONFIGURACIÓN DINÁMICA DE FORMAS DE PAGO -->
+<div class="page-header">
+  <div class="page-title"><h1>Formas de pago</h1><p>Configura los medios de cobro disponibles para la empresa.</p></div>
+  <button mat-flat-button type="button" class="primary-btn" [disabled]="cargando() || procesando()" (click)="nueva()"><mat-icon>add</mat-icon>Nueva forma de pago</button>
+</div>
+<div class="card">
+  @if (cargando() || procesando()) { <mat-progress-bar mode="indeterminate" /> }
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="text" [formControl]="buscarControl" maxlength="80" autocomplete="off" placeholder="Buscar forma de pago..." aria-label="Buscar forma de pago">
+      @if (buscarControl.value) { <button mat-icon-button matSuffix type="button" matTooltip="Limpiar búsqueda" aria-label="Limpiar búsqueda" (click)="limpiarBusqueda()"><mat-icon>close</mat-icon></button> }
+    </mat-form-field>
+    <div class="filters" role="group" aria-label="Filtrar por estado">
+      <button type="button" [class.selected]="filtro() === 'TODAS'" [attr.aria-pressed]="filtro() === 'TODAS'" (click)="seleccionarFiltro('TODAS')">Todas</button>
+      <button type="button" [class.selected]="filtro() === 'ACTIVAS'" [attr.aria-pressed]="filtro() === 'ACTIVAS'" (click)="seleccionarFiltro('ACTIVAS')">Activas</button>
+      <button type="button" [class.selected]="filtro() === 'INACTIVAS'" [attr.aria-pressed]="filtro() === 'INACTIVAS'" (click)="seleccionarFiltro('INACTIVAS')">Inactivas</button>
+    </div>
+    <span class="counter">{{ totalActivas() }} activas · {{ items().length }} registradas</span>
+  </div>
+  <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Formas de pago configuradas">
+    <table class="data-table ws-table ws-table--regular ws-table--actions">
+      <thead><tr><th class="order-col">Orden</th><th>Forma de pago</th><th class="reference-col">Referencia</th><th class="state-col">Estado</th><th class="actions-col">Acciones</th></tr></thead>
+      <tbody>
+        @for (item of visibles(); track item.id) {
+          <tr>
+            <td class="order-col">{{ item.orden }}</td>
+            <td><strong>{{ item.nombre }}</strong></td>
+            <td class="reference-col"><span class="ref-label" [class.required]="item.requiereReferencia">{{ item.requiereReferencia ? 'Obligatoria' : 'Opcional' }}</span></td>
+            <td class="state-col"><app-estado-switch [activo]="item.activo" [nombre]="'forma de pago ' + item.nombre"
+                [deshabilitado]="cargando() || procesando()" (cambiar)="cambiarEstado(item)"></app-estado-switch></td>
+            <td class="actions-col"><button mat-icon-button type="button" class="edit-btn" [disabled]="cargando() || procesando()" (click)="editar(item)" matTooltip="Editar forma de pago" [attr.aria-label]="'Editar ' + item.nombre"><mat-icon>edit</mat-icon></button><button mat-icon-button type="button" class="delete-btn" [disabled]="cargando() || procesando()" (click)="eliminar(item)" matTooltip="Eliminar si no tiene cobros" [attr.aria-label]="'Eliminar ' + item.nombre"><mat-icon>delete_outline</mat-icon></button></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="5" class="empty"><mat-icon>payments</mat-icon><strong>No hay formas de pago para mostrar</strong><span>{{ busqueda() || filtro() !== 'TODAS' ? 'Prueba cambiando los filtros.' : 'Registra la primera forma de pago.' }}</span></td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="table-footer">
+    <span>{{ filtrados().length }} registros encontrados</span>
+    <div class="pagination"><span>Página {{ paginaVisible() + 1 }} de {{ totalPaginas() }}</span><button mat-icon-button type="button" aria-label="Página anterior" [disabled]="paginaVisible() === 0" (click)="anterior()"><mat-icon>chevron_left</mat-icon></button><button mat-icon-button type="button" aria-label="Página siguiente" [disabled]="paginaVisible() + 1 >= totalPaginas()" (click)="siguiente()"><mat-icon>chevron_right</mat-icon></button></div>
+  </div>
+  <div class="info"><mat-icon>info_outline</mat-icon>Las formas de pago desactivadas se conservan para consultar cobros anteriores. Solo pueden eliminarse si no tienen pagos registrados.</div>
+</div>

@@ -1,3 +1,4 @@
+@use '../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - STOCK DE ACCESORIOS
    DISEÑO COMPACTO, UNIFICADO Y RESPONSIVE
@@ -1307,3 +1308,5 @@ mat-progress-bar {
   }
 }
 
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

@@ -1,3 +1,4 @@
+import { PagoCaptura, PagoRegistrado } from '../../shared/pagos-editor/pagos-editor.model';
 export interface NotaVentaDetalleRequest {
   idProducto: number;
   precioTotal: number;
@@ -6,6 +7,7 @@ export interface NotaVentaDetalleRequest {
 export interface NotaVentaRequest {
   idCliente: number;
   detalle: NotaVentaDetalleRequest[];
+  pagos: PagoCaptura[];
 }
 
 export interface NotaVentaCreada {
@@ -52,6 +54,7 @@ export interface NotaVentaCompleta extends NotaVentaResumen {
   direccion?: string;
   correo?: string;
   detalle: NotaVentaDetalle[];
+  pagos?: PagoRegistrado[];
 }
 
 export interface NotasVentaResponse {

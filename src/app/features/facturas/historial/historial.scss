@@ -1,3 +1,4 @@
+@use '../../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - HISTORIAL DE FACTURAS
    DISEÑO COMPACTO UNIFICADO
@@ -1059,3 +1060,5 @@ mat-progress-bar {
   }
 }
 
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

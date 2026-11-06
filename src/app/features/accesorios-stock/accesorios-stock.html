@@ -205,10 +205,10 @@
          TABLA DE ACCESORIOS
     ================================================== -->
 
-    <div class="table-wrapper accesorios-table-scroll" role="region" aria-label="Tabla de inventario de accesorios"
+    <div class="ws-table-shell table-wrapper accesorios-table-scroll" role="region" aria-label="Inventario de accesorios"
       tabindex="0">
 
-      <table mat-table class="accesorios-table" [dataSource]="accesorios()" matSort matSortDisableClear
+      <table mat-table class="accesorios-table ws-table ws-table--xwide ws-table--actions" [dataSource]="accesorios()" matSort matSortDisableClear
         [matSortActive]="columnaOrden()" [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
         <!-- ACCESORIO -->

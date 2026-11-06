@@ -1,0 +1,55 @@
+@use '../../../shared/styles/responsive-table' as wsTable;
+:host{display:block;width:100%;min-width:0;color:var(--app-text);}
+:host *{box-sizing:border-box;}
+.page-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+.page-title h1{margin:0;font-size:22px;font-weight:700;color:var(--app-text);}
+.page-title p{margin:3px 0 0;font-size:13px;color:var(--app-text-muted);}
+.primary-btn{min-height:38px;padding:0 15px!important;border-radius:7px!important;background:var(--app-primary)!important;color:#fff!important;font-size:12px;font-weight:600;}
+.primary-btn mat-icon{margin-right:5px;}
+.card{position:relative;overflow:hidden;background:var(--app-card);border:1px solid var(--app-border);border-radius:8px;box-shadow:0 1px 3px #1018280d;}
+.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 14px;border-bottom:1px solid var(--app-border);}
+.search-field{min-width:210px;max-width:350px;flex:1 1 235px;font-size:12px;}
+.search-field mat-icon{color:var(--app-text-muted);font-size:19px;}
+/* Buscador compacto de 38px, mismo estilo que los demas catalogos de WorkStock. */
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-subscript-wrapper{display:none;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-text-field-wrapper{height:38px;border-radius:6px;background:var(--app-input-bg,var(--app-card));}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-flex{height:38px;align-items:center;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-infix{display:flex;align-items:center;height:38px;min-height:38px;padding-top:7px!important;padding-bottom:7px!important;}
+:host ::ng-deep .toolbar .search-field input.mat-mdc-input-element{font-size:11px;line-height:normal;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-icon-prefix,
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-icon-suffix{display:flex;align-items:center;justify-content:center;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-icon-prefix{padding-left:7px;padding-right:2px;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-icon-prefix mat-icon{width:17px;height:17px;font-size:17px;line-height:17px;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button{width:32px;height:32px;padding:4px;}
+:host ::ng-deep .toolbar .search-field .mat-mdc-form-field-icon-suffix mat-icon{width:18px;height:18px;font-size:18px;line-height:18px;}
+.filters{display:flex;gap:4px;align-items:center;background:var(--app-card-secondary);padding:3px;border:1px solid var(--app-border-soft);border-radius:7px;}
+.filters button{border:0;border-radius:5px;background:transparent;color:var(--app-text-muted);padding:7px 11px;font-size:11px;cursor:pointer;}
+.filters button.selected{background:var(--app-primary);color:#fff;font-weight:700;}
+.filters button:focus-visible{outline:2px solid var(--app-primary);outline-offset:2px;}
+.counter{margin-left:auto;font-size:11px;color:var(--app-text-muted);white-space:nowrap;}
+.table-wrapper{overflow:auto;width:100%;}
+.data-table{width:100%;min-width:550px;border-collapse:collapse;color:var(--app-text);font-size:12px;}
+.data-table th{padding:11px 14px;background:var(--app-card-secondary);color:var(--app-text-muted);border-bottom:1px solid var(--app-border);font-size:11px;text-align:left;font-weight:700;}
+.data-table td{padding:8px 14px;border-bottom:1px solid var(--app-border-soft);}
+.data-table tbody tr:hover{background:var(--app-hover);}
+.data-table tbody tr:last-child td{border-bottom:0;}
+.order-col{width:74px;text-align:center!important;font-variant-numeric:tabular-nums;}
+.reference-col{width:132px;text-align:center!important;}
+.state-col{width:90px;text-align:center!important;}
+.actions-col{width:110px;text-align:right!important;white-space:nowrap;}
+.actions-col button{width:35px;height:35px;}
+.actions-col mat-icon{font-size:19px;width:19px;height:19px;line-height:19px;}
+.edit-btn{color:var(--app-primary);}.delete-btn{color:var(--app-danger,#c43b40);}
+.ref-label{display:inline-flex;padding:4px 7px;border-radius:5px;color:var(--app-text-muted);background:var(--app-card-secondary);font-size:10px;font-weight:600;}
+.ref-label.required{background:var(--app-primary-soft);color:var(--app-primary);}
+.empty{text-align:center!important;padding:35px 12px!important;color:var(--app-text-muted);}
+.empty mat-icon{display:block;margin:0 auto 8px;font-size:30px;width:30px;height:30px;}
+.empty strong,.empty span{display:block;line-height:1.7;}
+.table-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:9px 14px;color:var(--app-text-muted);font-size:11px;border-top:1px solid var(--app-border-soft);}
+.pagination{display:flex;align-items:center;gap:5px;}.pagination button{width:30px;height:30px;}.pagination mat-icon{font-size:18px;}
+.info{display:flex;align-items:flex-start;gap:8px;padding:11px 14px;border-top:1px solid var(--app-border);background:var(--app-card-secondary);color:var(--app-text-muted);font-size:11px;line-height:1.5;}
+.info mat-icon{flex:0 0 18px;font-size:18px;width:18px;height:18px;color:var(--app-primary);}
+@media(max-width:640px){.page-header .primary-btn{width:100%;}.toolbar{align-items:stretch;}.search-field{max-width:none;flex-basis:100%;}.filters{width:max-content;}.counter{margin-left:0;}.data-table th,.data-table td{padding-left:9px;padding-right:9px;}}
+
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

@@ -1,0 +1,10 @@
+:host { display: block; min-width: 0; }
+.cliente-identificacion-ayuda { display: flex; align-items: flex-start; gap: 5px; margin: 6px 0 0; color: var(--app-text-muted); font-size: 10px; line-height: 1.4; }
+.cliente-identificacion-ayuda mat-icon { flex: 0 0 14px; width: 14px; height: 14px; margin-top: 1px; font-size: 14px; }
+.cliente-seleccionado { display: flex; align-items: center; gap: 8px; min-width: 0; margin-top: 9px; padding: 8px 10px; border: 1px solid var(--app-border-soft); border-radius: 7px; background: var(--app-card-secondary); }
+.cliente-seleccionado > mat-icon { flex: 0 0 18px; width: 18px; height: 18px; font-size: 18px; color: var(--app-success); }
+.cliente-seleccionado-datos { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 3px 10px; min-width: 0; }
+.cliente-seleccionado-datos strong { color: var(--app-text); font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
+.cliente-seleccionado-datos span { color: var(--app-text-muted); font-size: 10px; overflow-wrap: anywhere; }
+.cliente-seleccionado-estado { flex: 0 0 auto; color: var(--app-success); font-size: 10px; font-weight: 600; }
+@media (max-width: 560px) { .cliente-seleccionado-estado { display: none; } }

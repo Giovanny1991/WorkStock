@@ -110,9 +110,9 @@
 
         <!-- TABLA -->
 
-        <div class="table-wrapper">
+        <div class="ws-table-shell table-wrapper" role="region" tabindex="0" aria-label="Celulares vendidos">
 
-            <table mat-table [dataSource]="equipos()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
+            <table class="ws-table ws-table--xwide ws-table--actions" mat-table [dataSource]="equipos()" matSort matSortDisableClear [matSortActive]="columnaOrden()"
                 [matSortDirection]="direccionOrden()" (matSortChange)="cambiarOrden($event)">
 
                 <!-- VENTA -->

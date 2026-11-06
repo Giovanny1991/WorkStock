@@ -530,3 +530,9 @@ mat-dialog-actions {
     0;
 
 }
+/* Desglose de cobros en el ticket: se imprime junto con la nota. */
+.ticket .pagos-ticket { margin: 12px 0 6px; padding-top: 7px; border-top: 1px dashed #777; font-size: 9px; }
+.ticket .pagos-ticket > strong { display: block; margin-bottom: 5px; text-align: center; }
+.ticket .pago-ticket-fila { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.ticket .pago-ticket-fila span:first-child { flex: 1; overflow-wrap: anywhere; }
+.ticket .pago-ticket-fila span:last-child { flex: 0 0 auto; font-weight: 600; white-space: nowrap; }

@@ -1,0 +1,54 @@
+<div class="dialog-header">
+  <div class="header-identity">
+    <span class="header-icon"><mat-icon>{{ icono }}</mat-icon></span>
+    <div class="header-text">
+      <h2>{{ titulo }}</h2>
+      <p>Configuración de órdenes de trabajo</p>
+    </div>
+  </div>
+  <button mat-icon-button type="button" class="close-button" aria-label="Cerrar" [disabled]="procesando()" (click)="cerrar()"><mat-icon>close</mat-icon></button>
+</div>
+<mat-dialog-content class="dialog-content">
+  <div class="editor-panel">
+    <div class="field-group">
+      <label for="catalogo-nombre" class="field-label">{{ editando() !== null ? 'Modificar registro' : 'Nuevo registro' }}</label>
+      <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
+        <input id="catalogo-nombre" matInput [formControl]="nombre" maxlength="100" autocomplete="off" (keyup.enter)="guardar()" placeholder="Nombre del registro">
+      </mat-form-field>
+    </div>
+    <div class="editor-actions">
+      <button mat-flat-button type="button" class="save-btn" [disabled]="procesando()" (click)="guardar()">
+        <mat-icon>{{ editando() !== null ? 'save' : 'add' }}</mat-icon><span>{{ editando() !== null ? 'Actualizar' : 'Agregar' }}</span>
+      </button>
+      @if (editando() !== null) { <button mat-stroked-button type="button" class="cancel-btn" [disabled]="procesando()" (click)="cancelarEdicion()">Cancelar</button> }
+    </div>
+  </div>
+  <div class="list-heading"><strong>Registros configurados</strong><span>{{ items().length }} registro(s)</span></div>
+  <div class="ws-table-shell catalogo-table-wrap" role="region" tabindex="0" aria-label="Registros del catálogo de órdenes">
+    <table class="catalogo-table ws-table ws-table--compact ws-table--actions" aria-label="Registros del catálogo">
+      <thead><tr><th scope="col">Nombre</th><th scope="col" class="status-title">Estado</th><th scope="col" class="actions-title">Acciones</th></tr></thead>
+      <tbody>
+        @if (cargando()) { <tr><td colspan="3" class="empty-message">Consultando registros...</td></tr> }
+        @else if (!items().length) { <tr><td colspan="3" class="empty-message">No existen registros. Agrega el primero.</td></tr> }
+        @else {
+          @for (item of items(); track item.id) {
+            <tr [class.editing-row]="editando() === item.id">
+              <td class="name-col">{{ item.nombre }}</td>
+              <td class="status-col">
+                <app-estado-switch [activo]="item.estado === 'ACTIVO'" [nombre]="'registro ' + item.nombre"
+                  [deshabilitado]="procesando() || cargando()" (cambiar)="cambiarEstado(item)"></app-estado-switch>
+              </td>
+              <td class="actions-col">
+                <button mat-icon-button type="button" class="edit-action" aria-label="Editar" matTooltip="Editar registro" [disabled]="procesando()" (click)="editar(item)"><mat-icon>edit</mat-icon></button>
+                <button mat-icon-button type="button" class="delete-action" aria-label="Eliminar" matTooltip="Eliminar registro" [disabled]="procesando()" (click)="eliminar(item)"><mat-icon>delete_outline</mat-icon></button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="dialog-actions" align="end">
+  <button mat-stroked-button type="button" class="cancel-btn" [disabled]="procesando()" (click)="cerrar()">Cerrar</button>
+</mat-dialog-actions>

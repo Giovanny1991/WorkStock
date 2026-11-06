@@ -1,0 +1,14 @@
+<p class="cliente-identificacion-ayuda">
+  <mat-icon aria-hidden="true">info_outline</mat-icon>
+  <span>{{ ayudaIdentificacion }}</span>
+</p>
+@if (cliente(); as seleccionado) {
+<div class="cliente-seleccionado" role="status" aria-label="Cliente seleccionado">
+  <mat-icon aria-hidden="true">check_circle</mat-icon>
+  <div class="cliente-seleccionado-datos">
+    <strong>{{ seleccionado.nombreCliente }}</strong>
+    <span>{{ seleccionado.identificacion }}</span>
+  </div>
+  <span class="cliente-seleccionado-estado">Seleccionado</span>
+</div>
+}

@@ -1,3 +1,4 @@
+import type { PagoCaptura, PagoRegistrado } from '../../shared/pagos-editor/pagos-editor.model';
 export interface FacturaDetalleRequest {
   idProducto: number;
   precioTotal: number;
@@ -6,6 +7,7 @@ export interface FacturaDetalleRequest {
 export interface FacturaRequest {
   idCliente: number;
   detalle: FacturaDetalleRequest[];
+  pagos: PagoCaptura[];
 }
 
 export interface FacturaCreadaResponse {
@@ -73,6 +75,7 @@ export interface FacturaCompleta {
   ivaAplicado: number;
   vendedor: string;
   detalle: FacturaDetalle[];
+  pagos: PagoRegistrado[];
 }
 
 export interface FacturasResponse {

@@ -1,0 +1,12 @@
+<div class="ws-dialog-header">
+  <div class="ws-dialog-identity"><span class="ws-dialog-icon"><mat-icon>qr_code_2</mat-icon></span><div><h2>Fotografías por QR</h2><p>Nueva orden · Antes de guardar</p></div></div>
+  <button mat-icon-button type="button" (click)="cerrar()" aria-label="Cerrar"><mat-icon>close</mat-icon></button>
+</div>
+<mat-dialog-content class="ws-qr-content">
+  @if (error()) { <p class="ws-error">{{ error() }}</p> }
+  @if (codigoQr(); as qr) { <div class="ws-qr-code"><img [src]="qr" alt="Código QR temporal para fotografías de la nueva orden" width="250" height="250"></div> }
+  <p class="ws-help">El técnico debe iniciar sesión en WorkStock desde su celular. Las fotografías se guardarán como borrador y se asociarán automáticamente cuando registres la orden.</p>
+  <p class="ws-expires">QR válido durante {{ sesion.minutosVigencia }} minutos · Hasta {{ sesion.MaxFotografias }} imágenes.</p>
+  <!-- <p class="ws-url">{{ enlace }}</p> -->
+</mat-dialog-content>
+<mat-dialog-actions align="end"><button mat-stroked-button type="button" (click)="cerrar()">Cerrar</button><button mat-flat-button type="button" (click)="copiar()"><mat-icon>content_copy</mat-icon> Copiar enlace</button></mat-dialog-actions>

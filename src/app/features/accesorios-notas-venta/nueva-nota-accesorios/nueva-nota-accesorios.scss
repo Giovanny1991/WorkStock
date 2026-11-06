@@ -1,3 +1,4 @@
+@use '../../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - NOTA DE VENTA DE ACCESORIOS
    ESTILO UNIFICADO CON NOTA DE VENTA DE DISPOSITIVOS
@@ -744,3 +745,6 @@ td small {
   }
 
 }
+
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

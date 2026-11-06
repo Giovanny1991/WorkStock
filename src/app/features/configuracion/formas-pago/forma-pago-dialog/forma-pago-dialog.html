@@ -1,0 +1,17 @@
+<!-- WORKSTOCK - NUEVA / EDITAR FORMA DE PAGO -->
+<div class="dialog-header">
+  <div class="header-identity"><span class="header-icon"><mat-icon>{{ esEdicion ? 'edit_note' : 'payments' }}</mat-icon></span><div class="header-text"><h2>{{ esEdicion ? 'Editar forma de pago' : 'Nueva forma de pago' }}</h2><p>Configura cómo se registrarán los cobros de la empresa.</p></div></div>
+  <button mat-icon-button type="button" class="close-button" [disabled]="guardando()" (click)="cancelar()" aria-label="Cerrar formulario"><mat-icon>close</mat-icon></button>
+</div>
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <mat-dialog-content class="dialog-content">
+    <div class="field-group"><label for="fp-nombre">Nombre de la forma de pago</label><mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field"><input id="fp-nombre" matInput formControlName="nombre" maxlength="80" placeholder="Ej. TRANSFERENCIA" autocomplete="off">
+      @if (form.controls.nombre.touched && (form.controls.nombre.hasError('required') || form.controls.nombre.hasError('minlength'))) { <mat-error>Ingrese al menos dos caracteres</mat-error> }
+    </mat-form-field><span class="field-hint">{{ form.controls.nombre.value.length }}/80 caracteres</span></div>
+    <div class="field-group"><label for="fp-orden">Orden de visualización</label><mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-field"><input id="fp-orden" matInput type="number" formControlName="orden" min="0" max="99999" step="1" autocomplete="off">
+      @if (form.controls.orden.touched && form.controls.orden.invalid) { <mat-error>Ingrese un número entero entre 0 y 99999</mat-error> }
+    </mat-form-field></div>
+    <div class="settings"><mat-checkbox formControlName="requiereReferencia" color="primary">Requiere número de referencia</mat-checkbox><p>Se solicitará un comprobante o referencia para esta forma de pago.</p><mat-checkbox formControlName="activo" color="primary">Forma de pago activa</mat-checkbox><p>Las formas inactivas no estarán disponibles para nuevos cobros.</p></div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="dialog-actions" align="end"><button mat-stroked-button type="button" class="cancel-btn" [disabled]="guardando()" (click)="cancelar()">Cancelar</button><button mat-flat-button type="submit" class="save-btn" [disabled]="form.invalid || guardando()"><mat-icon>{{ guardando() ? 'hourglass_top' : 'save' }}</mat-icon>{{ guardando() ? 'Guardando...' : esEdicion ? 'Actualizar' : 'Guardar' }}</button></mat-dialog-actions>
+</form>

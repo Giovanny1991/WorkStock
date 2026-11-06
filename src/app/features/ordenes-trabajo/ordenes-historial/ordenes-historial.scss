@@ -1,3 +1,4 @@
+@use '../../../shared/styles/responsive-table' as wsTable;
 /* =====================================================
    WORKSTOCK - ÓRDENES DE TRABAJO
    ESTILO COMPACTO UNIFICADO Y RESPONSIVE
@@ -1298,6 +1299,10 @@ mat-progress-bar {
   --state-fg: #2165c4;
 }
 
+.presupuesto {
+  --state-fg: #7953a8;
+}
+
 .repuesto {
   --state-fg: #bd680c;
 }
@@ -1326,6 +1331,7 @@ mat-progress-bar {
 .status-badge.todos,
 .status-badge.pendientes,
 .status-badge.diagnostico,
+.status-badge.presupuesto,
 .status-badge.repuesto,
 .status-badge.reparado,
 .status-badge.sin-reparacion,
@@ -1352,3 +1358,6 @@ mat-progress-bar {
     font-size: 11px;
   }
 }
+
+// Apariencia y desplazamiento compartidos de tablas de WorkStock.
+@include wsTable.aplicar();

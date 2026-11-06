@@ -1,0 +1,20 @@
+:host{display:block;width:100%;min-width:0;color:var(--app-text);}
+:host *{box-sizing:border-box;}
+.dialog-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--app-card);border-bottom:1px solid var(--app-border);}
+.header-identity{display:flex;align-items:center;gap:10px;min-width:0;}
+.header-icon{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:7px;background:var(--app-primary-soft);color:var(--app-primary);}
+.header-icon mat-icon{width:19px;height:19px;font-size:19px;line-height:19px;}
+.header-text{min-width:0;}.header-text h2{margin:0;font-size:14px;font-weight:700;color:var(--app-text);}.header-text p{margin:3px 0 0;font-size:11px;line-height:1.4;color:var(--app-text-muted);}
+.close-button{flex-shrink:0;color:var(--app-text-muted);}
+.dialog-content{display:grid;gap:16px;padding:16px!important;background:var(--app-card);}
+.field-group{display:grid;gap:5px;}.field-group label{font-size:11px;font-weight:600;color:var(--app-text);}
+.compact-field{display:block;width:100%;font-size:12px;--mdc-outlined-text-field-container-shape:7px;}
+.field-hint{font-size:10px;color:var(--app-text-muted);text-align:right;}
+.settings{display:grid;gap:2px;padding:10px 12px;background:var(--app-card-secondary);border:1px solid var(--app-border-soft);border-radius:8px;}
+.settings mat-checkbox{font-size:12px;color:var(--app-text);}.settings p{margin:0 0 8px 40px;font-size:11px;line-height:1.4;color:var(--app-text-muted);}
+.dialog-actions{display:flex;gap:8px;justify-content:flex-end;padding:11px 16px!important;margin:0;border-top:1px solid var(--app-border);background:var(--app-card);}
+.save-btn,.cancel-btn{min-height:36px;border-radius:7px!important;padding:0 13px!important;font-size:12px;font-weight:600;}
+.save-btn{background:var(--app-primary)!important;color:#fff!important;}.save-btn mat-icon{margin-right:4px;}
+:host ::ng-deep .compact-field .mat-mdc-text-field-wrapper{min-height:40px;}
+:host ::ng-deep .compact-field .mat-mdc-form-field-infix{min-height:40px;padding-top:9px;padding-bottom:7px;}
+@media(max-width:520px){.dialog-header{padding:12px;}.dialog-content{padding:12px!important;}.settings p{margin-left:28px;}}

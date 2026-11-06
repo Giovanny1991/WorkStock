@@ -297,6 +297,10 @@ export class AdministracionService {
 
   }
 
+  actualizarEstadoEmpresa(id: number, estado: 'ACTIVA' | 'INACTIVA'): Observable<RespuestaApi<Empresa>> {
+    return this.http.patch<RespuestaApi<Empresa>>(`${this.api}/empresas/${id}/estado`, { estado });
+  }
+
   // ===================================================
   // SUBIR / REEMPLAZAR LOGO
   // ===================================================
@@ -496,6 +500,10 @@ export class AdministracionService {
       data
     );
 
+  }
+
+  actualizarEstadoUsuario(idUsuario: number, estado: 'ACTIVO' | 'INACTIVO', idEmpresa?: number): Observable<RespuestaApi<UsuarioEmpresa>> {
+    return this.http.patch<RespuestaApi<UsuarioEmpresa>>(`${this.rutaUsuarios(idEmpresa)}/${idUsuario}/estado`, { estado });
   }
 
   // ===================================================
