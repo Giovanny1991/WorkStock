@@ -1,0 +1,53 @@
+<div class="dialog-header">
+  <div class="header-info">
+    <span class="header-icon"><mat-icon>admin_panel_settings</mat-icon></span>
+    <div><h2>Configurar módulos</h2><p>{{ empresa.nombreEmpresa }} · {{ empresa.codigo }}</p></div>
+  </div>
+  <button mat-icon-button type="button" class="close-button" aria-label="Cerrar configuración" [disabled]="guardando()" (click)="cancelar()"><mat-icon>close</mat-icon></button>
+</div>
+@if (cargando() || guardando()) { <mat-progress-bar mode="indeterminate" /> }
+<mat-dialog-content class="dialog-body">
+  @if (error()) {
+    <div class="error-box"><mat-icon>error_outline</mat-icon><span>{{ error() }}</span><button mat-stroked-button type="button" (click)="cargar()">Reintentar</button></div>
+  } @else if (!cargando()) {
+    <div class="intro-row">
+      <div class="summary"><strong>{{ totalSeleccionados() }} de {{ totalDisponibles() }}</strong><span>submódulos habilitados</span></div>
+      <div class="bulk-actions">
+        <button mat-stroked-button type="button" [disabled]="guardando()" (click)="seleccionarTodos(true)"><mat-icon>done_all</mat-icon> Habilitar todos</button>
+        <button mat-stroked-button type="button" [disabled]="guardando()" (click)="seleccionarTodos(false)"><mat-icon>remove_done</mat-icon> Deshabilitar todos</button>
+      </div>
+    </div>
+    <div class="info-note"><mat-icon>info_outline</mat-icon><span>Configura los módulos contratados por la empresa. Los grupos y subgrupos se activan o desactivan con un solo switch; los cambios se guardan al confirmar.</span></div>
+    <div class="groups-list">
+      @for (grupo of grupos(); track grupo.modulo.codigo) {
+        <section class="group-card">
+          <header class="group-header">
+            <div class="group-title"><mat-icon>folder_open</mat-icon><div><strong>{{ grupo.modulo.nombre }}</strong><small>{{ cantidad(grupo) }} de {{ grupo.codigosDisponibles.length }} habilitados</small></div></div>
+            <app-estado-switch [activo]="activo(grupo)" [nombre]="'grupo ' + grupo.modulo.nombre" [deshabilitado]="guardando() || !grupo.codigosDisponibles.length" (cambiar)="cambiar(grupo)" />
+          </header>
+          <div class="group-rows">
+            @for (fila of grupo.filas; track fila.modulo.codigo) {
+              <div class="module-row" [class.subgroup]="!fila.asignable" [class.disabled]="!fila.disponible" [style.--level]="fila.nivel - 1">
+                <div class="module-name">
+                  <mat-icon>{{ fila.asignable ? 'subdirectory_arrow_right' : 'folder' }}</mat-icon>
+                  <div><span>{{ fila.modulo.nombre }}</span>
+                    @if (!fila.disponible) { <small>Inactivo en el catálogo general</small> }
+                    @else if (!fila.asignable) { <small>{{ cantidad(fila) }} de {{ fila.codigosDisponibles.length }} habilitados</small> }
+                  </div>
+                </div>
+                <app-estado-switch [activo]="activo(fila)" [nombre]="fila.modulo.nombre" [deshabilitado]="guardando() || !fila.disponible || !fila.codigosDisponibles.length" (cambiar)="cambiar(fila)" />
+              </div>
+            }
+          </div>
+        </section>
+      } @empty {
+        <div class="empty-state"><mat-icon>inventory_2</mat-icon>No se encontraron módulos configurables.</div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="dialog-actions">
+  <span class="unsaved">@if (cambiosPendientes()) { <mat-icon>circle</mat-icon> Cambios sin guardar }</span>
+  <button mat-stroked-button type="button" [disabled]="guardando()" (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button type="button" class="save-button" [disabled]="cargando() || guardando() || !!error() || !cambiosPendientes()" (click)="guardar()"><mat-icon>save</mat-icon> Guardar configuración</button>
+</mat-dialog-actions>

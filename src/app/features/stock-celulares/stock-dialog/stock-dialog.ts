@@ -294,14 +294,14 @@ export class StockDialog implements OnInit {
         imei1,
         [
           Validators.required,
-          Validators.pattern(/^\d{15}$/)
+          Validators.pattern(/^[A-Za-z0-9/-]{1,20}$/)
         ]
       ],
 
       imei2: [
         imei2,
         [
-          Validators.pattern(/^$|^\d{15}$/)
+          Validators.pattern(/^$|^[A-Za-z0-9/-]{1,20}$/)
         ]
       ]
 
@@ -391,7 +391,7 @@ export class StockDialog implements OnInit {
           .at(index)
           .controls[campo]
           .value ?? ''
-      ).trim();
+      ).trim().toUpperCase();
 
     if (!actual) {
       return false;
@@ -407,12 +407,12 @@ export class StockDialog implements OnInit {
         const imei1 =
           String(
             equipo.controls.imei1.value ?? ''
-          ).trim();
+          ).trim().toUpperCase();
 
         const imei2 =
           String(
             equipo.controls.imei2.value ?? ''
-          ).trim();
+          ).trim().toUpperCase();
 
         return (
           imei1 === actual ||
@@ -443,10 +443,10 @@ export class StockDialog implements OnInit {
           [
             String(
               equipo.controls.imei1.value ?? ''
-            ).trim(),
+            ).trim().toUpperCase(),
             String(
               equipo.controls.imei2.value ?? ''
-            ).trim()
+            ).trim().toUpperCase()
           ].filter(Boolean)
         );
 
@@ -1109,8 +1109,8 @@ export class StockDialog implements OnInit {
     if (Number(c.precioVenta.value) <= Number(c.precioCosto.value) && !c.precioCosto.invalid && !c.precioVenta.invalid) errores.push('El precio de venta debe ser mayor al costo.');
     if (c.estadoCelular.invalid) errores.push('Seleccione un estado válido del celular.');
     this.equipos.controls.forEach((equipo, i) => {
-      if (equipo.controls.imei1.invalid) errores.push(`Equipo ${i + 1}: IMEI 1 debe tener exactamente 15 dígitos.`);
-      if (equipo.controls.imei2.invalid) errores.push(`Equipo ${i + 1}: IMEI 2 debe estar vacío o tener 15 dígitos.`);
+      if (equipo.controls.imei1.invalid) errores.push(`Equipo ${i + 1}: IMEI / Serie 1 debe contener de 1 a 20 caracteres: letras, números, / o -.`);
+      if (equipo.controls.imei2.invalid) errores.push(`Equipo ${i + 1}: IMEI / Serie 2 debe estar vacío o contener hasta 20 caracteres: letras, números, / o -.`);
     });
     if (this.hayImeisDuplicados()) errores.push('Hay IMEI repetidos entre diferentes equipos.');
     return errores;
@@ -1197,9 +1197,9 @@ export class StockDialog implements OnInit {
       value.equipos.map(
         equipo => ({
           imei1:
-            equipo.imei1.trim(),
+            equipo.imei1.trim().toUpperCase(),
           imei2:
-            equipo.imei2.trim()
+            equipo.imei2.trim().toUpperCase()
         })
       );
 

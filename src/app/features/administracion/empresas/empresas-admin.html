@@ -317,6 +317,13 @@
 
               </button>
 
+              <!-- CONFIGURAR MÓDULOS DE LA EMPRESA -->
+              <button mat-icon-button type="button" class="action modules" matTooltip="Configurar módulos y submódulos"
+                aria-label="Configurar módulos de la empresa" [disabled]="guardando() || eliminandoId() !== null || cambiandoEstadoId() !== null"
+                (click)="configurarModulos(empresa)">
+                <mat-icon>admin_panel_settings</mat-icon>
+              </button>
+
               <!-- ELIMINAR -->
 
               <button mat-icon-button type="button" class="action delete" matTooltip="Eliminar empresa"

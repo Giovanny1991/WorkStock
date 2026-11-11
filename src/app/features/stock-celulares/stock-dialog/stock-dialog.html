@@ -302,8 +302,8 @@
           <p>
             {{
             esEdicion
-            ? 'Modifica los IMEI del equipo seleccionado.'
-            : 'Agrega un par de IMEI por cada celular que deseas ingresar.'
+            ? 'Modifica el IMEI o número de serie del equipo seleccionado.'
+            : 'Ingresa un IMEI o número de serie por equipo (letras, números, guiones y /; máximo 20 caracteres).'
             }}
           </p>
 
@@ -369,14 +369,14 @@
             <div class="field-group">
 
               <label [for]="'equipo-imei1-' + i">
-                IMEI 1
+                IMEI / Serie 1
               </label>
 
               <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
                 <input [id]="'equipo-imei1-' + i" [class.ws-input-invalid]="imeiConError(i, 'imei1')" matInput
-                  type="text" formControlName="imei1" maxlength="15" inputmode="numeric"
-                  placeholder="Ingrese 15 dígitos" autocomplete="off">
+                  type="text" formControlName="imei1" maxlength="20" inputmode="text"
+                  placeholder="Ej. ABC-123/45" autocomplete="off">
 
                 @if (
                 equipo.controls.imei1.invalid &&
@@ -384,7 +384,7 @@
                 ) {
 
                 <mat-error>
-                  Debe contener 15 dígitos
+                  Use letras, números, / o - (máx. 20)
                 </mat-error>
 
                 } @else if (
@@ -400,7 +400,7 @@
               </mat-form-field>
               @if (imeiConError(i, 'imei1')) {
               <span class="ws-field-error" role="alert">{{ imeiDuplicado(i, 'imei1') ? 'IMEI repetido en otro equipo.' :
-                'Debe contener exactamente 15 dígitos.' }}</span>
+                'Use de 1 a 20 caracteres: letras, números, / o -.' }}</span>
               }
 
             </div>
@@ -410,7 +410,7 @@
             <div class="field-group">
 
               <label [for]="'equipo-imei2-' + i">
-                IMEI 2
+                IMEI / Serie 2
                 <span class="optional-text">
                   (opcional)
                 </span>
@@ -419,7 +419,7 @@
               <mat-form-field appearance="outline" class="compact-field" subscriptSizing="dynamic">
 
                 <input [id]="'equipo-imei2-' + i" [class.ws-input-invalid]="imeiConError(i, 'imei2')" matInput
-                  type="text" formControlName="imei2" maxlength="15" inputmode="numeric" placeholder="IMEI secundario"
+                  type="text" formControlName="imei2" maxlength="20" inputmode="text" placeholder="Ej. SERIE-456/78"
                   autocomplete="off">
 
                 @if (
@@ -428,7 +428,7 @@
                 ) {
 
                 <mat-error>
-                  Debe contener 15 dígitos
+                  Use letras, números, / o - (máx. 20)
                 </mat-error>
 
                 } @else if (
@@ -444,7 +444,7 @@
               </mat-form-field>
               @if (imeiConError(i, 'imei2')) {
               <span class="ws-field-error" role="alert">{{ imeiDuplicado(i, 'imei2') ? 'IMEI repetido en otro equipo.' :
-                'Debe contener exactamente 15 dígitos.' }}</span>
+                'Use de 1 a 20 caracteres: letras, números, / o -.' }}</span>
               }
 
             </div>

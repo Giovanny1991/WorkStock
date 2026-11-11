@@ -1,4 +1,5 @@
 import { EstadoSwitch } from '../../../shared/estado-switch/estado-switch';
+import { ModulosEmpresaDialog } from './modulos-empresa-dialog/modulos-empresa-dialog';
 import {
   Component,
   computed,
@@ -1364,6 +1365,20 @@ export class EmpresasAdmin
 
   }
 
+
+  // =====================================================
+  // MÓDULOS CONTRATADOS POR EMPRESA (SOLO SUPERADMIN)
+  // =====================================================
+  configurarModulos(empresa: Empresa): void {
+    if (this.guardando() || this.eliminandoId() !== null || this.cambiandoEstadoId() !== null) return;
+    this.dialog.open(ModulosEmpresaDialog, {
+      width: '890px', maxWidth: '96vw', maxHeight: '94vh',
+      autoFocus: false, disableClose: true,
+      data: empresa
+    }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(ok => {
+      if (ok) this.cargar();
+    });
+  }
 
   // =====================================================
   // USUARIOS

@@ -121,7 +121,7 @@
   border: 1px solid var(--hist-primary) !important;
   border-radius: 6px !important;
 
-  background: var(--hist-primary) !important;
+  background: #196eae !important;
   color: #ffffff !important;
 
   font-family: inherit;
@@ -1054,3 +1054,6 @@ mat-progress-bar {
 
 // Apariencia y desplazamiento compartidos de tablas de WorkStock.
 @include wsTable.aplicar();
+
+/* WORKSTOCK ETAPA 23 - ACCESO A MÓDULOS POR EMPRESA */
+.mat-column-acciones{width:160px;min-width:160px;max-width:160px}.col-actions{width:160px;min-width:160px;max-width:160px}.action.modules{color:var(--hist-primary);background:var(--hist-primary-soft)}.action.modules:hover:not(:disabled){filter:brightness(.94)}
